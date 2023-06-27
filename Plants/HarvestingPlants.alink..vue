@@ -15,20 +15,20 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-const eggCount = ref(0);
+const harvestCount = ref(0);
 
 const onSubmit = () => {
-  onDialogOK(eggCount.value);
+  onDialogOK(harvestCount.value);
 };
 </script>
 
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How many eggs were harvested from {{ props.asset.attributes.name }}?</h4>
+      <h4>How much did you harvest from {{ props.asset.attributes.name }}?</h4>
       <div class="q-pa-md">
       <q-slider
-        v-model="eggCount"
+        v-model="harvestCount"
         :min="0"
         :max="20"
         :step="1"
@@ -36,7 +36,7 @@ const onSubmit = () => {
         label
       />
       <q-input
-        v-model.number="eggCount"
+        v-model.number="harvestCount"
         type="number"
         filled
       />
@@ -47,7 +47,7 @@ const onSubmit = () => {
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="eggCount <= 0"
+          :disabled="harvestCount <= 0"
         />
       </div>
     </q-card>
@@ -60,7 +60,7 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
 
-const UNIT_NAME = "egg(s)";
+const UNIT_NAME = "st";
 
 export default {
   async onLoad(handle, assetLink) {
@@ -94,30 +94,28 @@ export default {
           {label: `Add '${UNIT_NAME}' unit`});
     }
 
-    handle.defineSlot('net.symbioquine.farmos_asset_link.actions.v0.egg_harvest', action => {
+    handle.defineSlot('net.symbioquine.farmos_asset_link.actions.v0.harvestPlant', action => {
 
       action.type('asset-action');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived'
-          // TODO: Implement a better predicate here...
-          && asset.attributes.name.toLowerCase().indexOf("chicken") !== -1);
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
       const doActionWorkflow = async (asset) => {
-        const eggCount = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+        const harvestCount = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
 
-        if (!eggCount || eggCount <= 0) {
+        if (!harvestCount || harvestCount <= 0) {
           return;
         }
 
-        const eggQuantity = {
+        const harvestQuantity = {
           type: 'quantity--standard',
           id: uuidv4(),
           attributes: {
             measure: 'count',
             value: {
-              numerator: eggCount,
+              numerator: harvestCount,
               denominator: 1,
-              decimal: `${eggCount}`,
+              decimal: `${harvestCount}`,
             },
           },
           relationships: {
@@ -133,7 +131,7 @@ export default {
         const harvestLog = {
           type: 'log--harvest',
           attributes: {
-            name: `Collected ${eggCount} egg(s) from ${asset.attributes.name}`,
+            name: `Collected ${harvestCount} egg(s) from ${asset.attributes.name}`,
             timestamp: formatRFC3339(new Date()),
             status: "done",
           },
@@ -149,8 +147,8 @@ export default {
             quantity: {
               data: [
                 {
-                  type: eggQuantity.type,
-                  id: eggQuantity.id,
+                  type: harvestQuantity.type,
+                  id: harvestQuantity.id,
                 }
               ]
             },
@@ -159,14 +157,14 @@ export default {
 
         assetLink.entitySource.update(
             (t) => [
-              t.addRecord(eggQuantity),
+              t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
             {label: `Record egg harvest for ${asset.attributes.name}`});
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Egg Harvest" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
     });
 
   }
