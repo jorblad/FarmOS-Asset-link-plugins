@@ -131,7 +131,7 @@ export default {
         const harvestLog = {
           type: 'log--harvest',
           attributes: {
-            name: `Collected ${harvestCount} egg(s) from ${asset.attributes.name}`,
+            name: `Harvested ${harvestCount} from ${asset.attributes.name}`,
             timestamp: formatRFC3339(new Date()),
             status: "done",
           },
