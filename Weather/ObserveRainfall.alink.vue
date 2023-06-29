@@ -6,7 +6,7 @@ import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 const assetLink = inject('assetLink');
 
 const loadingUnitTerm = ref(true);
-let inchesUnitTerm = undefined;
+let mmUnitTerm = undefined;
 
 const loadUnitTerm = async () => {
   await assetLink.booted;
@@ -21,13 +21,13 @@ const loadUnitTerm = async () => {
     return results.flatMap(l => l).find(a => a);
   };
 
-  inchesUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
+  mmUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
 
-  if (!inchesUnitTerm) {
-    inchesUnitTerm = await findUnitTerm(assetLink.entitySource);
+  if (!mmUnitTerm) {
+    mmUnitTerm = await findUnitTerm(assetLink.entitySource);
   }
 
-  if (!inchesUnitTerm) {
+  if (!mmUnitTerm) {
     const unitTermToCreate = {
         type: 'taxonomy_term--unit',
         id: uuidv4(),
@@ -36,7 +36,7 @@ const loadUnitTerm = async () => {
         },
     };
 
-    inchesUnitTerm = await assetLink.entitySource.update(
+    mmUnitTerm = await assetLink.entitySource.update(
         (t) => t.addRecord(unitTermToCreate),
         {label: `Add '${UNIT_NAME}' unit`});
   }
@@ -45,10 +45,10 @@ const loadUnitTerm = async () => {
 };
 loadUnitTerm();
 
-const inchesOfRain = ref(0);
+const mmOfRain = ref(0);
 
-const onSubmit = (inchesOfRain) => {
-  if (!inchesOfRain || inchesOfRain <= 0) {
+const onSubmit = (mmOfRain) => {
+  if (!mmOfRain || mmOfRain <= 0) {
     return;
   }
 
@@ -58,14 +58,14 @@ const onSubmit = (inchesOfRain) => {
     attributes: {
       measure: 'count',
       value: {
-        decimal: `${inchesOfRain}`,
+        decimal: `${mmOfRain}`,
       },
     },
     relationships: {
       units: {
         data: {
-          type: inchesUnitTerm.type,
-          id: inchesUnitTerm.id,
+          type: mmUnitTerm.type,
+          id: mmUnitTerm.id,
         }
       },
     },
@@ -74,7 +74,7 @@ const onSubmit = (inchesOfRain) => {
   const observationLog = {
     type: 'log--observation',
     attributes: {
-      name: `Measured ${inchesOfRain} mm of rainfall`,
+      name: `Measured ${mmOfRain} mm of rainfall`,
       timestamp: formatRFC3339(new Date()),
       status: "done",
     },
@@ -104,7 +104,7 @@ const onSubmit = (inchesOfRain) => {
     <h4>How much rain was there?</h4>
     <div class="q-pa-md">
     <q-slider
-      v-model="inchesOfRain"
+      v-model="mmOfRain"
       :min="0"
       :max="100"
       :step="1"
@@ -112,7 +112,7 @@ const onSubmit = (inchesOfRain) => {
       label
     />
     <q-input
-      v-model.number="inchesOfRain"
+      v-model.number="mmOfRain"
       type="number"
       filled
       suffix="mm"
@@ -123,8 +123,8 @@ const onSubmit = (inchesOfRain) => {
       <q-btn
         color="primary"
         label="Record"
-        @click="() => onSubmit(inchesOfRain)"
-        :disabled="inchesOfRain <= 0"
+        @click="() => onSubmit(mmOfRain)"
+        :disabled="mmOfRain <= 0"
       />
     </div>
     <q-inner-loading :showing="loadingUnitTerm"></q-inner-loading>
