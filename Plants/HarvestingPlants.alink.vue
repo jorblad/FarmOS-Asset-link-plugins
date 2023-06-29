@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useDialogPluginComponent } from 'quasar'
+import { useDialogPluginComponent, QBtn, QSelect } from 'quasar'
 
 const props = defineProps({
   asset: {
