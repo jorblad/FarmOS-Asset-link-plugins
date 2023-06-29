@@ -25,21 +25,27 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How much did you harvest from {{ props.asset.attributes.name }}?</h4>
+      <h4>Record Harvest</h4>
       <div class="q-pa-md">
-      <q-slider
-        v-model="harvestCount"
-        :min="0"
-        :max="20"
-        :step="1"
-        snap
-        label
-      />
-      <q-input
-        v-model.number="harvestCount"
-        type="number"
-        filled
-      />
+        <q-select
+          v-model="quantityType"
+          :options="quantityOptions"
+          label="Quantity Type"
+          filled
+        />
+        <q-slider
+          v-model="harvestCount"
+          :min="0"
+          :max="20"
+          :step="1"
+          snap
+          label
+        />
+        <q-input
+          v-model.number="harvestCount"
+          type="number"
+          filled
+        />
       </div>
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
@@ -66,107 +72,116 @@ export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
 
-    const findUnitTerm = async entitySource => {
-      const results = await entitySource.query(q => q
-          .findRecords('taxonomy_term--unit')
-          .filter({ attribute: 'name', op: 'equal', value: UNIT_NAME }));
+    const findUnitTerm = async (entitySource) => {
+      const results = await entitySource.query((q) =>
+        q.findRecords('taxonomy_term--unit').filter({
+          attribute: 'name',
+          op: 'equal',
+          value: UNIT_NAME,
+        })
+      );
 
-      return results.flatMap(l => l).find(a => a);
+      return results.flatMap((l) => l).find((a) => a);
     };
 
-    let eggUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
+    let harvestUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
 
-    if (!eggUnitTerm) {
-      eggUnitTerm = await findUnitTerm(assetLink.entitySource);
+    if (!harvestUnitTerm) {
+      harvestUnitTerm = await findUnitTerm(assetLink.entitySource);
     }
 
-    if (!eggUnitTerm) {
+    if (!harvestUnitTerm) {
       const unitTermToCreate = {
-          type: 'taxonomy_term--unit',
-          id: uuidv4(),
-          attributes: {
-            name: UNIT_NAME,
-          },
+        type: 'taxonomy_term--unit',
+        id: uuidv4(),
+        attributes: {
+          name: UNIT_NAME,
+        },
       };
 
-      eggUnitTerm = await assetLink.entitySource.update(
-          (t) => t.addRecord(unitTermToCreate),
-          {label: `Add '${UNIT_NAME}' unit`});
+      harvestUnitTerm = await assetLink.entitySource.update(
+        (t) => t.addRecord(unitTermToCreate),
+        { label: `Add '${UNIT_NAME}' unit` }
+      );
     }
 
-    handle.defineSlot('net.symbioquine.farmos_asset_link.actions.v0.harvestPlant', action => {
+    handle.defineSlot(
+      'net.symbioquine.farmos_asset_link.actions.v0.harvestPlant',
+      (action) => {
+        action.type('asset-action');
 
-      action.type('asset-action');
+        action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
+        const doActionWorkflow = async (asset) => {
+          const { quantityType, harvestCount } =
+            await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
 
-      const doActionWorkflow = async (asset) => {
-        const harvestCount = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+          if (!harvestCount || harvestCount <= 0) {
+            return;
+          }
 
-        if (!harvestCount || harvestCount <= 0) {
-          return;
-        }
-
-        const harvestQuantity = {
-          type: 'quantity--standard',
-          id: uuidv4(),
-          attributes: {
-            measure: 'count',
-            value: {
-              numerator: harvestCount,
-              denominator: 1,
-              decimal: `${harvestCount}`,
+          const harvestQuantity = {
+            type: 'quantity--standard',
+            id: uuidv4(),
+            attributes: {
+              measure: quantityType,
+              value: {
+                numerator: harvestCount,
+                denominator: 1,
+                decimal: `${harvestCount}`,
+              },
             },
-          },
-          relationships: {
-            units: {
-              data: {
-                type: eggUnitTerm.type,
-                id: eggUnitTerm.id,
-              }
+            relationships: {
+              units: {
+                data: {
+                  type: harvestUnitTerm.type,
+                  id: harvestUnitTerm.id,
+                },
+              },
             },
-          },
-        };
+          };
 
-        const harvestLog = {
-          type: 'log--harvest',
-          attributes: {
-            name: `Harvested ${harvestCount} from ${asset.attributes.name}`,
-            timestamp: formatRFC3339(new Date()),
-            status: "done",
-          },
-          relationships: {
-            asset: {
-              data: [
-                {
-                  type: asset.type,
-                  id: asset.id,
-                }
-              ]
+          const harvestLog = {
+            type: 'log--harvest',
+            attributes: {
+              name: `Harvested ${harvestCount} ${quantityType} from ${asset.attributes.name}`,
+              timestamp: formatRFC3339(new Date()),
+              status: 'done',
             },
-            quantity: {
-              data: [
-                {
-                  type: harvestQuantity.type,
-                  id: harvestQuantity.id,
-                }
-              ]
+            relationships: {
+              asset: {
+                data: [
+                  {
+                    type: asset.type,
+                    id: asset.id,
+                  },
+                ],
+              },
+              quantity: {
+                data: [
+                  {
+                    type: harvestQuantity.type,
+                    id: harvestQuantity.id,
+                  },
+                ],
+              },
             },
-          },
-        };
+          };
 
-        assetLink.entitySource.update(
+          assetLink.entitySource.update(
             (t) => [
               t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
-            {label: `Record egg harvest for ${asset.attributes.name}`});
-      };
+            { label: `Record harvest for ${asset.attributes.name}` }
+          );
+        };
 
-      action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
-    });
-
-  }
-}
+        action.component(({ asset }) =>
+          h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" )
+        );
+      }
+    );
+  },
+};
 </script>
