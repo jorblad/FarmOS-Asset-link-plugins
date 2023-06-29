@@ -40,6 +40,11 @@ const onSubmit = () => {
         type="number"
         filled
       />
+      <q-select
+        filled v-model="quantityType"
+        :options="options"
+        label="Standard"
+      />
       </div>
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
