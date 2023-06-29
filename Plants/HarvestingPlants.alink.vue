@@ -21,7 +21,7 @@ const quantityType = ref(null);
 const quantityOptions = ['st', 'gram']
 
 const onSubmit = () => {
-  onDialogOK(harvestCount.value);
+  onDialogOK(harvestCount.value, quantityType.value);
 };
 </script>
 
@@ -113,12 +113,12 @@ export default {
       action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
       const doActionWorkflow = async (asset) => {
-        const harvestCount = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-        console.log('Dialog result:', harvestCount);
-        //const harvestCount = dialogResult.harvestCount;
-        //console.log('Harvest Count:', harvestCount);
-        //const UNIT_NAME = dialogResult.quantityType;
-        //console.log('QuantityType:', UNIT_NAME);
+        const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+        console.log('Dialog result:', dialogResult);
+        const harvestCount = dialogResult.harvestCount;
+        console.log('Harvest Count:', harvestCount);
+        const UNIT_NAME = dialogResult.quantityType;
+        console.log('QuantityType:', UNIT_NAME);
 
         if (!harvestCount || harvestCount <= 0) {
           return;
