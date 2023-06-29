@@ -15,7 +15,7 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-const quantityType = ref('Count');
+const quantityType = ref('');
 const quantityOptions = ['Count', 'Grams'];
 
 const harvestCount = ref(0);
@@ -39,7 +39,7 @@ const onSubmit = () => {
         <q-slider
           v-model="harvestCount"
           :min="0"
-          :max="20"
+          :max="200"
           :step="1"
           snap
           label
@@ -114,8 +114,8 @@ export default {
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
-        const doActionWorkflow = async (asset, quantityType) => {
-          const { harvestCount } =
+        const doActionWorkflow = async (asset ) => {
+          const { harvestCount, quantityType } =
             await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
 
           if (!harvestCount || harvestCount <= 0) {
