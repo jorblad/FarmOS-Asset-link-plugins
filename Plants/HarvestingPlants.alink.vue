@@ -70,7 +70,7 @@ import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api
 
 const UNIT_NAME = "st";
 
-const doActionWorkflow = async (asset ) => {
+const doActionWorkflow = async (assetLink, handle, asset ) => {
   const { harvestCount, quantityType } =
     await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
 
@@ -184,7 +184,7 @@ export default {
         
 
         action.component(({ asset }) =>
-          h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" )
+          h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(assetLink, handle, asset), 'no-caps': true },  "Record Harvest" )
         );
       }
     );
