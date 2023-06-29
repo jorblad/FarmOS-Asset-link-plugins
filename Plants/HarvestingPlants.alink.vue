@@ -17,8 +17,8 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const harvestCount = ref(0);
 
-// Define the assetLink ref
-const assetLink = ref(null);
+/* // Define the assetLink ref
+//const assetLink = ref(null);
 
 // Create a function to fetch assetLink and store it in the ref
 const fetchAssetLink = async () => {
@@ -40,7 +40,7 @@ const findUnitTerms = async (entitySource) => {
   return unitTerms.find((a) => a);
 };
 
-const unitTerms = findUnitTerms(assetLink.entitySource);
+const unitTerms = findUnitTerms(assetLink.entitySource); */
 
 const quantityType = ref(null);
 const quantityOptions = ['st', 'gram']
