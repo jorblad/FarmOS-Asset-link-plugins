@@ -120,6 +120,34 @@ export default {
         const UNIT_NAME = dialogResult.quantityType;
         console.log('QuantityType:', UNIT_NAME);
 
+        const findUnitTerm = async entitySource => {
+          const results = await entitySource.query(q => q
+              .findRecords('taxonomy_term--unit')
+              .filter({ attribute: 'name', op: 'equal', value: UNIT_NAME }));
+
+          return results.flatMap(l => l).find(a => a);
+        };
+
+        let harvestUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
+
+        if (!harvestUnitTerm) {
+          harvestUnitTerm = await findUnitTerm(assetLink.entitySource);
+        }
+
+        if (!harvestUnitTerm) {
+          const unitTermToCreate = {
+              type: 'taxonomy_term--unit',
+              id: uuidv4(),
+              attributes: {
+                name: UNIT_NAME,
+              },
+          };
+
+          harvestUnitTerm = await assetLink.entitySource.update(
+              (t) => t.addRecord(unitTermToCreate),
+              {label: `Add '${UNIT_NAME}' unit`});
+        }
+
         if (!harvestCount || harvestCount <= 0) {
           return;
         }
