@@ -15,12 +15,14 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-const quantityOptions = ['Antal', 'Gram'];
+
+const quantityType = ref('');
+const quantityOptions = ['Count', 'Grams'];
 
 const harvestCount = ref(0);
 
 const onSubmit = () => {
-  onDialogOK(harvestCount.value);
+  onDialogOK(harvestCount.value, quantityType.value);
 };
 </script>
 
@@ -114,7 +116,7 @@ export default {
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
-        const doActionWorkflow = async (asset) => {
+        const doActionWorkflow = async (asset, quantityType) => {
           const { quantityType, harvestCount } =
             await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
 
@@ -180,7 +182,7 @@ export default {
         };
 
         action.component(({ asset }) =>
-          h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" )
+          h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset, quantityType.value), 'no-caps': true },  "Record Harvest" )
         );
       }
     );
