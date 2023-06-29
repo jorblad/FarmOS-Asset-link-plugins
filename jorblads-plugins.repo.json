@@ -1,0 +1,7 @@
+{
+    "plugins": [
+    {
+    "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/HarvestingPlants.alink.vue"
+    }
+    ]
+    }
