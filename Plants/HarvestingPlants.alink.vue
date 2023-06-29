@@ -17,6 +17,21 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const harvestCount = ref(0);
 
+
+const findUnitTerms = async (entitySource) => {
+  const results = await entitySource.query((q) =>
+    q.findRecords('taxonomy_term--unit')
+  );
+
+  const unitTerms = results.flatMap((l) => l);
+
+  console.log('All taxonomy_term--unit records:', unitTerms);
+
+  return unitTerms.find((a) => a);
+};
+
+const unitTerms = findUnitTerms(assetLink.entitySource);
+
 const quantityType = ref(null);
 const quantityOptions = ['st', 'gram']
 
@@ -84,6 +99,7 @@ export default {
       action.type('asset-action');
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived');
+
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
