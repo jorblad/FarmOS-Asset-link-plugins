@@ -66,7 +66,6 @@ const onSubmit = () => {
 
 <script>
 import { h } from 'vue';
-import { QBtn } from 'quasar';
 
 import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
 
@@ -117,7 +116,7 @@ export default {
         action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
         const doActionWorkflow = async (asset, quantityType) => {
-          const { quantityType, harvestCount } =
+          const { harvestCount } =
             await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
 
           if (!harvestCount || harvestCount <= 0) {
