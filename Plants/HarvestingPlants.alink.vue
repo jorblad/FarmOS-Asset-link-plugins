@@ -17,6 +17,16 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const harvestCount = ref(0);
 
+// Define the assetLink ref
+const assetLink = ref(null);
+
+// Create a function to fetch assetLink and store it in the ref
+const fetchAssetLink = async () => {
+  assetLink.value = await getAssetLink(); // Replace getAssetLink with your code to retrieve assetLink
+};
+
+// Fetch the assetLink on component mount
+onMounted(fetchAssetLink);
 
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
