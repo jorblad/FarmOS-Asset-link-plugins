@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useDialogPluginComponent, QBtn, QSelect } from 'quasar'
+import { useDialogPluginComponent, QBtn, QSelect } from 'quasar';
 
 const props = defineProps({
   asset: {
@@ -14,7 +14,6 @@ defineEmits([
 ]);
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
-
 
 const quantityType = ref('');
 const quantityOptions = ['Count', 'Grams'];
