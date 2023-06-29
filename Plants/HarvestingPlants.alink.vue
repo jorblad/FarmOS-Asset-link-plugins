@@ -180,7 +180,7 @@ export default {
         };
 
         action.component(({ asset }) =>
-          h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset, quantityType.value), 'no-caps': true },  "Record Harvest" )
+          h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" )
         );
       }
     );
