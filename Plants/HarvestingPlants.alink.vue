@@ -126,7 +126,7 @@ export default {
             type: 'quantity--standard',
             id: uuidv4(),
             attributes: {
-              measure: quantityType,
+              measure: quantityType.value,
               value: {
                 numerator: harvestCount,
                 denominator: 1,
@@ -146,7 +146,7 @@ export default {
           const harvestLog = {
             type: 'log--harvest',
             attributes: {
-              name: `Harvested ${harvestCount} ${quantityType} from ${asset.attributes.name}`,
+              name: `Harvested ${harvestCount} ${quantityType.value} from ${asset.attributes.name}`,
               timestamp: formatRFC3339(new Date()),
               status: 'done',
             },
