@@ -114,8 +114,11 @@ export default {
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+        console.log('Dialog result:', dialogResult);
         const harvestCount = dialogResult.harvestCount;
+        console.log('Harvest Count:', harvestCount);
         const UNIT_NAME = dialogResult.quantityType;
+        console.log('QuantityType:', UNIT_NAME);
 
         if (!harvestCount || harvestCount <= 0) {
           return;
