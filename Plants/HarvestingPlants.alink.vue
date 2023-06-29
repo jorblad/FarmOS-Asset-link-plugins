@@ -21,7 +21,7 @@ const quantityType = ref(null);
 const quantityOptions = ['st', 'gram']
 
 const onSubmit = () => {
-  onDialogOK(harvestCount.value, quantityType.value);
+  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value });
 };
 </script>
 
