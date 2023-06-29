@@ -112,10 +112,10 @@ export default {
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
-      const doActionWorkflow = async (asset) => {
+      const doActionWorkflow = async (asset, unitName) => {
         const harvestCount = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         // Get the UNIT_NAME from quantityType
-        const UNIT_NAME = quantityType.value;
+        const UNIT_NAME = unitName;
 
         if (!harvestCount || harvestCount <= 0) {
           return;
@@ -178,7 +178,7 @@ export default {
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset, quantityType.value), 'no-caps': true },  "Record Harvest" ));
     });
 
   }
