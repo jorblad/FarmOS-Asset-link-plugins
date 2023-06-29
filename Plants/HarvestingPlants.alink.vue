@@ -114,6 +114,8 @@ export default {
 
       const doActionWorkflow = async (asset) => {
         const harvestCount = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+        // Get the UNIT_NAME from quantityType
+        const UNIT_NAME = quantityType.value;
 
         if (!harvestCount || harvestCount <= 0) {
           return;
