@@ -17,6 +17,9 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const harvestCount = ref(0);
 
+const quantityType = ref(null);
+const quantityOptions = ['Count', 'Grams']
+
 const onSubmit = () => {
   onDialogOK(harvestCount.value);
 };
@@ -42,7 +45,7 @@ const onSubmit = () => {
       />
       <q-select
         filled v-model="quantityType"
-        :options="options"
+        :options="quantityOptions"
         label="Standard"
       />
       </div>
