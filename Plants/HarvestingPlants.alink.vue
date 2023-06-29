@@ -15,6 +15,8 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
+const quantityOptions = ['Antal', 'Gram'];
+
 const harvestCount = ref(0);
 
 const onSubmit = () => {
