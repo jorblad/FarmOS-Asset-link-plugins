@@ -1,7 +1,10 @@
 {
     "plugins": [
-    {
-    "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/HarvestingPlants.alink.vue"
-    }
+        {
+            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/HarvestingPlants.alink.vue"
+        },
+        {
+            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Weather/ObserveRainfall.alink.vue"
+        }
     ]
-    }
+}
