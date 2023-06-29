@@ -74,13 +74,13 @@ export default {
       return results.flatMap(l => l).find(a => a);
     };
 
-    let eggUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
+    let harvestUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
 
-    if (!eggUnitTerm) {
-      eggUnitTerm = await findUnitTerm(assetLink.entitySource);
+    if (!harvestUnitTerm) {
+      harvestUnitTerm = await findUnitTerm(assetLink.entitySource);
     }
 
-    if (!eggUnitTerm) {
+    if (!harvestUnitTerm) {
       const unitTermToCreate = {
           type: 'taxonomy_term--unit',
           id: uuidv4(),
@@ -89,7 +89,7 @@ export default {
           },
       };
 
-      eggUnitTerm = await assetLink.entitySource.update(
+      harvestUnitTerm = await assetLink.entitySource.update(
           (t) => t.addRecord(unitTermToCreate),
           {label: `Add '${UNIT_NAME}' unit`});
     }
@@ -121,8 +121,8 @@ export default {
           relationships: {
             units: {
               data: {
-                type: eggUnitTerm.type,
-                id: eggUnitTerm.id,
+                type: harvestUnitTerm.type,
+                id: harvestUnitTerm.id,
               }
             },
           },
@@ -160,7 +160,7 @@ export default {
               t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
-            {label: `Record egg harvest for ${asset.attributes.name}`});
+            {label: `Record harvest harvest for ${asset.attributes.name}`});
       };
 
       action.component(({ asset }) =>
