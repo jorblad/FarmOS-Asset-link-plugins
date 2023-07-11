@@ -151,7 +151,7 @@ export default {
           return;
         }
         let harvestQuantityMeasure = "count";
-        if ("gram" === harvestCount) {
+        if (harvestCount === "gram" ) {
           harvestQuantityMeasure = "weight";
           console.log("Weight '${harvestQuantityMeasure}'")
         } else {
