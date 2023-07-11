@@ -155,7 +155,7 @@ export default {
           type: 'quantity--standard',
           id: uuidv4(),
           attributes: {
-            measure: 'count',
+            measure: 'weight',
             value: {
               numerator: harvestCount,
               denominator: 1,
