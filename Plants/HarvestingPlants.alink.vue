@@ -151,11 +151,19 @@ export default {
           return;
         }
 
+        if harvestCount == "gram" {
+          const harvestQuantityMeasure = "weight";
+        } else {
+          const harvestQuantityMeasure = "count";
+        }
+
+
+
         const harvestQuantity = {
           type: 'quantity--standard',
           id: uuidv4(),
           attributes: {
-            measure: 'weight',
+            measure: harvestQuantityMeasure,
             value: {
               numerator: harvestCount,
               denominator: 1,
