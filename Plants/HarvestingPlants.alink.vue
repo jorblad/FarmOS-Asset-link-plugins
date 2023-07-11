@@ -150,11 +150,9 @@ export default {
         if (!harvestCount || harvestCount <= 0) {
           return;
         }
-
+        harvestQuantityMeasure = "count";
         if (harvestCount == "gram") {
           harvestQuantityMeasure = "weight";
-        } else {
-          harvestQuantityMeasure = "count";
         }
 
 
