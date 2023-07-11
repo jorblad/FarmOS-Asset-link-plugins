@@ -150,12 +150,12 @@ export default {
         if (!harvestCount || harvestCount <= 0) {
           return;
         }
-
+        const harvestQuantityMeasure = "count";
         if ("gram" === harvestCount) {
-          var harvestQuantityMeasure = "weight";
+          harvestQuantityMeasure = "weight";
           console.log(harvestQuantityMeasure)
         } else {
-          var harvestQuantityMeasure = "count";
+          harvestQuantityMeasure = "count";
           console.log(harvestQuantityMeasure)
         }
 
