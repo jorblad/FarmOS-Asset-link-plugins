@@ -157,8 +157,11 @@ export default {
           relationships: {
             units: {
               data: {
-                type: harvestUnitTerm.type,
-                id: harvestUnitTerm.id,
+                type: 'taxonomy_term--unit',
+                id: uuidv4(),
+                '$relateByName': {
+                  name: UNIT_NAME,
+                },
               }
             },
           },
