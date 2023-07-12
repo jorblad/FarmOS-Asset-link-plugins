@@ -114,8 +114,8 @@ export default {
 
       action.type('asset-action');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
-
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived' );
+      console.log(asset.relationships.asset_type.data.meta)
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
