@@ -114,8 +114,9 @@ export default {
 
       action.type('asset-action');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived' );
-      console.log(asset.relationships.asset_type.data.meta)
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived'
+      && asset.relationships.asset_type.data.meta.drupal_internal__target_id.toLowerCase().indexOf("plant") !== -1);
+
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
