@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
-
+const assetLink = inject('assetLink');
 const props = defineProps({
   asset: {
     type: Object,
@@ -17,7 +17,7 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const harvestCount = ref(0);
 
-/* // Define the assetLink ref
+// Define the assetLink ref
 //const assetLink = ref(null);
 
 // Create a function to fetch assetLink and store it in the ref
@@ -37,13 +37,18 @@ const findUnitTerms = async (entitySource) => {
 
   console.log('All taxonomy_term--unit records:', unitTerms);
 
-  return unitTerms.find((a) => a);
+  return unitTerms;
 };
 
-const unitTerms = findUnitTerms(assetLink.entitySource); */
+const unitTerms = ref([]);
+
+onMounted(async () => {
+  unitTerms.value = await findUnitTerms(assetLink.entitySource);
+});
+
 
 const quantityType = ref(null);
-const quantityOptions = ['st', 'gram']
+const unitLabelFn = unitTerm => unitTerm.attributes.name;
 
 const onSubmit = () => {
   onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value });
@@ -73,7 +78,8 @@ const onSubmit = () => {
 
       <q-select
         filled v-model="quantityType"
-        :options="quantityOptions"
+        :options="unitTerms"
+        :option-label="unitLabelFn"
         label="Standard"
       />
       
@@ -116,43 +122,20 @@ export default {
         console.log('Dialog result:', dialogResult);
         const harvestCount = dialogResult.harvestCount;
         console.log('Harvest Count:', harvestCount);
-        const UNIT_NAME = dialogResult.quantityType;
-        console.log('QuantityType:', UNIT_NAME);
-
-        const findUnitTerm = async entitySource => {
-          const results = await entitySource.query(q => q
-              .findRecords('taxonomy_term--unit')
-              .filter({ attribute: 'name', op: 'equal', value: UNIT_NAME }));
-
-          return results.flatMap(l => l).find(a => a);
-        };
-
-        let harvestUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
+        const harvestUnitTerm = dialogResult.quantityType;
+        console.log('QuantityType:', harvestUnitTerm);
 
         if (!harvestUnitTerm) {
-          harvestUnitTerm = await findUnitTerm(assetLink.entitySource);
+          return;
         }
 
-        if (!harvestUnitTerm) {
-          const unitTermToCreate = {
-              type: 'taxonomy_term--unit',
-              id: uuidv4(),
-              attributes: {
-                name: UNIT_NAME,
-              },
-          };
-
-          harvestUnitTerm = await assetLink.entitySource.update(
-              (t) => t.addRecord(unitTermToCreate),
-              {label: `Add '${UNIT_NAME}' unit`});
-        }
 
         if (!harvestCount || harvestCount <= 0) {
           return;
         }
 
         let harvestQuantityMeasure = "count";
-        if (UNIT_NAME === "gram" ) {
+        if (harvestUnitTerm.attributes.name === "gram" ) {
           harvestQuantityMeasure = "weight";
         } else {
           harvestQuantityMeasure = "count";
