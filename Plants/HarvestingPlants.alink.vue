@@ -33,6 +33,7 @@ const findUnitTerms = async (entitySource) => {
     q.findRecords('taxonomy_term--unit')
   );
 
+
   const unitTerms = results.flatMap((l) => l);
 
   console.log('All taxonomy_term--unit records:', unitTerms);
@@ -44,6 +45,7 @@ const unitTerms = ref([]);
 
 onMounted(async () => {
   unitTerms.value = await findUnitTerms(assetLink.entitySource);
+  console.log('asset.relationships:', asset.relationships);
 });
 
 
