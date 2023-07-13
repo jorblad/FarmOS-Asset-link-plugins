@@ -116,7 +116,9 @@ export default {
 
       action.type('asset-action');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived'
+          // TODO: Implement a better predicate here...
+          && asset.relationships.plant_type !== undefined);
 
 
       const doActionWorkflow = async (asset) => {
