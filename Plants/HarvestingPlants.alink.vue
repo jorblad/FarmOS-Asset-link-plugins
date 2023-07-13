@@ -103,7 +103,6 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
 
-const UNIT_NAME = "st";
 
 export default {
   async onLoad(handle, assetLink) {
