@@ -45,8 +45,9 @@ const unitTerms = ref([]);
 
 onMounted(async () => {
   unitTerms.value = await findUnitTerms(assetLink.entitySource);
-  console.log('asset.relationships:', props.asset.relationships.asset_type.data.meta.drupal_internal__target_id);
   console.log('asset.relationships:', props.asset.attributes.status);
+  console.log('asset.relationships:', props.asset.relationships.asset_type.data.meta.drupal_internal__target_id);
+  
 });
 
 
