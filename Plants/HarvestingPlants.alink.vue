@@ -33,6 +33,7 @@ const findUnitTerms = async (entitySource) => {
     q.findRecords('taxonomy_term--unit')
   );
 
+
   const unitTerms = results.flatMap((l) => l);
 
   console.log('All taxonomy_term--unit records:', unitTerms);
@@ -44,6 +45,7 @@ const unitTerms = ref([]);
 
 onMounted(async () => {
   unitTerms.value = await findUnitTerms(assetLink.entitySource);
+  
 });
 
 
@@ -103,7 +105,6 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
 
-const UNIT_NAME = "st";
 
 export default {
   async onLoad(handle, assetLink) {
@@ -114,7 +115,9 @@ export default {
 
       action.type('asset-action');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived'
+          // Only shows on plants
+          && asset.relationships.plant_type !== undefined);
 
 
       const doActionWorkflow = async (asset) => {
