@@ -124,7 +124,6 @@ export default {
         console.log('Harvest Count:', harvestCount);
         const harvestUnitTerm = dialogResult.quantityType;
         console.log('QuantityType:', harvestUnitTerm);
-        console.log(asset.relationships.asset_type.data.meta.drupal_internal__target_id)
 
         if (!harvestUnitTerm) {
           return;
