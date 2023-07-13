@@ -117,7 +117,7 @@ export default {
       action.type('asset-action');
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
-          // TODO: Implement a better predicate here...
+          // Only shows on plants
           && asset.relationships.plant_type !== undefined);
 
 
