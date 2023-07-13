@@ -109,13 +109,13 @@ export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
 
-    //console.log(asset.relationships.asset_type.data.meta.drupal_internal__target_id)
+
     handle.defineSlot('net.symbioquine.farmos_asset_link.actions.v0.harvestPlant', action => {
 
       action.type('asset-action');
 
-      //action.showIf(({ asset }) => asset.attributes.status !== 'archived' && asset.relationships.asset_type.data.meta.drupal_internal__target_id === "plant");
       action.showIf(({ asset }) => asset.attributes.status !== 'archived');
+
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
