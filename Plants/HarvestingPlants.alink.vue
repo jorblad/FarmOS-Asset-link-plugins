@@ -115,7 +115,7 @@ export default {
       action.type('asset-action');
 
       console.log(asset.relationships.asset_type.data.meta.drupal_internal__target_id)
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived' && asset.relationships.asset_type.data.meta.drupal_internal__target_id === "plant");
 
 
       const doActionWorkflow = async (asset) => {
