@@ -45,8 +45,7 @@ const unitTerms = ref([]);
 
 onMounted(async () => {
   unitTerms.value = await findUnitTerms(assetLink.entitySource);
-  console.log('asset.relationships:', props.asset.attributes);
-  console.log('asset.relationships:', props.asset.relationships.asset_type.data);
+  console.log('asset.relationships:', props);
   
 });
 
