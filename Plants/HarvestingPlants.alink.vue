@@ -114,8 +114,7 @@ export default {
 
       action.type('asset-action');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived' );
-
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
 
       const doActionWorkflow = async (asset) => {
