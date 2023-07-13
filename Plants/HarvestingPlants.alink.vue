@@ -114,9 +114,8 @@ export default {
 
       action.type('asset-action');
 
-      console.log(asset.relationships.asset_type.data.meta.drupal_internal__target_id)
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived' && asset.relationships.asset_type.data.meta.drupal_internal__target_id === "plant");
-
+      //action.showIf(({ asset }) => asset.attributes.status !== 'archived' && asset.relationships.asset_type.data.meta.drupal_internal__target_id === "plant");
+      action.showIf(({ asset }) => asset.attributes.status !== 'archived');
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
@@ -125,6 +124,7 @@ export default {
         console.log('Harvest Count:', harvestCount);
         const harvestUnitTerm = dialogResult.quantityType;
         console.log('QuantityType:', harvestUnitTerm);
+        console.log(asset.relationships.asset_type.data.meta.drupal_internal__target_id)
 
         if (!harvestUnitTerm) {
           return;
