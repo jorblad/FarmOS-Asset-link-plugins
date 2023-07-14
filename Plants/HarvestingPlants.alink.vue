@@ -132,6 +132,10 @@ export default {
             'plant_type')
           ) : [];
 
+          if (!plantTypes) {
+            return false;
+          }
+
         console.log("plantTypes=", plantTypes);
         
         // Obviously, since `plant_type` is a required (N >= 1)
