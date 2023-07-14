@@ -133,6 +133,9 @@ export default {
             'animal_type')
           ) : [];
 
+          if (!animalType) {
+            return false;
+          }
         // Note the difference between `findRelatedRecords` and
         // `findRelatedRecord` (above) which return a list of entities and
         // a single entity respectively. They cannot be used
