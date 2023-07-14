@@ -60,7 +60,7 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How much did you harvest from {{ props.asset.attributes.name }}?</h4>
+      <h4>How much wool did you harvest from {{ props.asset.attributes.name }}?</h4>
       <div class="q-pa-md">
       <q-slider
         v-model="harvestCount"
