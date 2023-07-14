@@ -60,7 +60,7 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How much did you harvest from {{ props.asset.attributes.name }}?</h4>
+      <h4>How much wool did you harvest from {{ props.asset.attributes.name }}?</h4>
       <div class="q-pa-md">
       <q-slider
         v-model="harvestCount"
@@ -125,26 +125,28 @@ export default {
         // is possible because these relationships will almost always
         // already be loaded on the asset page. It is also necessary
         // since slots cannot have asynchronous `showIf` methods.
-        const plantTypes = asset.type === 'asset--plant' ?
+
+        const animalType = asset.type === 'asset--animal' ?
           assetLink.entitySource.cache.query((q) =>
-          q.findRelatedRecords(
+          q.findRelatedRecord(
             { type: asset.type, id: asset.id },
-            'plant_type')
+            'animal_type')
           ) : [];
 
-          if (!plantTypes) {
+          if (!animalType || !animalType.attributes) {
             return false;
           }
+        // Note the difference between `findRelatedRecords` and
+        // `findRelatedRecord` (above) which return a list of entities and
+        // a single entity respectively. They cannot be used
+        // interchangeably - usage must match the cardinality of the
+        // relationship.
+        console.log("animalType=", animalType);
 
-        console.log("plantTypes=", plantTypes);
-        
-        // Obviously, since `plant_type` is a required (N >= 1)
-        // attribute, we didn't actually need to load them it would have
-        // been sufficient to just check `asset.type === 'asset--plant'`
-        if (plantTypes.length) {
-          return true;
-        }
-
+        // Ideally, there'd be a better "machine readable" way to determine
+        // if a given animal type can be "harvested" - and maybe provide
+        // defaults to the harvest dialog.
+        return animalType.attributes.name.toLowerCase().includes('sheep');
       });
 
 
