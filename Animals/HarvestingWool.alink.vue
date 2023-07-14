@@ -133,7 +133,7 @@ export default {
             'animal_type')
           ) : [];
 
-          if (!animalType) {
+          if (!animalType || !animalType.attributes) {
             return false;
           }
         // Note the difference between `findRelatedRecords` and
