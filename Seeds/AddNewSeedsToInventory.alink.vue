@@ -180,6 +180,33 @@ export default {
           },
         };
 
+        const seedCost_Quantity = {
+          type: 'quantity--price',
+          id: uuidv4(),
+          attributes: {
+            measure: 'count',
+            value: {
+              numerator: seedCost,
+              denominator: 1,
+              decimal: `${seedCost}`,
+            },
+          },
+          relationships: {
+            inventory_asset: {
+              data: {
+                  type: asset.type,
+                  id: asset.id,
+                }
+            },
+            units: {
+              data: {
+                type: seedUnitTerm.type,
+                id: seedUnitTerm.id,
+              }
+            },
+          },
+        };
+
         const purchaseLog = {
           type: 'log--purchase',
           attributes: {
