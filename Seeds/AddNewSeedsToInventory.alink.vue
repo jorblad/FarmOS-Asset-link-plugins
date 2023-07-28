@@ -125,11 +125,11 @@ export default {
         const seedCount = dialogResult.seedCount;
         console.log('seedCount', seedCount)
         const seller = dialogResult.seller;
-        console.log('seedCount', seller)
+        console.log('seller', seller)
         const invoice_number = dialogResult.invoice_number;
-        console.log('seedCount', invoice_number)
+        console.log('invoice_number', invoice_number)
         const lot_number = dialogResult.lot_number;
-        console.log('seedCount', lot_number)
+        console.log('lot_number', lot_number)
 
         if (!seedCount || seedCount <= 0) {
           return;
