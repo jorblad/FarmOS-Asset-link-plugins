@@ -152,8 +152,36 @@ export default {
           return;
         }
 
+        // const seedQuantity = {
+        //   type: 'quantity--material',
+        //   id: uuidv4(),
+        //   attributes: {
+        //     measure: 'count',
+        //     value: {
+        //       numerator: seedCount,
+        //       denominator: 1,
+        //       decimal: `${seedCount}`,
+        //     },
+        //     inventory_adjustment: 'increment',
+        //   },
+        //   relationships: {
+        //     inventory_asset: {
+        //       data: {
+        //           type: asset.type,
+        //           id: asset.id,
+        //         }
+        //     },
+        //     units: {
+        //       data: {
+        //         type: seedUnitTerm.type,
+        //         id: seedUnitTerm.id,
+        //       }
+        //     },
+        //   },
+        // };
+
         const seedQuantity = {
-          type: 'quantity--material',
+          type: 'quantity--price',
           id: uuidv4(),
           attributes: {
             measure: 'count',
@@ -162,34 +190,8 @@ export default {
               denominator: 1,
               decimal: `${seedCount}`,
             },
+            total_price: `${seedCost}`,
             inventory_adjustment: 'increment',
-          },
-          relationships: {
-            inventory_asset: {
-              data: {
-                  type: asset.type,
-                  id: asset.id,
-                }
-            },
-            units: {
-              data: {
-                type: seedUnitTerm.type,
-                id: seedUnitTerm.id,
-              }
-            },
-          },
-        };
-
-        const seedCost_Quantity = {
-          type: 'quantity--price',
-          id: uuidv4(),
-          attributes: {
-            measure: 'count',
-            value: {
-              numerator: seedCost,
-              denominator: 1,
-              decimal: `${seedCost}`,
-            },
           },
           relationships: {
             inventory_asset: {
