@@ -135,8 +135,8 @@ export default {
           },
         };
 
-        const harvestLog = {
-          type: 'log--harvest',
+        const purchaseLog = {
+          type: 'log--purchase',
           attributes: {
             name: `Bought ${seedCount} seeds`,
             timestamp: formatRFC3339(new Date()),
@@ -165,7 +165,7 @@ export default {
         assetLink.entitySource.update(
             (t) => [
               t.addRecord(seedQuantity),
-              t.addRecord(harvestLog),
+              t.addRecord(purchaseLog),
             ],
             {label: `Buy new seeds`});
       };
