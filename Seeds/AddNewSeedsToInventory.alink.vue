@@ -17,6 +17,9 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
+const seller = ref(0);
+const invoice_number = ref(0);
+const lot_number = ref(0);
 
 const onSubmit = () => {
   onDialogOK(seedCount.value);
