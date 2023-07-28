@@ -190,7 +190,10 @@ export default {
               denominator: 1,
               decimal: `${seedCount}`,
             },
-            total_price: `${seedCost}`,
+            total_price: {
+              numerator: `${seedCost}`,
+              denominator: 1,
+            },
             inventory_adjustment: 'increment',
           },
           relationships: {
