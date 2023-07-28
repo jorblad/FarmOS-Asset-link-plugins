@@ -17,12 +17,13 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
+const seedCost = ref(0);
 const seller = ref(null);
 const invoice_number = ref(null);
 const lot_number = ref(null);
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, seller: seller.value, invoice_number: invoice_number.value, lot_number: lot_number.value });
+  onDialogOK({ seedCount: seedCount.value, seller: seller.value, invoice_number: invoice_number.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
 </script>
 
@@ -41,6 +42,20 @@ const onSubmit = () => {
         />
         <q-input
             v-model.number="seedCount"
+            type="number"
+            filled
+        />
+        <h4>Total cost</h4>
+        <q-slider
+            v-model="seedCost"
+            :min="0"
+            :max="500"
+            :step="1"
+            snap
+            label
+        />
+        <q-input
+            v-model.number="seedCost"
             type="number"
             filled
         />
@@ -130,6 +145,8 @@ export default {
         console.log('invoice_number', invoice_number)
         const lot_number = dialogResult.lot_number;
         console.log('lot_number', lot_number)
+        const seedCost = dialogResult.seedCost;
+        console.log('total cost', seedCost)
 
         if (!seedCount || seedCount <= 0) {
           return;
