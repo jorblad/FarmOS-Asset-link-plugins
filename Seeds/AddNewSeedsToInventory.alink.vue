@@ -28,20 +28,27 @@ const onSubmit = () => {
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
       <h4>How many seeds did you buy?</h4>
       <div class="q-pa-md">
-      <q-slider
-        v-model="seedCount"
-        :min="0"
-        :max="5000"
-        :step="1"
-        snap
-        label
-      />
-      <q-input
-        v-model.number="seedCount"
-        type="number"
-        filled
-      />
-    
+        <q-slider
+            v-model="seedCount"
+            :min="0"
+            :max="5000"
+            :step="1"
+            snap
+            label
+        />
+        <q-input
+            v-model.number="seedCount"
+            type="number"
+            filled
+        />
+      </div>
+      <div class="q-pa-md">
+        <h4>Seller</h4>
+        <q-input
+            v-model="seller"
+            filled
+             />
+      </div>
       <!-- <h4>Seller</h4>
         <q-input v-model="seller" type="text" />
 
@@ -54,7 +61,7 @@ const onSubmit = () => {
         <h4>Price</h4>
         <q-slider v-model="price" :min="0" :max="5000" :step="1" snap label />
         <q-input v-model.number="price" type="number" filled /> -->
-      </div>
+      
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
         <q-btn
