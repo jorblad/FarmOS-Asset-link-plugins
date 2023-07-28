@@ -42,35 +42,18 @@ const onSubmit = () => {
         filled
       />
     
-      <h4>Seller</h4>
-      <q-input
-        v-model-text="seller"
-        type="text" 
-      />
-      <h4>Invoice number</h4>
-      <q-input
-        v-model-text="invoice_number"
-        type="text" 
-      />
-      <h4>Lot number</h4>
-      <q-input
-        v-model-text="lot_number"
-        type="text" 
-      />
-      <h4>Price</h4>
-      <q-slider
-        v-model="price"
-        :min="0"
-        :max="5000"
-        :step="1"
-        snap
-        label
-      />
-      <q-input
-        v-model.number="price"
-        type="number"
-        filled
-      />
+      <!-- <h4>Seller</h4>
+        <q-input v-model="seller" type="text" />
+
+        <h4>Invoice number</h4>
+        <q-input v-model="invoice_number" type="text" />
+
+        <h4>Lot number</h4>
+        <q-input v-model="lot_number" type="text" />
+
+        <h4>Price</h4>
+        <q-slider v-model="price" :min="0" :max="5000" :step="1" snap label />
+        <q-input v-model.number="price" type="number" filled /> -->
       </div>
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
