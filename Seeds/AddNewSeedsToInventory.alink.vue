@@ -17,12 +17,12 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
-const seller = ref(0);
-const invoice_number = ref(0);
-const lot_number = ref(0);
+const seller = ref(null);
+const invoice_number = ref(null);
+const lot_number = ref(null);
 
 const onSubmit = () => {
-  onDialogOK(seedCount.value);
+  onDialogOK({ seedCount: seedCount.value, seller: seller.value, invoice_number: invoice_number.value, lot_number: lot_number.value });
 };
 </script>
 
@@ -44,22 +44,16 @@ const onSubmit = () => {
             type="number"
             filled
         />
-      </div>
-      <div class="q-pa-md">
         <h4>Seller</h4>
         <q-input
             v-model="seller"
             filled
              />
-      </div>
-      <div class="q-pa-md">
         <h4>Invoice number</h4>
         <q-input
             v-model="invoice_number"
             filled
              />
-      </div>
-      <div class="q-pa-md">
         <h4>Lot number</h4>
         <q-input
             v-model="lot_number"
