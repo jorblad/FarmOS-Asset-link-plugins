@@ -41,6 +41,36 @@ const onSubmit = () => {
         type="number"
         filled
       />
+    
+      <h4>Seller</h4>
+      <q-input
+        v-model-text="seller"
+        type="text" 
+      />
+      <h4>Invoice number</h4>
+      <q-input
+        v-model-text="invoice_number"
+        type="text" 
+      />
+      <h4>Lot number</h4>
+      <q-input
+        v-model-text="lot_number"
+        type="text" 
+      />
+      <h4>Price</h4>
+      <q-slider
+        v-model="price"
+        :min="0"
+        :max="5000"
+        :step="1"
+        snap
+        label
+      />
+      <q-input
+        v-model.number="price"
+        type="number"
+        filled
+      />
       </div>
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
@@ -101,7 +131,16 @@ export default {
           && asset.type === 'asset--seed');
 
       const doActionWorkflow = async (asset) => {
-        const seedCount = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+        const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+        console.log('Dialog result:', dialogResult);
+        const seedCount = dialogResult.seedCount;
+        console.log('seedCount', seedCount)
+        const seller = dialogResult.seller;
+        console.log('seedCount', seller)
+        const invoice_number = dialogResult.invoice_number;
+        console.log('seedCount', invoice_number)
+        const lot_number = dialogResult.lot_number;
+        console.log('seedCount', lot_number)
 
         if (!seedCount || seedCount <= 0) {
           return;
@@ -141,6 +180,9 @@ export default {
             name: `Bought ${seedCount} seeds`,
             timestamp: formatRFC3339(new Date()),
             status: "done",
+            seller: `${seller}`,
+            invoice_number: `${invoice_number}`,
+            lot_number: `${lot_number}`,
           },
           relationships: {
             asset: {
