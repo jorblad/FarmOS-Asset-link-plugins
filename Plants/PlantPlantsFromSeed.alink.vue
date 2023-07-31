@@ -389,9 +389,13 @@ export default {
         }
         
       };
-
-      action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant from seeds" ));
+      try {
+        action.component(({ asset }) =>
+            h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant from seeds" ));
+      } catch (error) {
+            console.error('Error in doActionWorkflow:', error);
+      }
+      
     });
   }
 }
