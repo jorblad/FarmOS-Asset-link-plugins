@@ -31,23 +31,24 @@ const fetchAssetLink = async () => {
 // Fetch the assetLink on component mount
 onMounted(fetchAssetLink);
 
-const findUnitTerms = async (entitySource) => {
+const findseasons = async (entitySource) => {
   const results = await entitySource.query((q) =>
-    q.findRecords('taxonomy_term--unit')
+    q.findRecords('taxonomy_term--season')
   );
 
 
-  const unitTerms = results.flatMap((l) => l);
+  const seasons = results.flatMap((l) => l);
 
-  console.log('All taxonomy_term--unit records:', unitTerms);
+  console.log('All taxonomy_term--season records:', seasons);
 
-  return unitTerms;
+  // Extract the attributes.name from each element and return as a list
+  return seasons.map((season) => season.attributes.name);
 };
 
-const unitTerms = ref([]);
+const seasons = ref([]);
 
 onMounted(async () => {
-  unitTerms.value = await findUnitTerms(assetLink.entitySource);
+  seasons.value = await findseasons(assetLink.entitySource);
   
 });
 
@@ -77,7 +78,7 @@ const onSubmit = () => {
         <q-select
         filled
         v-model="quantityType"
-        :options="unitTerms"
+        :options="seasons"
         :option-label="unitLabelFn"
         label="Season"
         use-input
