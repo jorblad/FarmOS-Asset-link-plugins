@@ -335,7 +335,7 @@ export default {
             (t) => [
               t.addRecord(plant),
               //t.addRecord(seedQuantity),
-              t.addRecord(plantingLog),
+              //t.addRecord(plantingLog),
             ],
             {label: `Plant from seeds`});
       };
