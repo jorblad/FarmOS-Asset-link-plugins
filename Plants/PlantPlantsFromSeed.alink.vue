@@ -52,6 +52,8 @@ onMounted(async () => {
   
 });
 
+const plantSeason = ref(null);
+
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, seller: seller.value, invoice_number: invoice_number.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
@@ -77,9 +79,8 @@ const onSubmit = () => {
         />
         <q-select
         filled
-        v-model="quantityType"
+        v-model="plantSeason"
         :options="seasons"
-        :option-label="unitLabelFn"
         label="Season"
         use-input
         input-debounce="300"
