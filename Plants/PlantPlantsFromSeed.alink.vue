@@ -250,132 +250,133 @@ export default {
           && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) );
 
       const doActionWorkflow = async (asset) => {
-        const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-        console.log('Dialog result:', dialogResult);
-        const seedCount = dialogResult.seedCount;
-        console.log('seedCount', seedCount)
-        const plantSeason = dialogResult.plantSeason;
-        console.log('plantSeason', plantSeason)
-        const plantType = dialogResult.plantType;
-        console.log('plantType', plantType)
-        const notes = dialogResult.notes;
-        console.log('notes', notes)
-        const seedAsset = dialogResult.seedAsset;
-        console.log('seedAsset', seedAsset)
+        try {
+            const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+            console.log('Dialog result:', dialogResult);
+            const seedCount = dialogResult.seedCount;
+            console.log('seedCount', seedCount)
+            const plantSeason = dialogResult.plantSeason;
+            console.log('plantSeason', plantSeason)
+            const plantType = dialogResult.plantType;
+            console.log('plantType', plantType)
+            const notes = dialogResult.notes;
+            console.log('notes', notes)
+            const seedAsset = dialogResult.seedAsset;
+            console.log('seedAsset', seedAsset)
 
-        const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
+            const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
 
-        const plantID = uuidv4();
-
-
-        if (!seedCount || seedCount <= 0) {
-          return;
-        }
+            const plantID = uuidv4();
 
 
-        const plant = {
-            type: 'asset--plant',
-            id: plantID,
+            if (!seedCount || seedCount <= 0) {
+            return;
+            }
+
+
+            const plant = {
+                type: 'asset--plant',
+                id: plantID,
+                attributes: {
+                    name: `${plantName}`,
+                    status: 'active',
+                },
+                relationships: {
+                    plant_type: {
+                        data: [
+                            {
+                                type: 'taxonomy_term--plant_type',
+                                id: uuidv4(),
+                                '$relateByName': {
+                                name: plantType,
+                                },
+                            }
+                        ]
+                    },
+                    season: {
+                        data: [
+                            {
+                                type: 'taxonomy_term--season',
+                                id: uuidv4(),
+                                '$relateByName': {
+                                name: plantSeason,
+                                },
+                            }
+                        ]
+                    },
+                }
+            }
+
+            const seedQuantity = {
+            type: 'quantity--price',
+            id: uuidv4(),
             attributes: {
-                name: `${plantName}`,
-                status: 'active',
+                measure: 'count',
+                value: {
+                numerator: seedCount,
+                denominator: 1,
+                decimal: `${seedCount}`,
+                },
+                inventory_adjustment: 'decrement',
             },
             relationships: {
-                plant_type: {
-                    data: [
-                        {
-                            type: 'taxonomy_term--plant_type',
-                            id: uuidv4(),
-                            '$relateByName': {
-                            name: plantType,
-                            },
-                        }
-                    ]
+                inventory_asset: {
+                data: {
+                    type: 'asset--seed',
+                    id: uuidv4(),
+                                '$relateByName': {
+                                name: seedAsset,
+                                },
+                    }
                 },
-                season: {
-                    data: [
-                        {
-                            type: 'taxonomy_term--season',
-                            id: uuidv4(),
-                            '$relateByName': {
-                            name: plantSeason,
-                            },
-                        }
-                    ]
+                units: {
+                data: {
+                    type: seedUnitTerm.type,
+                    id: seedUnitTerm.id,
+                }
                 },
-            }
-        }
+            },
+            };
 
-        const seedQuantity = {
-          type: 'quantity--price',
-          id: uuidv4(),
-          attributes: {
-            measure: 'count',
-            value: {
-              numerator: seedCount,
-              denominator: 1,
-              decimal: `${seedCount}`,
-            },
-            inventory_adjustment: 'decrement',
-          },
-          relationships: {
-            inventory_asset: {
-              data: {
-                  type: 'asset--seed',
-                  id: uuidv4(),
-                            '$relateByName': {
-                            name: seedAsset,
-                            },
-                }
-            },
-            units: {
-              data: {
-                type: seedUnitTerm.type,
-                id: seedUnitTerm.id,
-              }
-            },
-          },
-        };
+            const plantingLog = {
+            type: 'log--seeding',
+            attributes: {
+                name: `Planted ${seedCount} seeds`,
+                timestamp: formatRFC3339(new Date()),
+                status: "done",
+                notes: `${notes}`,
+                is_movement: true,
 
-        const plantingLog = {
-          type: 'log--seeding',
-          attributes: {
-            name: `Planted ${seedCount} seeds`,
-            timestamp: formatRFC3339(new Date()),
-            status: "done",
-            notes: `${notes}`,
-            is_movement: true,
+            },
+            relationships: {
+                asset: {
+                data: [
+                    {
+                    type: 'asset--plant',
+                    id: plantID,
+                    }
+                ]
+                },
+                location: {
+                data: [
+                    {
+                    type: asset.type,
+                    id: asset.id,
+                    }
+                ]
+                },
+                quantity: {
+                data: [
+                    {
+                    type: seedQuantity.type,
+                    id: seedQuantity.id,
+                    }
+                ]
+                },
+            },
+            };
 
-          },
-          relationships: {
-            asset: {
-              data: [
-                {
-                  type: 'asset--plant',
-                  id: plantID,
-                }
-              ]
-            },
-            location: {
-              data: [
-                {
-                  type: asset.type,
-                  id: asset.id,
-                }
-              ]
-            },
-            quantity: {
-              data: [
-                {
-                  type: seedQuantity.type,
-                  id: seedQuantity.id,
-                }
-              ]
-            },
-          },
-        };
-
-        try {
+        
             assetLink.entitySource.update(
             (t) => [
               t.addRecord(plant),
