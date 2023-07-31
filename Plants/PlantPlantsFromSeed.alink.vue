@@ -22,6 +22,26 @@ const seller = ref(null);
 const invoice_number = ref(null);
 const lot_number = ref(null);
 
+const findUnitTerms = async (entitySource) => {
+  const results = await entitySource.query((q) =>
+    q.findRecords('taxonomy_term--unit')
+  );
+
+
+  const unitTerms = results.flatMap((l) => l);
+
+  console.log('All taxonomy_term--unit records:', unitTerms);
+
+  return unitTerms;
+};
+
+const unitTerms = ref([]);
+
+onMounted(async () => {
+  unitTerms.value = await findUnitTerms(assetLink.entitySource);
+  
+});
+
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, seller: seller.value, invoice_number: invoice_number.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
@@ -45,35 +65,17 @@ const onSubmit = () => {
             type="number"
             filled
         />
-        <h4>Total cost</h4>
-        <q-slider
-            v-model="seedCost"
-            :min="0"
-            :max="500"
-            :step="1"
-            snap
-            label
+        <q-select
+        filled
+        v-model="quantityType"
+        :options="unitTerms"
+        :option-label="unitLabelFn"
+        label="Season"
+        use-input
+        input-debounce="300"
+        datalist
         />
-        <q-input
-            v-model.number="seedCost"
-            type="number"
-            filled
-        />
-        <h4>Seller</h4>
-        <q-input
-            v-model="seller"
-            filled
-             />
-        <h4>Invoice number</h4>
-        <q-input
-            v-model="invoice_number"
-            filled
-             />
-        <h4>Lot number</h4>
-        <q-input
-            v-model="lot_number"
-            filled
-             />
+
       </div>
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
@@ -247,11 +249,11 @@ export default {
               t.addRecord(seedQuantity),
               t.addRecord(purchaseLog),
             ],
-            {label: `Buy new seeds`});
+            {label: `Plant from seeds`});
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Buy new seeds" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant from seeds" ));
     });
   }
 }
