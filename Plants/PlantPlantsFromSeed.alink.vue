@@ -292,11 +292,14 @@ export default {
         };
 
         const plantingLog = {
-          type: 'log--planting',
+          type: 'log--seeding',
           attributes: {
             name: `Planted ${seedCount} seeds`,
             timestamp: formatRFC3339(new Date()),
             status: "done",
+            notes: `${notes}`,
+            is_movement: true,
+
           },
           relationships: {
             asset: {
@@ -304,6 +307,14 @@ export default {
                 {
                   type: 'asset--plant',
                   id: plantID,
+                }
+              ]
+            },
+            location: {
+              data: [
+                {
+                  type: asset.type,
+                  id: asset.id,
                 }
               ]
             },
