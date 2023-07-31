@@ -66,7 +66,7 @@ const filteredPlantTypes = ref([]);
 
 // Custom filter function for Plant Season options
 const filterSeasons = (val, update) => {
-  const filterValue = val.toLowerCase();
+  const filterValue = val ? val.toLowerCase() : '';
   const filtered = seasons.value.filter((season) =>
     season.toLowerCase().includes(filterValue)
   );
@@ -76,7 +76,7 @@ const filterSeasons = (val, update) => {
 
 // Custom filter function for Plant Type options
 const filterPlantTypes = (val, update) => {
-  const filterValue = val.toLowerCase();
+  const filterValue = val ? val.toLowerCase() : '';
   const filtered = plant_types.value.filter((plantType) =>
     plantType.toLowerCase().includes(filterValue)
   );
@@ -87,6 +87,10 @@ const filterPlantTypes = (val, update) => {
 onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
+
+  // Initialize filtered options with original data
+  filteredSeasons.value = [...seasons.value];
+  filteredPlantTypes.value = [...plant_types.value];
   
 });
 
