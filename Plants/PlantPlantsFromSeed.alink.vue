@@ -104,7 +104,7 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How many seeds did you plant?</h4>
+      <h4>Planting</h4>
       <div class="q-pa-md">
         <q-slider
             v-model="seedCount"
@@ -118,6 +118,7 @@ const onSubmit = () => {
             v-model.number="seedCount"
             type="number"
             filled
+            label="How many seeds?"
         />
         <q-select
             filled
@@ -138,6 +139,13 @@ const onSubmit = () => {
             input-debounce="300"
             datalist
             @filter="plantTypesFilterFn"
+        />
+
+        <q-input
+            v-model="notes"
+            label="Notes"
+            filled
+            autogrow
         />
 
       </div>
