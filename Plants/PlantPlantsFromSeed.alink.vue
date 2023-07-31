@@ -121,7 +121,7 @@ export default {
             use-input
             input-debounce="300"
             datalist
-            filter @filter="filterFn"
+            @filter="filterFn"
         />
         <q-select
             filled
@@ -131,7 +131,7 @@ export default {
             use-input
             input-debounce="300"
             datalist
-            filter @filter="filterFn"
+            @filter="filterFn"
         />
 
       </div>
