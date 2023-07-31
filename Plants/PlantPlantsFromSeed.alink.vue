@@ -152,8 +152,8 @@ export default {
         console.log('Dialog result:', dialogResult);
         const seedCount = dialogResult.seedCount;
         console.log('seedCount', seedCount)
-        const seller = dialogResult.seller;
-        console.log('seller', seller)
+        const plantSeason = dialogResult.plantSeason;
+        console.log('seller', plantSeason)
         const invoice_number = dialogResult.invoice_number;
         console.log('invoice_number', invoice_number)
         const lot_number = dialogResult.lot_number;
