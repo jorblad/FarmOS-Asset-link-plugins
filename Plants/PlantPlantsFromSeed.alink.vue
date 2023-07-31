@@ -310,7 +310,7 @@ export default {
             console.log('plant:', plant)
 
             const seedQuantity = {
-            type: 'quantity--price',
+            type: 'quantity--material',
             id: uuidv4(),
             attributes: {
                 measure: 'count',
