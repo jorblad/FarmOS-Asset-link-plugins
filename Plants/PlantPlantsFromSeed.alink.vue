@@ -130,7 +130,7 @@ watch(plantType, (newValue) => {
         <q-select
             filled
             v-model="plantSeason"
-            :options="seasons"
+            :options="filteredSeasons"
             label="Season"
             use-input
             input-debounce="300"
@@ -140,7 +140,7 @@ watch(plantType, (newValue) => {
         <q-select
             filled
             v-model="plantType"
-            :options="plant_types"
+            :options="filteredPlantTypes"
             label="Species"
             use-input
             input-debounce="300"
