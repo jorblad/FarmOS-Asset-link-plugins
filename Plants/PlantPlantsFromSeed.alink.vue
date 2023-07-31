@@ -376,7 +376,9 @@ export default {
             },
             };
 
-        
+            console.log('plant:', plant)
+            console.log('seedQuantity:', seedQuantity)
+            console.log('plantingLog:', plantingLog)
             assetLink.entitySource.update(
             (t) => [
               t.addRecord(plant),
