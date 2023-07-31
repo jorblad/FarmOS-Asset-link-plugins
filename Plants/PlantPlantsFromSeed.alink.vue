@@ -307,6 +307,8 @@ export default {
                 }
             }
 
+            console.log('plant:', plant)
+
             const seedQuantity = {
             type: 'quantity--price',
             id: uuidv4(),
@@ -337,6 +339,8 @@ export default {
                 },
             },
             };
+
+            console.log('seedQuantity:', seedQuantity)
 
             const plantingLog = {
             type: 'log--seeding',
@@ -376,9 +380,9 @@ export default {
             },
             };
 
-            console.log('plant:', plant)
-            console.log('seedQuantity:', seedQuantity)
             console.log('plantingLog:', plantingLog)
+
+
             assetLink.entitySource.update(
             (t) => [
               t.addRecord(plant),
