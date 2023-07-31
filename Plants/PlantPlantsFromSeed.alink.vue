@@ -18,10 +18,7 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
-const seedCost = ref(0);
-const seller = ref(null);
-const invoice_number = ref(null);
-const lot_number = ref(null);
+const notes = ref(null);
 
 // Create a function to fetch assetLink and store it in the ref
 const fetchAssetLink = async () => {
