@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted } from 'vue';
+import { inject, ref, watch, onMounted } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 
@@ -97,7 +97,15 @@ const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
 
+// Watch for changes in plantSeason and trigger the filter function
+watch(plantSeason, (newValue) => {
+  filteredSeasons.value = filterSeasons(newValue);
+});
 
+// Watch for changes in plantType and trigger the filter function
+watch(plantType, (newValue) => {
+  filteredPlantTypes.value = filterPlantTypes(newValue);
+});
 
 </script>
 
