@@ -375,13 +375,18 @@ export default {
           },
         };
 
-        assetLink.entitySource.update(
+        try {
+            assetLink.entitySource.update(
             (t) => [
               t.addRecord(plant),
               t.addRecord(seedQuantity),
               t.addRecord(plantingLog),
             ],
             {label: `Plant from seeds`});
+        } catch (error) {
+            console.error('Error in doActionWorkflow:', error);
+        }
+        
       };
 
       action.component(({ asset }) =>
