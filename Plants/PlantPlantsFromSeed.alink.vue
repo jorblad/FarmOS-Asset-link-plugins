@@ -24,7 +24,7 @@ setup () {
         })
       }
     }
-  }
+  };
 
 defineEmits([
   ...useDialogPluginComponent.emits
