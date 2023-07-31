@@ -61,6 +61,29 @@ const findplanttypes = async (entitySource) => {
 const seasons = ref([]);
 const plant_types = ref([]);
 
+const filteredSeasons = ref([]);
+const filteredPlantTypes = ref([]);
+
+// Custom filter function for Plant Season options
+const filterSeasons = (val, update) => {
+  const filterValue = val.toLowerCase();
+  const filtered = seasons.value.filter((season) =>
+    season.toLowerCase().includes(filterValue)
+  );
+  // Update the filtered options
+  update(() => filtered);
+};
+
+// Custom filter function for Plant Type options
+const filterPlantTypes = (val, update) => {
+  const filterValue = val.toLowerCase();
+  const filtered = plant_types.value.filter((plantType) =>
+    plantType.toLowerCase().includes(filterValue)
+  );
+  // Update the filtered options
+  update(() => filtered);
+};
+
 onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
@@ -104,7 +127,7 @@ const onSubmit = () => {
             use-input
             input-debounce="300"
             datalist
-            filter
+            @filter="filterSeasons"
         />
         <q-select
             filled
@@ -114,7 +137,7 @@ const onSubmit = () => {
             use-input
             input-debounce="300"
             datalist
-            filter
+            @filter="filterPlantTypes"
         />
 
       </div>
