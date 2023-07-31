@@ -95,7 +95,7 @@ const plantTypesFilterFn = (val, update, abort) => {
 };
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value });
 };
 
 
@@ -214,18 +214,54 @@ export default {
         const seedCount = dialogResult.seedCount;
         console.log('seedCount', seedCount)
         const plantSeason = dialogResult.plantSeason;
-        console.log('seller', plantSeason)
+        console.log('plantSeason', plantSeason)
         const plantType = dialogResult.plantType;
         console.log('plantType', plantType)
-        const lot_number = dialogResult.lot_number;
-        console.log('lot_number', lot_number)
-        const seedCost = dialogResult.seedCost;
-        console.log('total cost', seedCost)
+        const notes = dialogResult.notes;
+        console.log('notes', notes)
+
+        const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
+
+        const plantID = uuidv4();
+
 
         if (!seedCount || seedCount <= 0) {
           return;
         }
 
+
+        const plant = {
+            type: 'asset--plant',
+            id: plantID,
+            attributes: {
+                name: `${plantName}`,
+                status: 'active',
+            },
+            relationships: {
+                plant_type: {
+                    data: [
+                        {
+                            type: 'taxonomy_term--plant_type',
+                            id: uuidv4(),
+                            '$relateByName': {
+                            name: plantType,
+                            },
+                        }
+                    ]
+                },
+                season: {
+                    data: [
+                        {
+                            type: 'taxonomy_term--season',
+                            id: uuidv4(),
+                            '$relateByName': {
+                            name: plantSeason,
+                            },
+                        }
+                    ]
+                },
+            }
+        }
 
         const seedQuantity = {
           type: 'quantity--price',
@@ -237,19 +273,15 @@ export default {
               denominator: 1,
               decimal: `${seedCount}`,
             },
-            total_price: {
-              numerator: `${seedCost}`,
-              denominator: 1,
-            },
             inventory_adjustment: 'decrement',
           },
           relationships: {
-            inventory_asset: {
-              data: {
-                  type: asset.type,
-                  id: asset.id,
-                }
-            },
+            // inventory_asset: {
+            //   data: {
+            //       type: asset.type,
+            //       id: asset.id,
+            //     }
+            //},
             units: {
               data: {
                 type: seedUnitTerm.type,
@@ -259,22 +291,19 @@ export default {
           },
         };
 
-        const purchaseLog = {
-          type: 'log--purchase',
+        const plantingLog = {
+          type: 'log--planting',
           attributes: {
-            name: `Bought ${seedCount} seeds`,
+            name: `Planted ${seedCount} seeds`,
             timestamp: formatRFC3339(new Date()),
             status: "done",
-            seller: `${seller}`,
-            invoice_number: `${invoice_number}`,
-            lot_number: `${lot_number}`,
           },
           relationships: {
             asset: {
               data: [
                 {
-                  type: asset.type,
-                  id: asset.id,
+                  type: 'asset--plant',
+                  id: plantID,
                 }
               ]
             },
@@ -291,8 +320,9 @@ export default {
 
         assetLink.entitySource.update(
             (t) => [
-              t.addRecord(seedQuantity),
-              t.addRecord(purchaseLog),
+              t.addRecord(plant),
+              //t.addRecord(seedQuantity),
+              t.addRecord(plantingLog),
             ],
             {label: `Plant from seeds`});
       };
