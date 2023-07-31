@@ -61,36 +61,10 @@ const findplanttypes = async (entitySource) => {
 const seasons = ref([]);
 const plant_types = ref([]);
 
-const filteredSeasons = ref([]);
-const filteredPlantTypes = ref([]);
-
-// Custom filter function for Plant Season options
-const filterSeasons = (val, update) => {
-  const filterValue = val ? val.toLowerCase() : '';
-  const filtered = seasons.value.filter((season) =>
-    season.toLowerCase().includes(filterValue)
-  );
-  // Update the filtered options
-  update(() => filtered);
-};
-
-// Custom filter function for Plant Type options
-const filterPlantTypes = (val, update) => {
-  const filterValue = val ? val.toLowerCase() : '';
-  const filtered = plant_types.value.filter((plantType) =>
-    plantType.toLowerCase().includes(filterValue)
-  );
-  // Update the filtered options
-  update(() => filtered);
-};
 
 onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
-
-  // Initialize filtered options with original data
-  filteredSeasons.value = [...seasons.value];
-  filteredPlantTypes.value = [...plant_types.value];
   
 });
 
@@ -101,15 +75,23 @@ const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
 
-// Watch for changes in plantSeason and trigger the filter function
-watch(plantSeason, (newValue) => {
-  filteredSeasons.value = filterSeasons(newValue);
-});
+export default {
+  setup () {
+    const options = ref(stringOptions)
 
-// Watch for changes in plantType and trigger the filter function
-watch(plantType, (newValue) => {
-  filteredPlantTypes.value = filterPlantTypes(newValue);
-});
+    return {
+      model: ref(null),
+      options,
+
+      filterFn (val, update, abort) {
+        update(() => {
+          const needle = val.toLowerCase()
+          options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
+        })
+      }
+    }
+  }
+}
 
 </script>
 
@@ -134,22 +116,22 @@ watch(plantType, (newValue) => {
         <q-select
             filled
             v-model="plantSeason"
-            :options="filteredSeasons"
+            :options="seasons"
             label="Season"
             use-input
             input-debounce="300"
             datalist
-            filter @filter="filterSeasons"
+            filter @filter="filterFn"
         />
         <q-select
             filled
             v-model="plantType"
-            :options="filteredPlantTypes"
+            :options="plant_types"
             label="Species"
             use-input
             input-debounce="300"
             datalist
-            filter @filter="filterPlantTypes"
+            filter @filter="filterFn"
         />
 
       </div>
