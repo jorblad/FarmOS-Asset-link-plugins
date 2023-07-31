@@ -31,6 +31,7 @@ onMounted(fetchAssetLink);
 
 const seasonsOptions = ref([]);
 const plantTypesOptions = ref([]);
+const seedAssetsOptions = ref([]);
 
 const findseasons = async (entitySource) => {
   const results = await entitySource.query((q) =>
@@ -60,18 +61,35 @@ const findplanttypes = async (entitySource) => {
   return plant_types.map((plant_type) => plant_type.attributes.name);
 };
 
+const findseedassets = async (entitySource) => {
+  const results = await entitySource.query((q) =>
+    q.findRecords('asset--seed')
+  );
+
+
+  const seed_assets = results.flatMap((l) => l);
+
+  console.log('All asset--seed records:', seed_assets);
+
+  // Extract the attributes.name from each element and return as a list
+  return seed_assets.map((seed_asset) => seed_asset.attributes.name);
+};
+
 const seasons = ref([]);
 const plant_types = ref([]);
+const seed_assets = ref([]);
 
 
 onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
+  seed_assets.value = await findseedassets(assetLink.entitySource);
   
 });
 
 const plantSeason = ref(null);
 const plantType = ref(null);
+const seedAsset = ref(null);
 
 const seasonsFilterFn = (val, update, abort) => {
   update(() => {
@@ -91,8 +109,17 @@ const plantTypesFilterFn = (val, update, abort) => {
   });
 };
 
+const seedAssetsFilterFn = (val, update, abort) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    seedAssetsOptions.value = seed_assets.value.filter((seed_asset) =>
+      seed_asset.toLowerCase().indexOf(needle) > -1
+    );
+  });
+};
+
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value });
 };
 
 
@@ -133,7 +160,19 @@ const onSubmit = () => {
         <div class="q-pa-md">
             <q-select
                 filled
-                v-model="plantType"
+                v-model="seedAsset"
+                :options="seedAssetsOptions"
+                label="Seed asset"
+                use-input
+                input-debounce="300"
+                datalist
+                @filter="seedAssetsFilterFn"
+            />
+        </div>
+        <div class="q-pa-md">
+            <q-select
+                filled
+                v-model="seedAsset"
                 :options="plantTypesOptions"
                 label="Species"
                 use-input
@@ -221,6 +260,8 @@ export default {
         console.log('plantType', plantType)
         const notes = dialogResult.notes;
         console.log('notes', notes)
+        const seedAsset = dialogResult.seedAsset;
+        console.log('seedAsset', seedAsset)
 
         const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
 
@@ -278,12 +319,15 @@ export default {
             inventory_adjustment: 'decrement',
           },
           relationships: {
-            // inventory_asset: {
-            //   data: {
-            //       type: asset.type,
-            //       id: asset.id,
-            //     }
-            //},
+            inventory_asset: {
+              data: {
+                  type: 'asset--seed',
+                  id: uuidv4(),
+                            '$relateByName': {
+                            name: seedAsset,
+                            },
+                }
+            },
             units: {
               data: {
                 type: seedUnitTerm.type,
