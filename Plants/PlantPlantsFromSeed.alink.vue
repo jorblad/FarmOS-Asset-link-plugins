@@ -55,7 +55,7 @@ onMounted(async () => {
 const plantSeason = ref(null);
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, seller: seller.value, invoice_number: invoice_number.value, lot_number: lot_number.value, seedCost: seedCost.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, invoice_number: invoice_number.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
 </script>
 
