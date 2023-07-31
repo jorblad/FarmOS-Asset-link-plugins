@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted, watch } from 'vue';
+import { inject, ref, watch, onMounted} from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 
