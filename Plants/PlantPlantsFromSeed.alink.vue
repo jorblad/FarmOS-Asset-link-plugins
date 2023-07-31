@@ -10,21 +10,6 @@ const props = defineProps({
   },
 });
 
-setup () {
-    const options = ref(stringOptions)
-
-    return {
-      model: ref(null),
-      options,
-
-      filterFn (val, update, abort) {
-        update(() => {
-          const needle = val.toLowerCase()
-          options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-        })
-      }
-    }
-  };
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -45,6 +30,10 @@ const fetchAssetLink = async () => {
 
 // Fetch the assetLink on component mount
 onMounted(fetchAssetLink);
+
+
+const seasonsOptions = ref([]);
+const plantTypesOptions = ref([]);
 
 const findseasons = async (entitySource) => {
   const results = await entitySource.query((q) =>
@@ -87,6 +76,24 @@ onMounted(async () => {
 const plantSeason = ref(null);
 const plantType = ref(null);
 
+const seasonsFilterFn = (val, update, abort) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    seasonsOptions.value = seasons.value.filter((season) =>
+      season.toLowerCase().indexOf(needle) > -1
+    );
+  });
+};
+
+const plantTypesFilterFn = (val, update, abort) => {
+  update(() => {
+    const needle = val.toLowerCase();
+    plantTypesOptions.value = plant_types.value.filter((plant_type) =>
+      plant_type.toLowerCase().indexOf(needle) > -1
+    );
+  });
+};
+
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
@@ -115,22 +122,22 @@ const onSubmit = () => {
         <q-select
             filled
             v-model="plantSeason"
-            :options="seasons"
+            :options="seasonsOptions"
             label="Season"
             use-input
             input-debounce="300"
             datalist
-            @filter="filterFn"
+            @filter="seasonsFilterFn"
         />
         <q-select
             filled
             v-model="plantType"
-            :options="plant_types"
+            :options="plantTypesOptions"
             label="Species"
             use-input
             input-debounce="300"
             datalist
-            @filter="filterFn"
+            @filter="plantTypesFilterFn"
         />
 
       </div>
