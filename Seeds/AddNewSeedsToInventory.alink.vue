@@ -152,34 +152,6 @@ export default {
           return;
         }
 
-        // const seedQuantity = {
-        //   type: 'quantity--material',
-        //   id: uuidv4(),
-        //   attributes: {
-        //     measure: 'count',
-        //     value: {
-        //       numerator: seedCount,
-        //       denominator: 1,
-        //       decimal: `${seedCount}`,
-        //     },
-        //     inventory_adjustment: 'increment',
-        //   },
-        //   relationships: {
-        //     inventory_asset: {
-        //       data: {
-        //           type: asset.type,
-        //           id: asset.id,
-        //         }
-        //     },
-        //     units: {
-        //       data: {
-        //         type: seedUnitTerm.type,
-        //         id: seedUnitTerm.id,
-        //       }
-        //     },
-        //   },
-        // };
-
         const seedQuantity = {
           type: 'quantity--price',
           id: uuidv4(),
