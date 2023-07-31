@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch, onMounted} from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 
@@ -73,32 +73,6 @@ const plantType = ref(null);
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
-
-const filteredSeasons = ref([]);
-const filteredPlantTypes = ref([]);
-
-// Event listener for Plant Season input
-const handlePlantSeasonInput = () => {
-  // Filter the seasons to match the entered plantSeason
-  filteredSeasons.value = seasons.value.filter((season) =>
-    season.toLowerCase().includes(plantSeason.value?.toLowerCase() || '')
-  );
-};
-
-// Event listener for Plant Type input
-const handlePlantTypeInput = () => {
-  // Filter the plant_types to match the entered plantType
-  filteredPlantTypes.value = plant_types.value.filter((plantType) =>
-    plantType.toLowerCase().includes(plantType.value?.toLowerCase() || '')
-  );
-};
-
-// Watch for changes in plantSeason and trigger the input event listener
-watch(plantSeason, handlePlantSeasonInput);
-
-// Watch for changes in plantType and trigger the input event listener
-watch(plantType, handlePlantTypeInput);
-
 </script>
 
 <template>
@@ -215,6 +189,7 @@ export default {
         if (!seedCount || seedCount <= 0) {
           return;
         }
+
 
         const seedQuantity = {
           type: 'quantity--price',
