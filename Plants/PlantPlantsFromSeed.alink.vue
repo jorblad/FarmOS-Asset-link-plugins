@@ -1,7 +1,8 @@
 <!-- Modified from https://github.com/Farmer-Eds-Shed/FarmOS-Asset-link-plugins/blob/main/Bales/AddNewHayBalesToInventory.alink.vue -->
 <script setup>
-import { ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+const assetLink = inject('assetLink');
 
 const props = defineProps({
   asset: {
@@ -21,6 +22,14 @@ const seedCost = ref(0);
 const seller = ref(null);
 const invoice_number = ref(null);
 const lot_number = ref(null);
+
+// Create a function to fetch assetLink and store it in the ref
+const fetchAssetLink = async () => {
+  assetLink.value = await getAssetLink(); // Replace getAssetLink with your code to retrieve assetLink
+};
+
+// Fetch the assetLink on component mount
+onMounted(fetchAssetLink);
 
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
