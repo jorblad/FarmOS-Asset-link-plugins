@@ -172,7 +172,7 @@ const onSubmit = () => {
         <div class="q-pa-md">
             <q-select
                 filled
-                v-model="seedAsset"
+                v-model="plantType"
                 :options="plantTypesOptions"
                 label="Species"
                 use-input
