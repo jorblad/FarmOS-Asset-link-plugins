@@ -10,6 +10,22 @@ const props = defineProps({
   },
 });
 
+setup () {
+    const options = ref(stringOptions)
+
+    return {
+      model: ref(null),
+      options,
+
+      filterFn (val, update, abort) {
+        update(() => {
+          const needle = val.toLowerCase()
+          options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
+        })
+      }
+    }
+  }
+
 defineEmits([
   ...useDialogPluginComponent.emits
 ]);
@@ -75,23 +91,6 @@ const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
 
-export default {
-  setup () {
-    const options = ref(stringOptions)
-
-    return {
-      model: ref(null),
-      options,
-
-      filterFn (val, update, abort) {
-        update(() => {
-          const needle = val.toLowerCase()
-          options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-        })
-      }
-    }
-  }
-}
 
 </script>
 
