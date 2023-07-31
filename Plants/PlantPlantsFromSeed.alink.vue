@@ -101,51 +101,56 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>Planting</h4>
-      <div class="q-pa-md">
-        <q-slider
-            v-model="seedCount"
-            :min="0"
-            :max="5000"
-            :step="1"
-            snap
-            label
-        />
-        <q-input
-            v-model.number="seedCount"
-            type="number"
-            filled
-            label="How many seeds?"
-        />
-        <q-select
-            filled
-            v-model="plantSeason"
-            :options="seasonsOptions"
-            label="Season"
-            use-input
-            input-debounce="300"
-            datalist
-            @filter="seasonsFilterFn"
-        />
-        <q-select
-            filled
-            v-model="plantType"
-            :options="plantTypesOptions"
-            label="Species"
-            use-input
-            input-debounce="300"
-            datalist
-            @filter="plantTypesFilterFn"
-        />
+        <h4>Planting</h4>
+        <div class="q-pa-md">
+            <q-slider
+                v-model="seedCount"
+                :min="0"
+                :max="5000"
+                :step="1"
+                snap
+                label
+            />
+            <q-input
+                v-model.number="seedCount"
+                type="number"
+                filled
+                label="How many seeds?"
+            />
+        </div>
+        <div class="q-pa-md">
+            <q-select
+                filled
+                v-model="plantSeason"
+                :options="seasonsOptions"
+                label="Season"
+                use-input
+                input-debounce="300"
+                datalist
+                @filter="seasonsFilterFn"
+            />
+        </div>
+        <div class="q-pa-md">
+            <q-select
+                filled
+                v-model="plantType"
+                :options="plantTypesOptions"
+                label="Species"
+                use-input
+                input-debounce="300"
+                datalist
+                @filter="plantTypesFilterFn"
+            />
+        </div>
+        <div class="q-pa-md">
+            <q-input
+                v-model="notes"
+                label="Notes"
+                filled
+                autogrow
+            />
+        </div>
 
-        <q-input
-            v-model="notes"
-            label="Notes"
-            filled
-            autogrow
-        />
-
-      </div>
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
