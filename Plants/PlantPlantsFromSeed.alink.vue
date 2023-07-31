@@ -73,6 +73,24 @@ const plantType = ref(null);
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
+
+filterFn (val, update) {
+        if (val === '') {
+          update(() => {
+            options.value = stringOptions
+
+            // here you have access to "ref" which
+            // is the Vue reference of the QSelect
+          })
+          return
+        }
+
+        update(() => {
+          const needle = val.toLowerCase()
+          options.value = stringOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
+        })
+    }
+
 </script>
 
 <template>
@@ -101,6 +119,7 @@ const onSubmit = () => {
         use-input
         input-debounce="300"
         datalist
+        @filter="filterFn"
         />
         <q-select
         filled
