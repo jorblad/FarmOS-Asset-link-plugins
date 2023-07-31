@@ -139,7 +139,7 @@ watch(plantType, (newValue) => {
             use-input
             input-debounce="300"
             datalist
-            @filter="filterSeasons"
+            filter @filter="filterSeasons"
         />
         <q-select
             filled
@@ -149,7 +149,7 @@ watch(plantType, (newValue) => {
             use-input
             input-debounce="300"
             datalist
-            @filter="filterPlantTypes"
+            filter @filter="filterPlantTypes"
         />
 
       </div>
