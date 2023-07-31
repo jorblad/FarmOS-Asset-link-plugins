@@ -386,8 +386,8 @@ export default {
             assetLink.entitySource.update(
             (t) => [
               t.addRecord(plant),
-              //t.addRecord(seedQuantity),
-              //t.addRecord(plantingLog),
+              t.addRecord(seedQuantity),
+              t.addRecord(plantingLog),
             ],
             {label: `Plant from seeds`});
         } catch (error) {
