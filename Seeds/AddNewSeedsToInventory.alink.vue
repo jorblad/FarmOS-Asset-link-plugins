@@ -59,20 +59,20 @@ const onSubmit = () => {
             type="number"
             filled
         />
-        <h4>Seller</h4>
         <q-input
             v-model="seller"
             filled
+            label="Seller"
              />
-        <h4>Invoice number</h4>
         <q-input
             v-model="invoice_number"
             filled
+            label="Invoice number"
              />
-        <h4>Lot number</h4>
         <q-input
             v-model="lot_number"
             filled
+            label="Lot number"
              />
       </div>
       
