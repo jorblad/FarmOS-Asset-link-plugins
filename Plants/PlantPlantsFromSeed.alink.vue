@@ -30,7 +30,7 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How many seeds did you buy?</h4>
+      <h4>How many seeds did you plant?</h4>
       <div class="q-pa-md">
         <q-slider
             v-model="seedCount"
