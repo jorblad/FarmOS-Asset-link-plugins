@@ -45,17 +45,34 @@ const findseasons = async (entitySource) => {
   return seasons.map((season) => season.attributes.name);
 };
 
+const findplanttypes = async (entitySource) => {
+  const results = await entitySource.query((q) =>
+    q.findRecords('taxonomy_term--plant_type')
+  );
+
+
+  const plant_types = results.flatMap((l) => l);
+
+  console.log('All taxonomy_term--plant_type records:', plant_types);
+
+  // Extract the attributes.name from each element and return as a list
+  return plant_types.map((plant_type) => plant_type.attributes.name);
+};
+
 const seasons = ref([]);
+const plant_types = ref([]);
 
 onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
+  plant_types.value = await findplanttypes(assetLink.entitySource);
   
 });
 
 const plantSeason = ref(null);
+const plantType = ref(null);
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, invoice_number: invoice_number.value, lot_number: lot_number.value, seedCost: seedCost.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, lot_number: lot_number.value, seedCost: seedCost.value });
 };
 </script>
 
@@ -82,6 +99,15 @@ const onSubmit = () => {
         v-model="plantSeason"
         :options="seasons"
         label="Season"
+        use-input
+        input-debounce="300"
+        datalist
+        />
+        <q-select
+        filled
+        v-model="plantType"
+        :options="plant_types"
+        label="Species"
         use-input
         input-debounce="300"
         datalist
@@ -154,8 +180,8 @@ export default {
         console.log('seedCount', seedCount)
         const plantSeason = dialogResult.plantSeason;
         console.log('seller', plantSeason)
-        const invoice_number = dialogResult.invoice_number;
-        console.log('invoice_number', invoice_number)
+        const plantType = dialogResult.plantType;
+        console.log('plantType', plantType)
         const lot_number = dialogResult.lot_number;
         console.log('lot_number', lot_number)
         const seedCost = dialogResult.seedCost;
