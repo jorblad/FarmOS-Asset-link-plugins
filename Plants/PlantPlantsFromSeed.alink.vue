@@ -264,6 +264,11 @@ export default {
             const seedAsset = dialogResult.seedAsset;
             console.log('seedAsset', seedAsset)
 
+            const seed = await assetLink.entitySource.cache.query(q => q
+                .findRecords(`asset--equipment`)
+                .filter({ attribute: 'name', op: 'CONTAINS', value: seedAsset }));
+            console.log('Seed object', seed)
+
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
 
             const plantID = uuidv4();
@@ -325,10 +330,7 @@ export default {
                     inventory_asset: {
                     data: {
                         type: 'asset--seed',
-                        id: uuidv4(),
-                                    '$relateByName': {
-                                    name: seedAsset,
-                                    },
+                        id: seed_id,
                         }
                     },
                     units: {
