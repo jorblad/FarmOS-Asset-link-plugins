@@ -268,7 +268,7 @@ export default {
                 q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: seedAsset })
             );
             console.log('Seed object', seed)
-            const seed_id = seed[0]['id'];
+            const seed_id = seed[0].id;
             console.log('Seed id', seed_id)
 
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
