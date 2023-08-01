@@ -369,14 +369,14 @@ export default {
                             }
                         ]
                     },
-                    // quantity: {
-                    //     data: [
-                    //         {
-                    //         type: seedQuantity.type,
-                    //         id: seedQuantity.id,
-                    //         }
-                    //     ]
-                    // },
+                    quantity: {
+                        data: [
+                            {
+                            type: seedQuantity.type,
+                            id: seedQuantity.id,
+                            }
+                        ]
+                    },
                 },
             };
 
@@ -386,7 +386,7 @@ export default {
             assetLink.entitySource.update(
             (t) => [
               t.addRecord(plant),
-              //t.addRecord(seedQuantity),
+              t.addRecord(seedQuantity),
               t.addRecord(plantingLog),
             ],
             {label: `Plant from seeds`});
