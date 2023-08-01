@@ -81,7 +81,7 @@ onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
   seed_assets.value = await findseedassets(assetLink.entitySource);
-  console.log('V0.1')
+  
   
 });
 
@@ -242,6 +242,7 @@ export default {
 
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
+      console.log('V0.1')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
