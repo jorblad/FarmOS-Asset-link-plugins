@@ -264,9 +264,9 @@ export default {
             const seedAsset = dialogResult.seedAsset;
             console.log('seedAsset', seedAsset)
 
-            const seed = await assetLink.entitySource.cache.query(q => q
-                .findRecords(`asset--seed`)
-                .filter({ attribute: 'name', op: 'CONTAINS', value: seedAsset }));
+            const seed = await entitySource.query((q) =>
+                q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: seedAsset })
+            );
             console.log('Seed object', seed)
 
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
