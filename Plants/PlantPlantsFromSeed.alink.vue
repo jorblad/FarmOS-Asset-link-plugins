@@ -315,11 +315,11 @@ export default {
                 attributes: {
                     measure: 'count',
                     value: {
-                    numerator: seedCount,
-                    denominator: 1,
-                    decimal: `${seedCount}`,
+                        numerator: seedCount,
+                        denominator: 1,
+                        decimal: `${seedCount}`,
                     },
-                    //inventory_adjustment: 'decrement',
+                    inventory_adjustment: 'decrement',
                 },
                 relationships: {
                     inventory_asset: {
@@ -332,10 +332,10 @@ export default {
                         }
                     },
                     units: {
-                    data: {
-                        type: seedUnitTerm.type,
-                        id: seedUnitTerm.id,
-                    }
+                        data: {
+                            type: seedUnitTerm.type,
+                            id: seedUnitTerm.id,
+                        }
                     },
                 },
             };
