@@ -63,7 +63,7 @@ const findplanttypes = async (entitySource) => {
 
 const findseedassets = async (entitySource) => {
   const results = await entitySource.query((q) =>
-    q.findRecords('asset--seed')
+    q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: 'Morot' })
   );
 
 
