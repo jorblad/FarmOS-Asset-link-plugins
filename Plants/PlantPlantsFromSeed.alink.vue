@@ -283,26 +283,22 @@ export default {
                 },
                 relationships: {
                     plant_type: {
-                        data: [
-                            {
+                        data: {
                                 type: 'taxonomy_term--plant_type',
                                 id: uuidv4(),
                                 '$relateByName': {
                                 name: plantType,
                                 },
                             }
-                        ]
                     },
                     season: {
-                        data: [
-                            {
+                        data: {
                                 type: 'taxonomy_term--season',
                                 id: uuidv4(),
                                 '$relateByName': {
                                 name: plantSeason,
                                 },
                             }
-                        ]
                     },
                 }
             }
@@ -354,28 +350,22 @@ export default {
             },
             relationships: {
                 asset: {
-                data: [
-                    {
+                data: {
                     type: 'asset--plant',
                     id: plantID,
                     }
-                ]
                 },
                 location: {
-                data: [
-                    {
+                data: {
                     type: asset.type,
                     id: asset.id,
                     }
-                ]
                 },
                 quantity: {
-                data: [
-                    {
+                data: {
                     type: seedQuantity.type,
                     id: seedQuantity.id,
                     }
-                ]
                 },
             },
             };
