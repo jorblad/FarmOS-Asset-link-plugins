@@ -354,12 +354,12 @@ export default {
             },
             relationships: {
                 asset: {
-                data: [
-                    {
-                    type: 'asset--plant',
-                    id: plantID,
-                    }
-                ]
+                    data: [
+                        {
+                        type: 'asset--plant',
+                        id: plantID,
+                        }
+                    ]
                 },
                 // location: {
                 // data: [
