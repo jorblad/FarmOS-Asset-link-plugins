@@ -310,7 +310,7 @@ export default {
             console.log('plant:', plant)
 
             const seedQuantity = {
-            type: 'quantity--material',
+            type: 'quantity--standard',
             id: uuidv4(),
             attributes: {
                 measure: 'count',
@@ -319,7 +319,7 @@ export default {
                 denominator: 1,
                 decimal: `${seedCount}`,
                 },
-                inventory_adjustment: 'decrement',
+                //inventory_adjustment: 'decrement',
             },
             relationships: {
                 inventory_asset: {
