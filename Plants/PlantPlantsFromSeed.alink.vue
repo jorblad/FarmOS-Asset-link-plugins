@@ -309,38 +309,38 @@ export default {
 
             console.log('plant:', plant)
 
-            const seedQuantity = {
-            type: 'quantity--standard',
-            id: uuidv4(),
-            attributes: {
-                measure: 'count',
-                value: {
-                numerator: seedCount,
-                denominator: 1,
-                decimal: `${seedCount}`,
-                },
-                //inventory_adjustment: 'decrement',
-            },
-            relationships: {
-                inventory_asset: {
-                data: {
-                    type: 'asset--seed',
-                    id: uuidv4(),
-                                '$relateByName': {
-                                name: seedAsset,
-                                },
-                    }
-                },
-                units: {
-                data: {
-                    type: seedUnitTerm.type,
-                    id: seedUnitTerm.id,
-                }
-                },
-            },
-            };
+            // const seedQuantity = {
+            // type: 'quantity--standard',
+            // id: uuidv4(),
+            // attributes: {
+            //     measure: 'count',
+            //     value: {
+            //     numerator: seedCount,
+            //     denominator: 1,
+            //     decimal: `${seedCount}`,
+            //     },
+            //     //inventory_adjustment: 'decrement',
+            // },
+            // relationships: {
+            //     inventory_asset: {
+            //     data: {
+            //         type: 'asset--seed',
+            //         id: uuidv4(),
+            //                     '$relateByName': {
+            //                     name: seedAsset,
+            //                     },
+            //         }
+            //     },
+            //     units: {
+            //     data: {
+            //         type: seedUnitTerm.type,
+            //         id: seedUnitTerm.id,
+            //     }
+            //     },
+            // },
+            // };
 
-            console.log('seedQuantity:', seedQuantity)
+            // console.log('seedQuantity:', seedQuantity)
 
             const plantingLog = {
             type: 'log--seeding',
@@ -369,14 +369,14 @@ export default {
                     }
                 ]
                 },
-                quantity: {
-                data: [
-                    {
-                    type: seedQuantity.type,
-                    id: seedQuantity.id,
-                    }
-                ]
-                },
+                // quantity: {
+                // data: [
+                //     {
+                //     type: seedQuantity.type,
+                //     id: seedQuantity.id,
+                //     }
+                // ]
+                // },
             },
             };
 
@@ -387,7 +387,7 @@ export default {
             (t) => [
               t.addRecord(plant),
               t.addRecord(seedQuantity),
-              //t.addRecord(plantingLog),
+              t.addRecord(plantingLog),
             ],
             {label: `Plant from seeds`});
         } catch (error) {
