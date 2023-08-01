@@ -354,22 +354,28 @@ export default {
             },
             relationships: {
                 asset: {
-                data: {
+                data: [
+                    {
                     type: 'asset--plant',
                     id: plantID,
                     }
+                ]
                 },
                 location: {
-                data: {
+                data: [
+                    {
                     type: asset.type,
                     id: asset.id,
                     }
+                ]
                 },
                 quantity: {
-                data: {
+                data: [
+                    {
                     type: seedQuantity.type,
                     id: seedQuantity.id,
                     }
+                ]
                 },
             },
             };
