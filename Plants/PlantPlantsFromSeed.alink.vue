@@ -265,7 +265,7 @@ export default {
             console.log('seedAsset', seedAsset)
 
             const seed = await assetLink.entitySource.cache.query(q => q
-                .findRecords(`asset--equipment`)
+                .findRecords(`asset--seed`)
                 .filter({ attribute: 'name', op: 'CONTAINS', value: seedAsset }));
             console.log('Seed object', seed)
 
