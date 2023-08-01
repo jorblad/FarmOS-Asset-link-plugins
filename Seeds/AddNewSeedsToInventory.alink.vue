@@ -30,51 +30,60 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How many seeds did you buy?</h4>
-      <div class="q-pa-md">
-        <q-slider
-            v-model="seedCount"
-            :min="0"
-            :max="5000"
-            :step="1"
-            snap
-            label
-        />
-        <q-input
-            v-model.number="seedCount"
-            type="number"
-            filled
-        />
-        <h4>Total cost</h4>
-        <q-slider
-            v-model="seedCost"
-            :min="0"
-            :max="500"
-            :step="1"
-            snap
-            label
-        />
-        <q-input
-            v-model.number="seedCost"
-            type="number"
-            filled
-        />
-        <h4>Seller</h4>
-        <q-input
-            v-model="seller"
-            filled
-             />
-        <h4>Invoice number</h4>
-        <q-input
-            v-model="invoice_number"
-            filled
-             />
-        <h4>Lot number</h4>
-        <q-input
-            v-model="lot_number"
-            filled
-             />
-      </div>
+        <h5>How many seeds did you buy?</h5>
+        <div class="q-pa-md">
+            <q-slider
+                v-model="seedCount"
+                :min="0"
+                :max="5000"
+                :step="1"
+                snap
+                label
+            />
+            <q-input
+                v-model.number="seedCount"
+                type="number"
+                filled
+            />
+            <h5>Total cost</h5>
+            <q-slider
+                v-model="seedCost"
+                :min="0"
+                :max="500"
+                :step="1"
+                snap
+                label
+            />
+        </div>
+        <div class="q-pa-md">
+            <q-input
+                v-model.number="seedCost"
+                type="number"
+                filled
+            />
+        </div>
+        <div class="q-pa-md">
+            <q-input
+                v-model="seller"
+                filled
+                label="Seller"
+                />
+        </div>
+        <div class="q-pa-md">
+            <q-input
+                v-model="invoice_number"
+                filled
+                label="Invoice number"
+                />
+        </div>
+        <div class="q-pa-md">
+            <q-input
+                v-model="lot_number"
+                filled
+                label="Lot number"
+                />
+        </div>
+      
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
@@ -151,34 +160,6 @@ export default {
         if (!seedCount || seedCount <= 0) {
           return;
         }
-
-        // const seedQuantity = {
-        //   type: 'quantity--material',
-        //   id: uuidv4(),
-        //   attributes: {
-        //     measure: 'count',
-        //     value: {
-        //       numerator: seedCount,
-        //       denominator: 1,
-        //       decimal: `${seedCount}`,
-        //     },
-        //     inventory_adjustment: 'increment',
-        //   },
-        //   relationships: {
-        //     inventory_asset: {
-        //       data: {
-        //           type: asset.type,
-        //           id: asset.id,
-        //         }
-        //     },
-        //     units: {
-        //       data: {
-        //         type: seedUnitTerm.type,
-        //         id: seedUnitTerm.id,
-        //       }
-        //     },
-        //   },
-        // };
 
         const seedQuantity = {
           type: 'quantity--price',
