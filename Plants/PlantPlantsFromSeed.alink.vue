@@ -243,7 +243,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.10')
+      console.log('V0.11')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -288,7 +288,7 @@ export default {
                 attributes: {
                     name: `${plantName}`,
                     status: 'active',
-                    notes: { value: notes },
+                    //notes: { value: notes },
                 },
                 relationships: {
                     plant_type: {
@@ -354,7 +354,7 @@ export default {
                     name: `Planted ${seedCount} seeds`,
                     timestamp: formatRFC3339(new Date()),
                     status: "done",
-                    //notes: { value: notes },
+                    notes: { value: "notes testar hårdkodad notes." },
                 },
                 relationships: {
                     asset: {
