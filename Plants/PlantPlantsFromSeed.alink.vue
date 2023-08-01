@@ -38,7 +38,6 @@ const findseasons = async (entitySource) => {
     q.findRecords('taxonomy_term--season')
   );
 
-
   const seasons = results.flatMap((l) => l);
 
   console.log('All taxonomy_term--season records:', seasons);
@@ -52,7 +51,6 @@ const findplanttypes = async (entitySource) => {
     q.findRecords('taxonomy_term--plant_type')
   );
 
-
   const plant_types = results.flatMap((l) => l);
 
   console.log('All taxonomy_term--plant_type records:', plant_types);
@@ -65,7 +63,6 @@ const findseedassets = async (entitySource) => {
   const results = await entitySource.query((q) =>
     q.findRecords('asset--seed')
   );
-
 
   const seed_assets = results.flatMap((l) => l);
 
