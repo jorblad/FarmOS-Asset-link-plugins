@@ -361,14 +361,14 @@ export default {
                     }
                 ]
                 },
-                location: {
-                data: [
-                    {
-                    type: asset.type,
-                    id: asset.id,
-                    }
-                ]
-                },
+                // location: {
+                // data: [
+                //     {
+                //     type: asset.type,
+                //     id: asset.id,
+                //     }
+                // ]
+                // },
                 // quantity: {
                 // data: [
                 //     {
