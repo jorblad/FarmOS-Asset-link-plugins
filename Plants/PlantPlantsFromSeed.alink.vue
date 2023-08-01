@@ -283,22 +283,26 @@ export default {
                 },
                 relationships: {
                     plant_type: {
-                        data: {
+                        data: [
+                            {
                                 type: 'taxonomy_term--plant_type',
                                 id: uuidv4(),
                                 '$relateByName': {
                                 name: plantType,
                                 },
                             }
+                        ]
                     },
                     season: {
-                        data: {
+                        data: [
+                            {
                                 type: 'taxonomy_term--season',
                                 id: uuidv4(),
                                 '$relateByName': {
                                 name: plantSeason,
                                 },
                             }
+                        ]
                     },
                 }
             }
