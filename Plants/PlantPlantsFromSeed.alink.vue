@@ -242,7 +242,7 @@ export default {
 
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
-      console.log('V0.2')
+      console.log('V0.3')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -267,8 +267,6 @@ export default {
                 q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: seedAsset })
             );
             console.log('Seed object', seed)
-            const seed_id = seed;
-            console.log('Seed id', seed_id)
 
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
 
