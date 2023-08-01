@@ -81,6 +81,7 @@ onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
   seed_assets.value = await findseedassets(assetLink.entitySource);
+  console.log('V0.1')
   
 });
 
