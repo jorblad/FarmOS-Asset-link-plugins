@@ -310,74 +310,74 @@ export default {
             console.log('plant:', plant)
 
             const seedQuantity = {
-            type: 'quantity--material',
-            id: uuidv4(),
-            attributes: {
-                measure: 'count',
-                value: {
-                numerator: seedCount,
-                denominator: 1,
-                decimal: `${seedCount}`,
+                type: 'quantity--material',
+                id: uuidv4(),
+                attributes: {
+                    measure: 'count',
+                    value: {
+                    numerator: seedCount,
+                    denominator: 1,
+                    decimal: `${seedCount}`,
+                    },
+                    //inventory_adjustment: 'decrement',
                 },
-                //inventory_adjustment: 'decrement',
-            },
-            relationships: {
-                inventory_asset: {
-                data: {
-                    type: 'asset--seed',
-                    id: uuidv4(),
-                                '$relateByName': {
-                                name: seedAsset,
-                                },
+                relationships: {
+                    inventory_asset: {
+                    data: {
+                        type: 'asset--seed',
+                        id: uuidv4(),
+                                    '$relateByName': {
+                                    name: seedAsset,
+                                    },
+                        }
+                    },
+                    units: {
+                    data: {
+                        type: seedUnitTerm.type,
+                        id: seedUnitTerm.id,
                     }
+                    },
                 },
-                units: {
-                data: {
-                    type: seedUnitTerm.type,
-                    id: seedUnitTerm.id,
-                }
-                },
-            },
             };
 
             console.log('seedQuantity:', seedQuantity)
 
             const plantingLog = {
-            type: 'log--seeding',
-            attributes: {
-                name: `Planted ${seedCount} seeds`,
-                timestamp: formatRFC3339(new Date()),
-                status: "done",
-                notes: `${notes}`,
-                is_movement: true,
+                type: 'log--seeding',
+                attributes: {
+                    name: `Planted ${seedCount} seeds`,
+                    timestamp: formatRFC3339(new Date()),
+                    status: "done",
+                    // notes: `${notes}`,
+                    // is_movement: true,
 
-            },
-            relationships: {
-                asset: {
-                    data: [
-                        {
-                        type: 'asset--plant',
-                        id: plantID,
-                        }
-                    ]
                 },
-                location: {
-                    data: [
-                        {
-                        type: asset.type,
-                        id: asset.id,
-                        }
-                    ]
+                relationships: {
+                    asset: {
+                        data: [
+                            {
+                            type: 'asset--plant',
+                            id: plantID,
+                            }
+                        ]
+                    },
+                    location: {
+                        data: [
+                            {
+                            type: asset.type,
+                            id: asset.id,
+                            }
+                        ]
+                    },
+                    // quantity: {
+                    //     data: [
+                    //         {
+                    //         type: seedQuantity.type,
+                    //         id: seedQuantity.id,
+                    //         }
+                    //     ]
+                    // },
                 },
-                quantity: {
-                    data: [
-                        {
-                        type: seedQuantity.type,
-                        id: seedQuantity.id,
-                        }
-                    ]
-                },
-            },
             };
 
             console.log('plantingLog:', plantingLog)
@@ -387,7 +387,7 @@ export default {
             (t) => [
               t.addRecord(plant),
               //t.addRecord(seedQuantity),
-              //t.addRecord(plantingLog),
+              t.addRecord(plantingLog),
             ],
             {label: `Plant from seeds`});
         } catch (error) {
