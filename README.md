@@ -11,6 +11,7 @@ A plugin that lets you choose what unit you want to record the harvest in.
 
 ### Plant plants
 A modified version of the planting quickform that creates a plant asset and a planting log with the amount of seeds reduced from the seed asset.
+It shows up as a option on land and greehouse assets and place the plant in that location. Seed and type of plant is not connected so you need to fill both. It also needs taxonomy term to exist.
 
 ## Seeds
 ### Add seeds to inventory
