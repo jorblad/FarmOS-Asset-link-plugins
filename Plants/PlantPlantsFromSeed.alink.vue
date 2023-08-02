@@ -140,7 +140,7 @@ watch(seedAsset, async (newValue) => {
       console.log('Plant Type ID:', plantTypeId);
 
       const SeedPlantType = await assetLink.entitySource.query((q) =>
-        q.findRecords('taxonomy_term--plant_type').filter({ attribute: 'id', op: 'equal', value: SeedPlantType })
+        q.findRecords('taxonomy_term--plant_type').filter({ attribute: 'id', op: 'equal', value: plantTypeId })
       );
       console.log('Plant Type:', SeedPlantType);
 
@@ -282,7 +282,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.26')
+      console.log('V0.27')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
