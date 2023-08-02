@@ -120,6 +120,10 @@ const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value });
 };
 
+// Define a ref for presetting plantType
+const presetPlantType = ref(null);
+
+
 // Watch for changes in the selected seedAsset
 watch(seedAsset, async (newValue) => {
   if (newValue) {
@@ -145,9 +149,19 @@ watch(seedAsset, async (newValue) => {
       const seedPlantName = SeedPlantType[0].attributes.name;
       console.log('Plant Type:', seedPlantName)
 
+      // Set presetPlantType to the extracted name
+      presetPlantType.value = plantTypeName;
+
     } catch (error) {
       console.error('Error fetching seed:', error);
     }
+  }
+});
+
+// Watch for changes in presetPlantType and update plantType accordingly
+watch(presetPlantType, (newValue) => {
+  if (newValue) {
+    plantType.value = newValue;
   }
 });
 
@@ -283,7 +297,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.28')
+      console.log('V0.29')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
