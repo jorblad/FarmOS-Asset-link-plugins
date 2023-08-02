@@ -312,7 +312,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.31')
+      console.log('V0.32')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -345,6 +345,7 @@ export default {
             if (seed.length === 0) {
                 const newSeedRecord = {
                     type: 'asset--seed',
+                    id: uuidv4(),
                     attributes: {
                         name: seedAsset
                     }
