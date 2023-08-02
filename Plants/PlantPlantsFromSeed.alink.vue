@@ -139,7 +139,7 @@ watch(seedAsset, async (newValue) => {
       console.log('Seed ID:', seed_id);
 
       // Extract the relationships, specifically the plant_type ID
-      const plantTypeRelationship = seedRecord.relationships.plant_type;
+      const plantTypeRelationship = seed.relationships.plant_type;
       const plantTypeId = plantTypeRelationship.data[0].id;
 
       // Perform further actions with plantTypeId if needed
@@ -283,7 +283,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.21')
+      console.log('V0.22')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
