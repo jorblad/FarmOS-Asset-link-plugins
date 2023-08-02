@@ -232,6 +232,7 @@ const addNewPlantType = () => {
                 input-debounce="300"
                 datalist
                 @filter="seedAssetsFilterFn"
+                new-value-mode="add-unique"
             />
         </div>
         <div class="q-pa-md">
@@ -311,7 +312,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.30')
+      console.log('V0.31')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -339,6 +340,25 @@ export default {
 
             // Extract the id from the first item (if available)
             const seed_id = seed.length > 0 ? seed[0].id : null;
+
+            // If seed array is empty, add a new record
+            if (seed.length === 0) {
+                const newSeedRecord = {
+                    type: 'asset--seed',
+                    attributes: {
+                        name: seedAsset
+                    }
+                };
+
+                const addedSeedRecord = await assetLink.entitySource.query((q) =>
+                    q.addRecord(newSeedRecord)
+                );
+
+                console.log('Added Seed Record', addedSeedRecord);
+
+                // Use the newly added seed record's ID
+                const newSeedId = addedSeedRecord.id;
+            }
 
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
 
