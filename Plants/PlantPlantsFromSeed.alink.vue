@@ -33,6 +33,56 @@ const seasonsOptions = ref([]);
 const plantTypesOptions = ref([]);
 const seedAssetsOptions = ref([]);
 
+// Photo adding
+const capturedPhotos = ref([]);
+
+const photoCaptureModel = ref(null);
+const carouselPosition = ref("capture-photo");
+
+watch(photoCaptureModel, async () => {
+  const file = photoCaptureModel.value;
+
+  if (!file) {
+    return;
+  }
+
+  const fileToArrayBuffer = data => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsArrayBuffer(data);
+  });
+
+  const fileName = file.name;
+  const fileType = file.type;
+  const fileData = await fileToArrayBuffer(file);
+
+  const fileStringData = new Uint8Array(fileData).reduce((data, byte) => {
+    return data + String.fromCharCode(byte);
+  }, '');
+
+  const fileDataUrl = `data:${fileType};base64, ` + btoa(fileStringData);
+
+  const photoId = uuidv4()
+
+  capturedPhotos.value.push({
+    id: photoId,
+    fileName,
+    fileDataUrl,
+  });
+
+  carouselPosition.value = photoId;
+});
+
+const resetQuickPhotoObservationForm = () => {
+  capturedPhotos.value = [];
+  observationNotes.value = "";
+  photoCaptureModel.value = null;
+  carouselPosition.value = "capture-photo";
+};
+
+// Find functions
+
 const findseasons = async (entitySource) => {
   const results = await entitySource.query((q) =>
     q.findRecords('taxonomy_term--season')
@@ -117,7 +167,7 @@ const seedAssetsFilterFn = (val, update, abort) => {
 };
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 // Define a ref for presetting plantType
@@ -257,6 +307,35 @@ const addNewPlantType = () => {
             />
         </div>
 
+        <div class="q-pa-md">
+          <q-carousel
+            swipeable
+            animated
+            navigation
+            navigation-icon="mdi-radiobox-marked"
+            control-type="flat"
+            control-color="orange"
+            :arrows="false"
+            height="200px"
+            v-model="carouselPosition"
+          >
+            <q-carousel-slide
+				v-for="(capturedPhoto, capturedPhotoIdx) in capturedPhotos"
+            	:key="capturedPhoto.id"
+            	:name="capturedPhoto.id">
+              <q-img
+                :src="capturedPhoto.fileDataUrl"
+                class="rounded-borders full-height"
+                fit="contain"
+              ></q-img>
+            </q-carousel-slide>
+
+            <q-carousel-slide name="capture-photo">
+              <photo-input class="q-pb-xl" v-model="photoCaptureModel"></photo-input>
+            </q-carousel-slide>
+          </q-carousel>
+        </div>
+
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
@@ -264,7 +343,7 @@ const addNewPlantType = () => {
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="seedCount <= 0"
+          :disabled="seedCount <= 0 || !seedAsset || !plantSeason || !plantType"
         />
       </div>
     </q-card>
@@ -312,7 +391,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.36')
+      //console.log('V0.41')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -332,6 +411,8 @@ export default {
             console.log('notes', notes)
             const seedAsset = dialogResult.seedAsset;
             console.log('seedAsset', seedAsset)
+            const photos = dialogResult.capturedPhotos;
+            console.log('Photos', photos)
 
             const seed = await assetLink.entitySource.query((q) =>
                 q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: seedAsset })
@@ -421,8 +502,21 @@ export default {
                             }
                         ]
                     },
+                    image: {
+                        data: photos.map(({ id, fileName, fileDataUrl }) =>
+                            ({
+                                type: 'file--file',
+                                id,
+                                '$upload': {
+                                    fileName,
+                                    fileDataUrl,
+                                }
+                            })
+                            ),
+                        },
+                    },
                 }
-            }
+            
 
             console.log('plant:', plant)
 
