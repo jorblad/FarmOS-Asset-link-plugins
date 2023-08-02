@@ -312,7 +312,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.32')
+      console.log('V0.33')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -343,22 +343,24 @@ export default {
 
             // If seed array is empty, add a new record
             if (seed.length === 0) {
+                seed_id = uuidv4();
                 const newSeedRecord = {
                     type: 'asset--seed',
-                    id: uuidv4(),
+                    id: seed_id,
                     attributes: {
                         name: seedAsset
                     }
                 };
 
-                const addedSeedRecord = await assetLink.entitySource.query((q) =>
-                    q.addRecord(newSeedRecord)
-                );
+
+                assetLink.entitySource.update(
+                    (t) => [
+                    t.addRecord(newSeedRecord),
+                    ],
+                    {label: `Add new seeds`});
 
                 console.log('Added Seed Record', addedSeedRecord);
 
-                // Use the newly added seed record's ID
-                const newSeedId = addedSeedRecord.id;
             }
 
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
