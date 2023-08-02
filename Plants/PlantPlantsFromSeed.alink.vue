@@ -123,10 +123,19 @@ const onSubmit = () => {
 // Watch for changes in the selected seedAsset
 watch(seedAsset, (newValue) => {
   if (newValue) {
-    // Perform actions based on the selected seedAsset
-    console.log('Selected seedAsset:', newValue);
-    // Your custom logic here...
-  }
+    const findSeedPLantType = async (entitySource) => {
+        // Perform actions based on the selected seedAsset
+        console.log('Selected seedAsset:', newValue);
+        
+        const seed = await entitySource.query((q) =>
+            q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: newValue })
+        );
+        console.log('Seed object', seed)
+
+        // Extract the id from the first item (if available)
+        const seed_id = seed.length > 0 ? seed[0].id : null;
+        };
+    }
 });
 
 // Watch for changes in the selected plantType
@@ -261,7 +270,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.13')
+      console.log('V0.14')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
