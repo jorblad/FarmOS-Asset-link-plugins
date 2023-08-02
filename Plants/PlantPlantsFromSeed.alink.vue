@@ -312,7 +312,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.34')
+      console.log('V0.35')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -339,7 +339,7 @@ export default {
             console.log('Seed object', seed)
 
             
-
+            let seed_id;
             // If seed array is empty, add a new record
             if (seed.length === 0) {
                 seed_id = uuidv4();
@@ -362,8 +362,10 @@ export default {
 
             } else {
                 // Extract the id from the first item (if available)
-                const seed_id = seed.length > 0 ? seed[0].id : null;
+                seed_id = seed.length > 0 ? seed[0].id : null;
             }
+
+            console.log('Final Seed ID', seed_id);
 
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
 
