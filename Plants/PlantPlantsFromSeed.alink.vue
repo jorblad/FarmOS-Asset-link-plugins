@@ -143,7 +143,7 @@ watch(seedAsset, async (newValue) => {
         q.findRecords('taxonomy_term--plant_type').filter({ attribute: 'id', op: 'equal', value: plantTypeId })
       );
       const seedPlantName = SeedPlantType[0].attributes.name;
-      console.log('Plant Type:', seedPlantName
+      console.log('Plant Type:', seedPlantName)
 
     } catch (error) {
       console.error('Error fetching seed:', error);
