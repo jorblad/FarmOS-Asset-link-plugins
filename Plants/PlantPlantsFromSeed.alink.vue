@@ -150,7 +150,7 @@ watch(seedAsset, async (newValue) => {
       console.log('Plant Type:', seedPlantName)
 
       // Set presetPlantType to the extracted name
-      presetPlantType.value = plantTypeName;
+      presetPlantType.value = seedPlantName;
 
     } catch (error) {
       console.error('Error fetching seed:', error);
@@ -297,7 +297,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.29')
+      console.log('V0.30')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
