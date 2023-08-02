@@ -90,50 +90,31 @@ const plantType = ref(null);
 const seedAsset = ref(null);
 
 const seasonsFilterFn = (val, update, abort) => {
-  if (val.trim() === '') {
-    update(() => {
-      seasonsOptions.value = seasons.value.map((season) => season.attributes.name);
-    });
-  } else {
-    update(() => {
-      const needle = val.toLowerCase();
-      seasonsOptions.value = seasons.value
-        .filter((season) => season.attributes.name.toLowerCase().indexOf(needle) > -1)
-        .map((season) => season.attributes.name);
-    });
-  }
+  update(() => {
+    const needle = val.toLowerCase();
+    seasonsOptions.value = seasons.value.filter((season) =>
+      season.toLowerCase().indexOf(needle) > -1
+    );
+  });
 };
 
 const plantTypesFilterFn = (val, update, abort) => {
-  if (val.trim() === '') {
-    update(() => {
-      plantTypesOptions.value = plant_types.value.map((plant_type) => plant_type.attributes.name);
-    });
-  } else {
-    update(() => {
-      const needle = val.toLowerCase();
-      plantTypesOptions.value = plant_types.value
-        .filter((plant_type) => plant_type.attributes.name.toLowerCase().indexOf(needle) > -1)
-        .map((plant_type) => plant_type.attributes.name);
-    });
-  }
+  update(() => {
+    const needle = val.toLowerCase();
+    plantTypesOptions.value = plant_types.value.filter((plant_type) =>
+      plant_type.toLowerCase().indexOf(needle) > -1
+    );
+  });
 };
 
 const seedAssetsFilterFn = (val, update, abort) => {
-  if (val.trim() === '') {
-    update(() => {
-      seedAssetsOptions.value = seed_assets.value.map((seed_asset) => seed_asset.attributes.name);
-    });
-  } else {
-    update(() => {
-      const needle = val.toLowerCase();
-      seedAssetsOptions.value = seed_assets.value
-        .filter((seed_asset) => seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1)
-        .map((seed_asset) => seed_asset.attributes.name);
-    });
-  }
+  update(() => {
+    const needle = val.toLowerCase();
+    seedAssetsOptions.value = seed_assets.value.filter((seed_asset) =>
+      seed_asset.toLowerCase().indexOf(needle) > -1
+    );
+  });
 };
-
 
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value });
@@ -196,14 +177,14 @@ watch(plantType, (newValue) => {
 const addNewPlantSeason = () => {
     if (plantSeason && !seasons.value.includes(plantSeason)) {
         seasons.value.push(plantSeason);
-        //plantSeason = plantSeason.toLowerCase(); // Adding the new value to the list
+        plantSeason = plantSeason.toLowerCase(); // Adding the new value to the list
     }
 };
 
 const addNewPlantType = () => {
     if (plantType && !plant_types.value.includes(plantType)) {
         plant_types.value.push(plantType);
-        //plantType = plantType.toLowerCase(); // Adding the new value to the list
+        plantType = plantType.toLowerCase(); // Adding the new value to the list
     }
 };
 </script>
@@ -238,19 +219,9 @@ const addNewPlantType = () => {
                 input-debounce="300"
                 datalist
                 @filter="seasonsFilterFn"
-                emit-value
-            >
-                <template v-slot:no-option>
-                <q-item>
-                    <q-item-section class="text-h6 text-grey">
-                    Create New: {{ plantSeason }}
-                    </q-item-section>
-                </q-item>
-                </template>
-            </q-select>
-            </div>
-
-            <div class="q-pa-md">
+            />
+        </div>
+        <div class="q-pa-md">
             <q-select
                 filled
                 v-model="seedAsset"
@@ -260,19 +231,9 @@ const addNewPlantType = () => {
                 input-debounce="300"
                 datalist
                 @filter="seedAssetsFilterFn"
-                emit-value
-            >
-                <template v-slot:no-option>
-                <q-item>
-                    <q-item-section class="text-h6 text-grey">
-                    Create New: {{ seedAsset }}
-                    </q-item-section>
-                </q-item>
-                </template>
-            </q-select>
-            </div>
-
-            <div class="q-pa-md">
+            />
+        </div>
+        <div class="q-pa-md">
             <q-select
                 filled
                 v-model="plantType"
@@ -282,17 +243,8 @@ const addNewPlantType = () => {
                 input-debounce="300"
                 datalist
                 @filter="plantTypesFilterFn"
-                emit-value
-            >
-                <template v-slot:no-option>
-                <q-item>
-                    <q-item-section class="text-h6 text-grey">
-                    Create New: {{ plantType }}
-                    </q-item-section>
-                </q-item>
-                </template>
-            </q-select>
-            </div>
+            />
+        </div>
         <div class="q-pa-md">
             <q-input
                 v-model="notes"
@@ -357,7 +309,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.34')
+      //console.log('V0.30')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
