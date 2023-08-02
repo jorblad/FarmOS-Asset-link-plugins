@@ -174,7 +174,19 @@ watch(plantType, (newValue) => {
   }
 });
 
+const addNewPlantSeason = () => {
+    if (plantSeason && !seasons.value.includes(plantSeason)) {
+        seasons.value.push(plantSeason);
+        plantSeason = plantSeason.toLowerCase(); // Adding the new value to the list
+    }
+};
 
+const addNewPlantType = () => {
+    if (plantType && !plant_types.value.includes(plantType)) {
+        plant_types.value.push(plantType);
+        plantType = plantType.toLowerCase(); // Adding the new value to the list
+    }
+};
 </script>
 
 <template>
@@ -202,12 +214,17 @@ watch(plantType, (newValue) => {
                 filled
                 v-model="plantSeason"
                 :options="seasonsOptions"
-                label="Season"
+                label="Species"
                 use-input
                 input-debounce="300"
                 datalist
                 @filter="seasonsFilterFn"
-            />
+            >
+                <!-- Allow input and option to add new value -->
+                <template v-slot:append>
+                    <q-btn @click="addNewPlantSeason" icon="add" color="primary" size="md" />
+                </template>
+            </q-select>
         </div>
         <div class="q-pa-md">
             <q-select
@@ -231,7 +248,12 @@ watch(plantType, (newValue) => {
                 input-debounce="300"
                 datalist
                 @filter="plantTypesFilterFn"
-            />
+            >
+                <!-- Allow input and option to add new value -->
+                <template v-slot:append>
+                    <q-btn @click="addNewPlantType" icon="add" color="primary" size="md" />
+                </template>
+            </q-select>
         </div>
         <div class="q-pa-md">
             <q-input
@@ -297,7 +319,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      //console.log('V0.30')
+      console.log('V0.31')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
