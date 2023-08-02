@@ -120,6 +120,24 @@ const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value });
 };
 
+// Watch for changes in the selected seedAsset
+watch(seedAsset, (newValue) => {
+  if (newValue) {
+    // Perform actions based on the selected seedAsset
+    console.log('Selected seedAsset:', newValue);
+    // Your custom logic here...
+  }
+});
+
+// Watch for changes in the selected plantType
+watch(plantType, (newValue) => {
+  if (newValue) {
+    // Perform actions based on the selected plantType
+    console.log('Selected plantType:', newValue);
+    // Your custom logic here...
+  }
+});
+
 
 </script>
 
@@ -243,7 +261,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      //console.log('V0.12')
+      console.log('V0.13')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
