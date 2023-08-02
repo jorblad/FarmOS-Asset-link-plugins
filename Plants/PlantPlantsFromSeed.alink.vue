@@ -139,7 +139,7 @@ watch(seedAsset, async (newValue) => {
       console.log('Seed ID:', seed_id);
 
       // Extract the relationships, specifically the plant_type ID
-      const plantTypeRelationship = seed.relationships;
+      const plantTypeRelationship = seed[0].relationships.plant_type;
       console.log('Plant Type Relationship:', plantTypeRelationship);
       const plantTypeId = plantTypeRelationship.data[0].id;
 
