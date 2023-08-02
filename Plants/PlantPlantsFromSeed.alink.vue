@@ -391,7 +391,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.38')
+      console.log('V0.39')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -411,6 +411,8 @@ export default {
             console.log('notes', notes)
             const seedAsset = dialogResult.seedAsset;
             console.log('seedAsset', seedAsset)
+            const photos = dialogResult.capturedPhotos;
+            console.log('Photos', photos)
 
             const seed = await assetLink.entitySource.query((q) =>
                 q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: seedAsset })
