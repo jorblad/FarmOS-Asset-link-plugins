@@ -136,7 +136,7 @@ export default {
             return false;
           }
 
-        console.log("plantTypes=", plantTypes);
+        //console.log("plantTypes=", plantTypes);
         
         // Obviously, since `plant_type` is a required (N >= 1)
         // attribute, we didn't actually need to load them it would have
