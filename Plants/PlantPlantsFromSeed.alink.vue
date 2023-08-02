@@ -219,6 +219,7 @@ const addNewPlantType = () => {
                 input-debounce="300"
                 datalist
                 @filter="seasonsFilterFn"
+                new-value-mode="add-unique"
             />
         </div>
         <div class="q-pa-md">
@@ -243,6 +244,7 @@ const addNewPlantType = () => {
                 input-debounce="300"
                 datalist
                 @filter="plantTypesFilterFn"
+                new-value-mode="add-unique"
             />
         </div>
         <div class="q-pa-md">
@@ -309,7 +311,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      //console.log('V0.30')
+      console.log('V0.30')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
