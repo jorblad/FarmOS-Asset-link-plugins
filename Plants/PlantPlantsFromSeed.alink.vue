@@ -123,7 +123,7 @@ const onSubmit = () => {
 // Watch for changes in the selected seedAsset
 watch(seedAsset, (newValue) => {
   if (newValue) {
-    const findSeedPLantType = async (entitySource) => {
+    const findSeedPlantType = async (entitySource) => {
         // Perform actions based on the selected seedAsset
         console.log('Selected seedAsset:', newValue);
         
@@ -135,6 +135,8 @@ watch(seedAsset, (newValue) => {
         // Extract the id from the first item (if available)
         const seed_id = seed.length > 0 ? seed[0].id : null;
         };
+
+    findSeedPlantType();
     }
 });
 
@@ -270,7 +272,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.14')
+      console.log('V0.15')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
