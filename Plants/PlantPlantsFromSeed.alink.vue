@@ -167,7 +167,7 @@ const seedAssetsFilterFn = (val, update, abort) => {
 };
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 // Define a ref for presetting plantType
@@ -391,7 +391,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.37')
+      console.log('V0.38')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
