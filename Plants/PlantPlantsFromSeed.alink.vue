@@ -232,6 +232,7 @@ const addNewPlantType = () => {
                 input-debounce="300"
                 datalist
                 @filter="seedAssetsFilterFn"
+                new-value-mode="add-unique"
             />
         </div>
         <div class="q-pa-md">
@@ -311,7 +312,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.30')
+      console.log('V0.36')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -337,8 +338,48 @@ export default {
             );
             console.log('Seed object', seed)
 
-            // Extract the id from the first item (if available)
-            const seed_id = seed.length > 0 ? seed[0].id : null;
+            
+
+            let seed_id;
+            // If seed array is empty, add a new record
+            if (seed.length === 0) {
+                seed_id = uuidv4();
+                const newSeedRecord = {
+                    type: 'asset--seed',
+                    id: seed_id,
+                    attributes: {
+                        name: seedAsset
+                    },
+                    relationships: {
+                        plant_type: {
+                            data: [
+                                {
+                                    type: 'taxonomy_term--plant_type',
+                                    id: uuidv4(),
+                                    '$relateByName': {
+                                    name: plantType,
+                                    },
+                                }
+                            ]
+                        },
+                    }
+                };
+
+
+                assetLink.entitySource.update(
+                    (t) => [
+                    t.addRecord(newSeedRecord),
+                    ],
+                    {label: `Add new seeds`});
+
+                console.log('Added Seed Record', newSeedRecord);
+
+            } else {
+                // Extract the id from the first item (if available)
+                seed_id = seed.length > 0 ? seed[0].id : null;
+            }
+
+            console.log('Final Seed ID', seed_id);
 
             const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
 
