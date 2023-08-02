@@ -127,23 +127,21 @@ watch(seedAsset, async (newValue) => {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
 
-      const seedRecord = await assetLink.entitySource.query((q) =>
-        q.findRecord('asset--seed').filter({ attribute: 'name', op: 'equal', value: newValue })
+      const seed = await assetLink.entitySource.query((q) =>
+        q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: newValue })
       );
-      console.log('Seed record:', seedRecord);
+      console.log('Seed object', seed);
 
-      // Extract the relationships, specifically the plant_type ID
-      const plantTypeRelationship = seedRecord.relationships.plant_type;
-      const plantTypeId = plantTypeRelationship.data[0].id;
+      // Extract the id from the first item (if available)
+      const seed_id = seed.length > 0 ? seed[0].id : null;
 
-      // Perform further actions with plantTypeId if needed
-      console.log('Plant Type ID:', plantTypeId);
+      // Perform further actions with seed_id if needed
+      console.log('Seed ID:', seed_id);
     } catch (error) {
       console.error('Error fetching seed:', error);
     }
   }
 });
-
 
 // Watch for changes in the selected plantType
 watch(plantType, (newValue) => {
@@ -277,7 +275,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.19')
+      console.log('V0.20')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
