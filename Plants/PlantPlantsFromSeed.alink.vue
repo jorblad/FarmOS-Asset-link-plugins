@@ -92,18 +92,17 @@ const seedAsset = ref(null);
 const seasonsFilterFn = (val, update, abort) => {
   update(() => {
     const needle = val.toLowerCase();
-    seasonsOptions.value = seasons.value.filter((season) =>
-      season.toLowerCase().indexOf(needle) > -1
-    );
+    seasonsOptions.value = seasons.value
+      .filter((season) => season.attributes.name.toLowerCase().indexOf(needle) > -1)
+      .map((season) => season.attributes.name);
   });
 };
-
 const plantTypesFilterFn = (val, update, abort) => {
   update(() => {
     const needle = val.toLowerCase();
-    plantTypesOptions.value = plant_types.value.filter((plant_type) =>
-      plant_type.toLowerCase().indexOf(needle) > -1
-    );
+    plantTypesOptions.value = plant_types.value
+      .filter((plant_type) => plant_type.attributes.name.toLowerCase().indexOf(needle) > -1)
+      .map((plant_type) => plant_type.attributes.name);
   });
 };
 
@@ -214,7 +213,7 @@ const addNewPlantType = () => {
                 filled
                 v-model="plantSeason"
                 :options="seasonsOptions"
-                label="Species"
+                label="Season"
                 use-input
                 input-debounce="300"
                 datalist
@@ -319,7 +318,7 @@ export default {
     handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.32')
+      console.log('V0.33')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
