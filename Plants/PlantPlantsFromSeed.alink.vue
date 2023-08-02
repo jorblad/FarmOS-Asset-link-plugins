@@ -167,7 +167,7 @@ const seedAssetsFilterFn = (val, update, abort) => {
 };
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value });
 };
 
 // Define a ref for presetting plantType
@@ -335,11 +335,6 @@ const addNewPlantType = () => {
             </q-carousel-slide>
           </q-carousel>
         </div>
-
-        <q-card-actions align="right">
-            <q-btn flat label="Cancel" color="primary" @click="() => resetQuickPhotoObservationForm()" v-close-popup />
-            <q-btn flat label="Save" color="primary" @click="() => saveQuickPhotoObservation(capturedPhotos, observationNotes)" v-close-popup />
-        </q-card-actions>
 
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
