@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch, onMounted } from 'vue';
+import { inject, ref, watch, onMounted,  computed } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 
@@ -19,14 +19,6 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
 const notes = ref(null);
-
-// Create a function to fetch assetLink and store it in the ref
-const fetchAssetLink = async () => {
-  assetLink.value = await getAssetLink(); // Replace getAssetLink with your code to retrieve assetLink
-};
-
-// Fetch the assetLink on component mount
-onMounted(fetchAssetLink);
 
 
 const seasonsOptions = ref([]);
@@ -74,12 +66,6 @@ watch(photoCaptureModel, async () => {
   carouselPosition.value = photoId;
 });
 
-const resetQuickPhotoObservationForm = () => {
-  capturedPhotos.value = [];
-  observationNotes.value = "";
-  photoCaptureModel.value = null;
-  carouselPosition.value = "capture-photo";
-};
 
 // Find functions
 
@@ -119,7 +105,8 @@ const findseedassets = async (entitySource) => {
   console.log('All asset--seed records:', seed_assets);
 
   // Extract the attributes.name from each element and return as a list
-  return seed_assets.map((seed_asset) => seed_asset.attributes.name);
+  //return seed_assets.map((seed_asset) => seed_asset.attributes.name);
+  return seed_assets;
 };
 
 const seasons = ref([]);
@@ -157,14 +144,19 @@ const plantTypesFilterFn = (val, update, abort) => {
   });
 };
 
-const seedAssetsFilterFn = (val, update, abort) => {
-  update(() => {
+const seedAssetsFilterFn = async (val, update, abort) => {
+  update(async () => {
     const needle = val.toLowerCase();
-    seedAssetsOptions.value = seed_assets.value.filter((seed_asset) =>
-      seed_asset.toLowerCase().indexOf(needle) > -1
+    const filteredSeedAssets = await findseedassets(assetLink.entitySource);
+    seedAssetsOptions.value = filteredSeedAssets.filter((seed_asset) =>
+      //console.log("Seed asset: ", seed_asset.attributes.name.toLowerCase())
+      seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
     );
+    console.log("SeedAssetOptions: ", seedAssetsOptions);
   });
 };
+
+
 
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
@@ -176,19 +168,14 @@ const presetPlantType = ref(null);
 
 // Watch for changes in the selected seedAsset
 watch(seedAsset, async (newValue) => {
-  if (newValue) {
+  console.log("Type of seed", typeof newValue)
+  if (seedAsset && typeof newValue != 'string') {
     try {
       // Perform actions based on the selected seedAsset
-      //console.log('Selected seedAsset:', newValue);
-
-      const seed = await assetLink.entitySource.query((q) =>
-        q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: newValue })
-      );
-      //console.log('Seed object', seed);
+      console.log('Selected seedAsset:', newValue);
 
       // Extract the relationships, specifically the plant_type ID
-      const plantTypeRelationship = seed[0].relationships.plant_type;
-      const plantTypeId = plantTypeRelationship.data[0].id;
+      const plantTypeId = newValue.plantTypeID;
 
       // Perform further actions with plantTypeId if needed
       //console.log('Plant Type ID:', plantTypeId);
@@ -224,19 +211,15 @@ watch(plantType, (newValue) => {
   }
 });
 
-const addNewPlantSeason = () => {
-    if (plantSeason && !seasons.value.includes(plantSeason)) {
-        seasons.value.push(plantSeason);
-        plantSeason = plantSeason.toLowerCase(); // Adding the new value to the list
-    }
-};
+// Create a computed property for seed asset options with labels
+const seedAssetOptionsWithLabel = computed(() => {
+  return seedAssetsOptions.value.map((seed_asset) => ({
+    label: seed_asset.attributes.name,
+    value: seed_asset.id,
+    plantTypeID: seed_asset.relationships.plant_type.data[0].id
+  }));
+});
 
-const addNewPlantType = () => {
-    if (plantType && !plant_types.value.includes(plantType)) {
-        plant_types.value.push(plantType);
-        plantType = plantType.toLowerCase(); // Adding the new value to the list
-    }
-};
 </script>
 
 <template>
@@ -276,7 +259,7 @@ const addNewPlantType = () => {
             <q-select
                 filled
                 v-model="seedAsset"
-                :options="seedAssetsOptions"
+                :options="seedAssetOptionsWithLabel"
                 label="Seed asset"
                 use-input
                 input-debounce="300"
@@ -361,37 +344,11 @@ export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
 
-    const findUnitTerm = async entitySource => {
-      const results = await entitySource.query(q => q
-          .findRecords('taxonomy_term--unit')
-          .filter({ attribute: 'name', op: 'equal', value: UNIT_NAME }));
-      return results.flatMap(l => l).find(a => a);
-    };
 
-    let seedUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
-
-    if (!seedUnitTerm) {
-      seedUnitTerm = await findUnitTerm(assetLink.entitySource);
-    }
-
-    if (!seedUnitTerm) {
-      const unitTermToCreate = {
-          type: 'taxonomy_term--unit',
-          id: uuidv4(),
-          attributes: {
-            name: UNIT_NAME,
-          },
-      };
-
-      seedUnitTerm = await assetLink.entitySource.update(
-          (t) => t.addRecord(unitTermToCreate),
-          {label: `Add '${UNIT_NAME}' unit`});
-    }
-
-    handle.defineSlot('com.example.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
+    handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      //console.log('V0.41')
+      //console.log('V0.63')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -413,17 +370,12 @@ export default {
             console.log('seedAsset', seedAsset)
             const photos = dialogResult.capturedPhotos;
             console.log('Photos', photos)
-
-            const seed = await assetLink.entitySource.query((q) =>
-                q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: seedAsset })
-            );
-            console.log('Seed object', seed)
-
-            
+           
 
             let seed_id;
             // If seed array is empty, add a new record
-            if (seed.length === 0) {
+            if (typeof seedAsset === 'string') {
+                console.log("Seed name for creaton of new seed", seedAsset)
                 seed_id = uuidv4();
                 const newSeedRecord = {
                     type: 'asset--seed',
@@ -446,7 +398,7 @@ export default {
                     }
                 };
 
-
+                console.log('New Seed Record', newSeedRecord);
                 assetLink.entitySource.update(
                     (t) => [
                     t.addRecord(newSeedRecord),
@@ -457,7 +409,7 @@ export default {
 
             } else {
                 // Extract the id from the first item (if available)
-                seed_id = seed.length > 0 ? seed[0].id : null;
+                seed_id = seedAsset.value;
             }
 
             console.log('Final Seed ID', seed_id);
@@ -541,8 +493,11 @@ export default {
                     },
                     units: {
                         data: {
-                            type: seedUnitTerm.type,
-                            id: seedUnitTerm.id,
+                            type: 'taxonomy_term--unit',
+                            id: uuidv4(),
+                            '$relateByName': {
+                            name: UNIT_NAME,
+                            },
                         }
                     },
                 },

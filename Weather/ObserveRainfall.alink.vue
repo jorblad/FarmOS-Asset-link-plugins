@@ -99,7 +99,7 @@ const onSubmit = (mmOfRain) => {
 };
 </script>
 
-<template alink-route[com.example.farmos_asset_link.routes.v0.observe_rainfall_page]="/observe-rainfall">
+<template alink-route[se.sj-tech.farmos_asset_link.routes.v0.observe_rainfall_page]="/observe-rainfall">
   <q-page padding class="column text-left">
     <h4>How much rain was there?</h4>
     <div class="q-pa-md">
