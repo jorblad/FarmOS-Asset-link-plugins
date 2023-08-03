@@ -168,7 +168,7 @@ const presetPlantType = ref(null);
 
 // Watch for changes in the selected seedAsset
 watch(seedAsset, async (newValue) => {
-  if (typeof seedAsset === 'object') {
+  if (seedAsset && typeof seedAsset != 'string') {
     try {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
@@ -352,7 +352,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.61')
+      console.log('V0.62')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
