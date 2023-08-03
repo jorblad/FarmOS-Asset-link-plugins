@@ -387,7 +387,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.58')
+      console.log('V0.59')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -447,7 +447,7 @@ export default {
 
             } else {
                 // Extract the id from the first item (if available)
-                seed_id = seedAsset.id;
+                seed_id = seedAsset.value;
             }
 
             console.log('Final Seed ID', seed_id);
