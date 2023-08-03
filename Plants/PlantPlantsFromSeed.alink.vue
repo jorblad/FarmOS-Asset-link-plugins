@@ -149,7 +149,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
     const needle = val.toLowerCase();
     const filteredSeedAssets = await findseedassets(assetLink.entitySource);
     seedAssetsOptions.value = filteredSeedAssets.filter((seed_asset) =>
-      console.log("Seed asset: ", seed_asset.attributes.name)
+      console.log("Seed asset: ", seed_asset.attributes.name.toLowerCase())
       //seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
     );
     console.log("SeedAssetOptions: ", seedAssetsOptions);
@@ -357,7 +357,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.53')
+      console.log('V0.54')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
