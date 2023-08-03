@@ -111,7 +111,8 @@ const findseedassets = async (entitySource) => {
   console.log('All asset--seed records:', seed_assets);
 
   // Extract the attributes.name from each element and return as a list
-  return seed_assets.map((seed_asset) => seed_asset.attributes.name);
+  //return seed_assets.map((seed_asset) => seed_asset.attributes.name);
+  return seed_assets;
 };
 
 const seasons = ref([]);
@@ -216,19 +217,6 @@ watch(plantType, (newValue) => {
   }
 });
 
-const addNewPlantSeason = () => {
-    if (plantSeason && !seasons.value.includes(plantSeason)) {
-        seasons.value.push(plantSeason);
-        plantSeason = plantSeason.toLowerCase(); // Adding the new value to the list
-    }
-};
-
-const addNewPlantType = () => {
-    if (plantType && !plant_types.value.includes(plantType)) {
-        plant_types.value.push(plantType);
-        plantType = plantType.toLowerCase(); // Adding the new value to the list
-    }
-};
 </script>
 
 <template>
@@ -275,12 +263,14 @@ const addNewPlantType = () => {
                 datalist
                 @filter="seedAssetsFilterFn"
                 new-value-mode="add-unique"
+                option-label="attributes.name" 
+                option-value="id"
             />
         </div>
         <div class="q-pa-md">
             <entity-select
             label="Plant Type"
-            entity-type="taxonomy_term"
+            entity-type="taxonomy_term--plant_type"
             v-model="plantType2"
             ></entity-select>
             <q-select
