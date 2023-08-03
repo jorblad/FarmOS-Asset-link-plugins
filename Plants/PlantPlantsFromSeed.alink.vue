@@ -387,7 +387,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.57')
+      console.log('V0.58')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -409,17 +409,11 @@ export default {
             console.log('seedAsset', seedAsset)
             const photos = dialogResult.capturedPhotos;
             console.log('Photos', photos)
-
-            const seed = await assetLink.entitySource.query((q) =>
-                q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: seedAsset })
-            );
-            console.log('Seed object', seed)
-
-            
+           
 
             let seed_id;
             // If seed array is empty, add a new record
-            if (seed.length === 0) {
+            if (typeof seedAsset === 'string') {
                 seed_id = uuidv4();
                 const newSeedRecord = {
                     type: 'asset--seed',
@@ -453,7 +447,7 @@ export default {
 
             } else {
                 // Extract the id from the first item (if available)
-                seed_id = seed.length > 0 ? seed[0].id : null;
+                seed_id = seedAsset.id;
             }
 
             console.log('Final Seed ID', seed_id);
