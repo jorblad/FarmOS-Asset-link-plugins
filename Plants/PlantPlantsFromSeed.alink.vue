@@ -147,12 +147,13 @@ const plantTypesFilterFn = (val, update, abort) => {
 const seedAssetsFilterFn = (val, update, abort) => {
   update(() => {
     const needle = val.toLowerCase();
-    seedAssetsOptions.value = seed_assets.value.filter((seed_asset) =>
+    seedAssetsOptions.value = seed_assets.filter((seed_asset) =>
       seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
     );
     console.log("SeedAssetOptions: ", seedAssetsOptions);
   });
 };
+
 
 const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
@@ -347,7 +348,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.47')
+      console.log('V0.48')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
