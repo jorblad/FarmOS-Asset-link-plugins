@@ -208,10 +208,20 @@ watch(plantType, (newValue) => {
   }
 });
 
+// // Create a computed property for seed asset options with labels
+// const seedAssetOptionsWithLabel = computed(() => {
+//   return seedAssetsOptions.value.map((seed_asset) => ({
+//     label: `${seed_asset.attributes.name} (${seed_asset.attributes.drupal_internal__id})`,
+//     value: seed_asset.id,
+//     plantTypeID: seed_asset.relationships.plant_type.data[0].id
+//   }));
+// });
+
+
 // Create a computed property for seed asset options with labels
 const seedAssetOptionsWithLabel = computed(() => {
   return seedAssetsOptions.value.map((seed_asset) => ({
-    label: `${seed_asset.attributes.name} (${seed_asset.attributes.drupal_internal__id})`,
+    label: seed_asset.attributes.name,
     value: seed_asset.id,
     plantTypeID: seed_asset.relationships.plant_type.data[0].id
   }));
@@ -345,7 +355,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.65')
+      console.log('V0.66')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
