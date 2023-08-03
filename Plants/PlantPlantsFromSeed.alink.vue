@@ -508,10 +508,10 @@ export default {
                     units: {
                         data: {
                             type: 'taxonomy_term--unit',
-                                id: uuidv4(),
-                                '$relateByName': {
-                                name: UNIT_NAME,
-                                },
+                            id: uuidv4(),
+                            '$relateByName': {
+                            name: UNIT_NAME,
+                            },
                         }
                     },
                 },
