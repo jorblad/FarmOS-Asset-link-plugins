@@ -387,7 +387,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.59')
+      console.log('V0.60')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
@@ -414,6 +414,7 @@ export default {
             let seed_id;
             // If seed array is empty, add a new record
             if (typeof seedAsset === 'string') {
+                console.log("Seed name for creaton of new seed", seedAsset)
                 seed_id = uuidv4();
                 const newSeedRecord = {
                     type: 'asset--seed',
@@ -436,7 +437,7 @@ export default {
                     }
                 };
 
-
+                console.log('New Seed Record', newSeedRecord);
                 assetLink.entitySource.update(
                     (t) => [
                     t.addRecord(newSeedRecord),
