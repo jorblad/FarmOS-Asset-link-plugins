@@ -167,43 +167,8 @@ const presetPlantType = ref(null);
 
 
 // Watch for changes in the selected seedAsset
-// watch(seedAsset, async (newValue) => {
-//   if (newValue) {
-//     try {
-//       // Perform actions based on the selected seedAsset
-//       //console.log('Selected seedAsset:', newValue);
-
-//       const seed = await assetLink.entitySource.query((q) =>
-//         q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: newValue })
-//       );
-//       //console.log('Seed object', seed);
-
-//       // Extract the relationships, specifically the plant_type ID
-//       const plantTypeRelationship = seed[0].relationships.plant_type;
-//       const plantTypeId = plantTypeRelationship.data[0].id;
-
-//       // Perform further actions with plantTypeId if needed
-//       //console.log('Plant Type ID:', plantTypeId);
-
-//       const SeedPlantType = await assetLink.entitySource.query((q) =>
-//         q.findRecords('taxonomy_term--plant_type').filter({ attribute: 'id', op: 'equal', value: plantTypeId })
-//       );
-//       const seedPlantName = SeedPlantType[0].attributes.name;
-//       console.log('Plant Type:', seedPlantName)
-
-//       // Set presetPlantType to the extracted name
-//       presetPlantType.value = seedPlantName;
-
-//     } catch (error) {
-//       console.error('Error fetching seed:', error);
-//     }
-//   }
-// });
-
-
-// Watch for changes in the selected seedAsset
 watch(seedAsset, async (newValue) => {
-  if (newValue) {
+  if (typeof seedAsset === 'object') {
     try {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
@@ -387,7 +352,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.60')
+      console.log('V0.61')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
