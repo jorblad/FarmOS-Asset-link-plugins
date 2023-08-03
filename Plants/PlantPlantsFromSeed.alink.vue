@@ -66,12 +66,6 @@ watch(photoCaptureModel, async () => {
   carouselPosition.value = photoId;
 });
 
-const resetQuickPhotoObservationForm = () => {
-  capturedPhotos.value = [];
-  observationNotes.value = "";
-  photoCaptureModel.value = null;
-  carouselPosition.value = "capture-photo";
-};
 
 // Find functions
 
@@ -154,8 +148,9 @@ const seedAssetsFilterFn = (val, update, abort) => {
   update(() => {
     const needle = val.toLowerCase();
     seedAssetsOptions.value = seed_assets.value.filter((seed_asset) =>
-      seed_asset.toLowerCase().indexOf(needle) > -1
+      seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
     );
+    console.log("SeedAssetOptions: ", seedAssetsOptions);
   });
 };
 
@@ -261,7 +256,7 @@ watch(plantType, (newValue) => {
                 use-input
                 input-debounce="300"
                 datalist
-                
+                @filter="seedAssetsFilterFn"
                 new-value-mode="add-unique"
                 option-label="attributes.name" 
                 option-value="id"
@@ -352,7 +347,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.46')
+      console.log('V0.47')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
