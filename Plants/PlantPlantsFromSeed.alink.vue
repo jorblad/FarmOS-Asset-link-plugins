@@ -240,7 +240,7 @@ const seedAssetOptionsWithLabel = computed(() => {
             />
         </div>
         <div class="q-pa-md">
-            <q-select
+            <!-- <q-select
                 filled
                 v-model="plantSeason"
                 :options="seasonsOptions"
@@ -250,8 +250,14 @@ const seedAssetOptionsWithLabel = computed(() => {
                 datalist
                 @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
-            />
+            /> -->
         </div>
+        <entity-select
+            label="Plant Season"
+            entity-type="taxonomy_term"
+            :entity-bundles="['season']"
+            v-model="plantSeason"
+        ></entity-select>   
         <div class="q-pa-md">
             <q-select
                 filled
@@ -344,8 +350,9 @@ export default {
 
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
+      action.weight(-10);
 
-      console.log('V0.65')
+      console.log('V0.66')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
