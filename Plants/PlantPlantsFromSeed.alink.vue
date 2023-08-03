@@ -280,7 +280,7 @@ const addNewPlantType = () => {
         <div class="q-pa-md">
             <entity-select
             label="Plant Type"
-            entity-type="taxonomy_term--plant_type"
+            entity-type="taxonomy_term"
             v-model="plantType2"
             ></entity-select>
             <q-select
@@ -362,7 +362,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.45')
+      console.log('V0.46')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
