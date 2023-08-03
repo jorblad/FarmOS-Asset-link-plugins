@@ -353,32 +353,6 @@ export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
 
-    // const findUnitTerm = async entitySource => {
-    //   const results = await entitySource.query(q => q
-    //       .findRecords('taxonomy_term--unit')
-    //       .filter({ attribute: 'name', op: 'equal', value: UNIT_NAME }));
-    //   return results.flatMap(l => l).find(a => a);
-    // };
-
-    // let seedUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
-
-    // if (!seedUnitTerm) {
-    //   seedUnitTerm = await findUnitTerm(assetLink.entitySource);
-    // }
-
-    // if (!seedUnitTerm) {
-    //   const unitTermToCreate = {
-    //       type: 'taxonomy_term--unit',
-    //       id: uuidv4(),
-    //       attributes: {
-    //         name: UNIT_NAME,
-    //       },
-    //   };
-
-    //   seedUnitTerm = await assetLink.entitySource.update(
-    //       (t) => t.addRecord(unitTermToCreate),
-    //       {label: `Add '${UNIT_NAME}' unit`});
-    // }
 
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
