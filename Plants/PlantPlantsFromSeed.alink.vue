@@ -261,7 +261,7 @@ watch(plantType, (newValue) => {
                 use-input
                 input-debounce="300"
                 datalist
-                @filter="seedAssetsFilterFn"
+                
                 new-value-mode="add-unique"
                 option-label="attributes.name" 
                 option-value="id"
