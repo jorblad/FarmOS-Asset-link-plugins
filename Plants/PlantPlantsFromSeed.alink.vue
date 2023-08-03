@@ -254,14 +254,14 @@ watch(plantType, (newValue) => {
             <q-select
                 filled
                 v-model="seedAsset"
-                :options="seed_assets"
+                :options="seedAssetsOptions"
                 label="Seed asset"
                 use-input
                 input-debounce="300"
                 datalist
-                
+                @filter="seedAssetsFilterFn"
                 new-value-mode="add-unique"
-                option-label="attributes.name" 
+                option-label="id" 
                 option-value="id"
             />
         </div>
@@ -350,7 +350,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.49')
+      console.log('V0.50')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
