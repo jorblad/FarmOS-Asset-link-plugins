@@ -20,13 +20,13 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 const seedCount = ref(0);
 const notes = ref(null);
 
-// Create a function to fetch assetLink and store it in the ref
-const fetchAssetLink = async () => {
-  assetLink.value = await getAssetLink(); // Replace getAssetLink with your code to retrieve assetLink
-};
+// // Create a function to fetch assetLink and store it in the ref
+// const fetchAssetLink = async () => {
+//   assetLink.value = await getAssetLink(); // Replace getAssetLink with your code to retrieve assetLink
+// };
 
-// Fetch the assetLink on component mount
-onMounted(fetchAssetLink);
+// // Fetch the assetLink on component mount
+// onMounted(fetchAssetLink);
 
 
 const seasonsOptions = ref([]);
