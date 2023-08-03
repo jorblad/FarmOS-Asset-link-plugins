@@ -208,14 +208,8 @@ watch(seedAsset, async (newValue) => {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
 
-      const seed = await assetLink.entitySource.query((q) =>
-        q.findRecords('asset--seed').filter({ attribute: 'name', op: 'equal', value: newValue })
-      );
-      //console.log('Seed object', seed);
-
       // Extract the relationships, specifically the plant_type ID
-      const plantTypeRelationship = seed[0].relationships.plant_type;
-      const plantTypeId = plantTypeRelationship.data[0].id;
+      const plantTypeId = newValue.plantTypeID;
 
       // Perform further actions with plantTypeId if needed
       //console.log('Plant Type ID:', plantTypeId);
@@ -255,7 +249,8 @@ watch(plantType, (newValue) => {
 const seedAssetOptionsWithLabel = computed(() => {
   return seedAssetsOptions.value.map((seed_asset) => ({
     label: seed_asset.attributes.name,
-    value: seed_asset.id
+    value: seed_asset.id,
+    plantTypeID: seed_asset.relationships.plant_type.data[0].id
   }));
 });
 
@@ -392,7 +387,7 @@ export default {
     handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
 
-      console.log('V0.56')
+      console.log('V0.57')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
