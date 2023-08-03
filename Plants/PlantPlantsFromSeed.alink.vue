@@ -240,7 +240,7 @@ const seedAssetOptionsWithLabel = computed(() => {
             />
         </div>
         <div class="q-pa-md">
-            <!-- <q-select
+             <q-select
                 filled
                 v-model="plantSeason"
                 :options="seasonsOptions"
@@ -250,14 +250,14 @@ const seedAssetOptionsWithLabel = computed(() => {
                 datalist
                 @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
-            /> -->
+            /> 
         </div>
-        <entity-select
+        <!-- <entity-select
             label="Plant Season"
             entity-type="taxonomy_term"
             :entity-bundles="['season']"
             v-model="plantSeason"
-        ></entity-select>   
+        ></entity-select> -->   
         <div class="q-pa-md">
             <q-select
                 filled
@@ -348,7 +348,7 @@ export default {
     await assetLink.booted;
 
 
-    handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
+    handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
       action.weight(-10);
 

@@ -110,7 +110,7 @@ export default {
     await assetLink.booted;
 
 
-    handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.increment_seed_inventory', action => {
+    handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.increment_seed_inventory', action => {
       action.type('asset-action');
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'

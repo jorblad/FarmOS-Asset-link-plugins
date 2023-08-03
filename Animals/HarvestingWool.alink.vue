@@ -101,7 +101,7 @@ export default {
     await assetLink.booted;
 
 
-    handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.harvestPlant', action => {
+    handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.harvestPlant', action => {
 
       action.type('asset-action');
 
