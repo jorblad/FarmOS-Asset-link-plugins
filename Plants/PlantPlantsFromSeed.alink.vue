@@ -121,6 +121,7 @@ onMounted(async () => {
 });
 
 const plantSeason = ref(null);
+const plantSeason2 = ref(null);
 const plantType = ref(null);
 const seedAsset = ref(null);
 
