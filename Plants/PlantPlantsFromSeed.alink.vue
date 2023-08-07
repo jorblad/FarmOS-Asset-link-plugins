@@ -331,7 +331,7 @@ const seedAssetOptionsWithLabel = computed(() => {
         <div v-if="transPlanting">
             <div class="q-pa-md">
                 Transplanting
-                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']">
+                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -377,8 +377,7 @@ const seedAssetOptionsWithLabel = computed(() => {
         </div>
         <div v-if="harvest">
             <div class="q-pa-md">
-                Harvest
-                <q-input filled v-model="harvestDate" mask="date" :rules="['date']">
+                <q-input filled v-model="harvestDate" mask="date" :rules="['date']" label="Harvest date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
