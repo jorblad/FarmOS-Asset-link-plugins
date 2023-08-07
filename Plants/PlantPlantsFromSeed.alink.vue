@@ -177,7 +177,7 @@ const presetPlantType = ref(null);
 
 // Watch for changes in the selected seedAsset
 watch(seedAsset, async (newValue) => {
-  console.log("Type of seed", typeof newValue)
+  console.log("Type of seed", typeof newValue);
   if (seedAsset && typeof newValue != 'string') {
     try {
       // Perform actions based on the selected seedAsset
@@ -186,17 +186,15 @@ watch(seedAsset, async (newValue) => {
       // Extract the relationships, specifically the plant_type ID
       const plantTypeId = newValue.plantTypeID;
 
-      // Perform further actions with plantTypeId if needed
-      //console.log('Plant Type ID:', plantTypeId);
-
-      const SeedPlantType = await assetLink.entitySource.query((q) =>
-        q.findRecords('taxonomy_term--plant_type').filter({ attribute: 'id', op: 'equal', value: plantTypeId })
+      // Find the corresponding plant type in seedAssetOptionsWithLabel
+      const matchingPlantType = plantTypeOptionsWithLabel.value.find(
+        (plantType) => plantType.value === plantTypeId
       );
-      const seedPlantName = SeedPlantType[0].attributes.name;
-      console.log('Plant Type:', seedPlantName)
 
-      // Set presetPlantType to the extracted name
-      presetPlantType.value = seedPlantName;
+      if (matchingPlantType) {
+        // Set presetPlantType to the extracted name
+        presetPlantType.value = matchingPlantType.label;
+      }
 
     } catch (error) {
       console.error('Error fetching seed:', error);
@@ -436,7 +434,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.73')
+      console.log('V0.74')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
