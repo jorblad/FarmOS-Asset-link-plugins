@@ -178,7 +178,7 @@ const presetPlantType = ref(null);
 // Watch for changes in the selected seedAsset
 watch(seedAsset, async (newValue) => {
   console.log("Type of seed", typeof newValue);
-  if (seedAsset && typeof newValue != 'string') {
+  if (seedAsset && typeof newValue !== 'string') {
     try {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
@@ -186,16 +186,22 @@ watch(seedAsset, async (newValue) => {
       // Extract the relationships, specifically the plant_type ID
       const plantTypeId = newValue.plantTypeID;
 
+      // Find the corresponding plant type in plantTypeOptionsWithLabel
+      const matchingPlantType = plantTypeOptionsWithLabel.value.find(
+        (plantType) => plantType.value === plantTypeId
+      );
 
-    // Set presetPlantType to the extracted name
-    plantType.selectedValue = plantTypeId;
-      
+      // Update the plantType value
+      if (matchingPlantType) {
+        plantType.value = matchingPlantType.value;
+      }
 
     } catch (error) {
       console.error('Error fetching seed:', error);
     }
   }
 });
+
 
 
 // Watch for changes in the selected plantType
@@ -437,7 +443,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.78')
+      console.log('V0.79')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
