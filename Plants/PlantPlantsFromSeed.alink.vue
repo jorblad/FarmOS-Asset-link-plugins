@@ -188,7 +188,7 @@ watch(seedAsset, async (newValue) => {
 
       console.log("plantTypeOptionsWithLabel: ", plantTypeOptionsWithLabel)
 
-
+      plantType.value = plantTypeId;
 
       // Find the corresponding plant type in plantTypeOptionsWithLabel
       const matchingPlantType = plantTypeOptionsWithLabel.value.find(
@@ -222,6 +222,7 @@ watch(plantType, (newValue) => {
     const prefillDate = new Date();
     prefillDate.setDate(prefillDate.getDate() + maturityDays);
     console.log("Harvest Date", prefillDate)
+    console.log("harvestDate: ", harvestDate)
 
     // Update selectedDate with the prefill date
     harvestDate.value = prefillDate;
@@ -457,7 +458,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.81')
+      console.log('V0.82')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
