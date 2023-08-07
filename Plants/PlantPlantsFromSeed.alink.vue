@@ -354,7 +354,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                             <q-date
                                 v-model="replantingDate"
                                 today-btn
-                                title="Replanting date"
+                                subtitle="Replanting date"
                             >
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat icon="close" />
@@ -387,7 +387,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                             <q-date
                                 v-model="harvestDate"
                                 today-btn
-                                title="Harvest date"
+                                subtitle="Harvest date"
                             >
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat />
