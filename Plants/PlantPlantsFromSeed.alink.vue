@@ -84,7 +84,7 @@ const findseasons = async (entitySource) => {
     q.findRecords('taxonomy_term--season')
   );
 
-  //const seasons = results.flatMap((l) => l);
+  const seasons = results.flatMap((l) => l);
 
   console.log('All taxonomy_term--season records:', seasons);
 
@@ -248,7 +248,7 @@ watch(presetPlantType, (newValue) => {
 watch(plantType, (newValue) => {
   if (newValue) {
     // Perform actions based on the selected plantType
-    //console.log('Selected plantType:', newValue);
+    console.log('Selected plantType:', newValue);
     // Your custom logic here...
   }
 });
@@ -295,7 +295,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 clearable
                 input-debounce="300"
                 datalist
-                @filter="seasonsFilterFn2"
+                @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
             /> 
         </div>
