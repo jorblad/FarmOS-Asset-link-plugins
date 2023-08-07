@@ -191,10 +191,9 @@ watch(seedAsset, async (newValue) => {
         (plantType) => plantType.value === plantTypeId
       );
 
-      if (matchingPlantType) {
-        // Set presetPlantType to the extracted name
-        presetPlantType.value = matchingPlantType.label;
-      }
+    // Set presetPlantType to the extracted name
+    presetPlantType.value = plantTypeId;
+      
 
     } catch (error) {
       console.error('Error fetching seed:', error);
@@ -434,7 +433,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.74')
+      console.log('V0.75')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
