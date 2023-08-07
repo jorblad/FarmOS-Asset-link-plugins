@@ -347,10 +347,23 @@ const seedAssetOptionsWithLabel = computed(() => {
         <div v-if="replanting">
             <div class="q-pa-md">
                 Replanting
-                <q-date
-                    v-model="replantingDate"
-                    today-btn
-                />
+                <q-input filled v-model="replantingDate" mask="date" :rules="['date']">
+                    <template v-slot:append>
+                        <q-icon name="today" class="cursor-pointer">
+                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                            <q-date
+                                v-model="replantingDate"
+                                today-btn
+                                title="Replanting date"
+                            >
+                            <div class="row items-center justify-end">
+                                <q-btn v-close-popup label="Close" color="primary" flat icon="close" />
+                            </div>
+                            </q-date>
+                        </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
             </div>
             
             
@@ -369,11 +382,12 @@ const seedAssetOptionsWithLabel = computed(() => {
                 Harvest
                 <q-input filled v-model="harvestDate" mask="date" :rules="['date']">
                     <template v-slot:append>
-                        <q-icon name="event" class="cursor-pointer">
+                        <q-icon name="today" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
                                 v-model="harvestDate"
                                 today-btn
+                                title="Harvest date"
                             >
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat />
