@@ -183,6 +183,9 @@ watch(seedAsset, async (newValue) => {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
 
+      // Extract the relationships, specifically the plant_type ID
+      const plantTypeId = newValue.plantTypeID;
+
 
     // Set presetPlantType to the extracted name
     plantType.selectedValue = plantTypeId;
@@ -434,7 +437,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.76')
+      console.log('V0.78')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
