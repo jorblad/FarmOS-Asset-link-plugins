@@ -190,17 +190,6 @@ watch(seedAsset, async (newValue) => {
 
       plantType.value = plantTypeId;
 
-      // Find the corresponding plant type in plantTypeOptionsWithLabel
-      const matchingPlantType = plantTypeOptionsWithLabel.value.find(
-        (plantType) => plantType.value === plantTypeId
-      );
-      console.log("Matchin planttype: ", matchingPlantType)
-
-      // Update the presetPlantType value
-      if (matchingPlantType) {
-        presetPlantType.value = matchingPlantType.label; // Set to label, not value
-      }
-
     } catch (error) {
       console.error('Error fetching seed:', error);
     }
@@ -222,10 +211,11 @@ watch(plantType, (newValue) => {
     const prefillDate = new Date();
     prefillDate.setDate(prefillDate.getDate() + parseInt(maturityDays));
     console.log("Harvest Date", prefillDate)
-    console.log("harvestDate: ", harvestDate)
+    console.log("harvestDate: ", harvestDate.value)
 
     // Update selectedDate with the prefill date
     harvestDate.value = prefillDate;
+    console.log("harvestDate: ", harvestDate.value)
   }
 });
 
@@ -458,7 +448,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.83')
+      console.log('V0.84')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
