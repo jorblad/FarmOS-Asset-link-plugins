@@ -148,7 +148,7 @@ const plantTypesFilterFn = (val, update, abort) => {
     const needle = val.toLowerCase();
     const filteredPlantTypes = await findplanttypes(assetLink.entitySource);
     plantTypesOptions.value = filteredPlantTypes.filter((plant_type) =>
-      plant_type.toLowerCase().indexOf(needle) > -1
+      plant_type.attributes.name.toLowerCase().indexOf(needle) > -1
     );
   });
 };
@@ -436,7 +436,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.72')
+      console.log('V0.73')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
