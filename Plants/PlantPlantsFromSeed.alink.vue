@@ -25,6 +25,8 @@ const seedCount = ref(0);
 const replanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
+const replantingDate = ref(null)
+const harvestDate = ref(null)
 
 
 const seasonsOptions = ref([]);
@@ -82,12 +84,12 @@ const findseasons = async (entitySource) => {
     q.findRecords('taxonomy_term--season')
   );
 
-  const seasons = results.flatMap((l) => l);
+  //const seasons = results.flatMap((l) => l);
 
   console.log('All taxonomy_term--season records:', seasons);
 
   // Extract the attributes.name from each element and return as a list
-  return seasons.map((season) => season.attributes.name);
+  return results.map((season) => season.attributes.name);
 };
 
 const findplanttypes = async (entitySource) => {
@@ -199,7 +201,7 @@ const seasonsFilterFn2 = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, replanting: replanting.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, replanting: replanting.value, replantingDate: replantingDate.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 // Define a ref for presetting plantType
@@ -336,26 +338,53 @@ const seedAssetOptionsWithLabel = computed(() => {
         <div class="q-pa-md">
             <q-toggle 
                 v-model="replanting"
-                label="Replanting"
+                label="Create replanting log"
                 icon="mdi-sprout"
                 size="xl"
                 color="green"
             />
         </div>
         <div v-if="replanting">
-            Replanting
+            <div class="q-pa-md">
+                Replanting
+                <q-date
+                    v-model="replantingDate"
+                    today-btn
+                />
+            </div>
+            
+            
         </div>
         <div class="q-pa-md">
             <q-toggle 
                 v-model="harvest"
-                label="Harvest"
+                label="Create harvest log"
                 icon="mdi-basket-outline"
                 size="xl"
                 color="green"
             />
         </div>
         <div v-if="harvest">
-            Harvest
+            <div class="q-pa-md">
+                Harvest
+                <q-input filled v-model="harvestDate" mask="date" :rules="['date']">
+                    <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                            <q-date
+                                v-model="harvestDate"
+                                today-btn
+                            >
+                            <div class="row items-center justify-end">
+                                <q-btn v-close-popup label="Close" color="primary" flat />
+                            </div>
+                            </q-date>
+                        </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
+            </div>
+            
         </div>
 
         <div class="q-pa-md">
@@ -417,7 +446,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.68')
+      console.log('V0.69')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
