@@ -195,7 +195,7 @@ const seasonsFilterFn2 = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, replanting: replanting.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 // Define a ref for presetting plantType
@@ -329,6 +329,19 @@ const seedAssetOptionsWithLabel = computed(() => {
                 autogrow
             />
         </div>
+        <div class="q-pa-md">
+            <q-toggle 
+                v-model="replanting"
+                label="Replanting"
+            />
+        </div>
+        <div class="q-pa-md">
+            <q-toggle 
+                v-model="harvest"
+                label="Harvest"
+            />
+        </div>
+
 
         <div class="q-pa-md">
           <q-carousel
