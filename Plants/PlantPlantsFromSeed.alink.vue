@@ -183,16 +183,9 @@ watch(seedAsset, async (newValue) => {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
 
-      // Extract the relationships, specifically the plant_type ID
-      const plantTypeId = newValue.plantTypeID;
-
-      // Find the corresponding plant type in seedAssetOptionsWithLabel
-      const matchingPlantType = plantTypeOptionsWithLabel.value.find(
-        (plantType) => plantType.value === plantTypeId
-      );
 
     // Set presetPlantType to the extracted name
-    presetPlantType.value = plantTypeId;
+    plantType.selectedValue = plantTypeId;
       
 
     } catch (error) {
@@ -201,12 +194,6 @@ watch(seedAsset, async (newValue) => {
   }
 });
 
-// Watch for changes in presetPlantType and update plantType accordingly
-watch(presetPlantType, (newValue) => {
-  if (newValue) {
-    plantType.value = newValue;
-  }
-});
 
 // Watch for changes in the selected plantType
 watch(plantType, (newValue) => {
@@ -338,6 +325,20 @@ const seedAssetOptionsWithLabel = computed(() => {
                     </template>
                 </q-input>
             </div>
+            <div class="q-pa-md">
+             <q-select
+                filled
+                v-model="plantSeason"
+                :options="seasonsOptions"
+                label="Location"
+                use-input
+                clearable
+                input-debounce="300"
+                datalist
+                @filter="seasonsFilterFn"
+                new-value-mode="add-unique"
+            /> 
+        </div>
             
             
         </div>
@@ -433,7 +434,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.75')
+      console.log('V0.76')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
