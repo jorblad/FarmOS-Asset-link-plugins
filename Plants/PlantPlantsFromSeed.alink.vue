@@ -287,7 +287,7 @@ const seedAssetOptionsWithLabel = computed(() => {
              <q-select
                 filled
                 v-model="plantSeason"
-                :options="options"
+                :options="seasonOptions"
                 label="Season"
                 use-input
                 clearable
@@ -339,7 +339,11 @@ const seedAssetOptionsWithLabel = computed(() => {
                 label="Replanting"
                 icon="mdi-sprout"
                 size="xl"
+                color="green"
             />
+        </div>
+        <div v-if="replanting">
+            Replanting
         </div>
         <div class="q-pa-md">
             <q-toggle 
@@ -347,9 +351,12 @@ const seedAssetOptionsWithLabel = computed(() => {
                 label="Harvest"
                 icon="mdi-basket-outline"
                 size="xl"
+                color="green"
             />
         </div>
-
+        <div v-if="harvest">
+            Harvest
+        </div>
 
         <div class="q-pa-md">
           <q-carousel
