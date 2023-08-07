@@ -144,9 +144,10 @@ const seasonsFilterFn = (val, update, abort) => {
 };
 
 const plantTypesFilterFn = (val, update, abort) => {
-  update(() => {
+    update(async () => {
     const needle = val.toLowerCase();
-    plantTypesOptions.value = plant_types.value.filter((plant_type) =>
+    const filteredPLantTypes = await findplanttypes(assetLink.entitySource);
+    plantTypesOptions.value = filteredPLantTypes.filter((plant_type) =>
       plant_type.toLowerCase().indexOf(needle) > -1
     );
   });
@@ -435,7 +436,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.70')
+      console.log('V0.71')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
