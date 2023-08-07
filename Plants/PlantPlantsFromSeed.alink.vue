@@ -25,8 +25,8 @@ const seedCount = ref(0);
 const transPlanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
-const transPlantingDate = ref(null)
-const harvestDate = ref(null)
+const transPlantingDate = ref(new Date())
+const harvestDate = ref(new Date())
 
 
 const seasonsOptions = ref([]);
@@ -191,9 +191,9 @@ watch(seedAsset, async (newValue) => {
         (plantType) => plantType.value === plantTypeId
       );
 
-      // Update the plantType value
+      // Update the presetPlantType value
       if (matchingPlantType) {
-        plantType.value = matchingPlantType.value;
+        presetPlantType.value = matchingPlantType.label; // Set to label, not value
       }
 
     } catch (error) {
@@ -204,12 +204,21 @@ watch(seedAsset, async (newValue) => {
 
 
 
+
 // Watch for changes in the selected plantType
 watch(plantType, (newValue) => {
   if (newValue) {
     // Perform actions based on the selected plantType
     console.log('Selected plantType:', newValue);
-    // Your custom logic here...
+    // Extract maturity_days from newValue
+    const maturityDays = newValue.maturity_days;
+
+    // Calculate the date after adding maturity_days
+    const prefillDate = new Date();
+    prefillDate.setDate(prefillDate.getDate() + maturityDays);
+
+    // Update selectedDate with the prefill date
+    harvestDate.value = prefillDate;
   }
 });
 
@@ -443,7 +452,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.79')
+      console.log('V0.80')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
