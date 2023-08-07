@@ -31,6 +31,8 @@ const capturedPhotos = ref([]);
 const photoCaptureModel = ref(null);
 const carouselPosition = ref("capture-photo");
 
+const maxDesiredSearchEntries = 20;
+
 watch(photoCaptureModel, async () => {
   const file = photoCaptureModel.value;
 
@@ -154,6 +156,58 @@ const seedAssetsFilterFn = async (val, update, abort) => {
   });
 };
 
+const filterSeasonFn = async (val, update, abort) => {
+  const searchRequest = {
+    id: uuidv4(),
+    type: "text-search",
+    entityType: "taxonomy_term",
+    entityBundles: "season",
+    term: val,
+  };
+
+
+  let entitySearchResultCursor = assetLink.searchEntities(
+    searchRequest,
+    "local"
+  );
+
+  if (assetLink.connectionStatus.isOnline.value) {
+    entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+      entitySearchResultCursor,
+      assetLink.searchEntities(searchRequest, "remote")
+    );
+  }
+
+  update(() => {
+    options.value = [];
+  });
+
+  const alreadyFoundEntityIds = new Set();
+
+  let searchIterItem = {};
+  while (
+    options.value.length < maxDesiredSearchEntries &&
+    !searchIterItem.done
+  ) {
+    searchIterItem = await entitySearchResultCursor.next();
+
+    if (
+      searchIterItem.value &&
+      !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+    ) {
+      alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+      update(() => {
+        options.value.push(searchIterItem.value);
+      });
+    }
+  }
+};
+
+const abortSeasonFilterFn = () => {
+  console.log("delayed filter aborted");
+};
+
 
 
 const onSubmit = () => {
@@ -250,7 +304,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 use-input
                 input-debounce="300"
                 datalist
-                @filter="seasonsFilterFn"
+                @filter="filterSeasonFn"
                 new-value-mode="add-unique"
             /> 
         </div>
