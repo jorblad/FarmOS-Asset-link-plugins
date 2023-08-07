@@ -22,12 +22,16 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
+const replanting = ref(false)
+const harvest = ref(false)
 const notes = ref(null);
 
 
 const seasonsOptions = ref([]);
 const plantTypesOptions = ref([]);
 const seedAssetsOptions = ref([]);
+
+const maxDesiredSearchEntries = 20;
 
 // Photo adding
 const capturedPhotos = ref([]);
