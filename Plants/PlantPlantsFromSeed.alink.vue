@@ -102,7 +102,7 @@ const findplanttypes = async (entitySource) => {
   console.log('All taxonomy_term--plant_type records:', plant_types);
 
   // Extract the attributes.name from each element and return as a list
-  return plant_types.map((plant_type) => plant_type.attributes.name);
+  return plant_types;
 };
 
 const findseedassets = async (entitySource) => {
@@ -146,8 +146,8 @@ const seasonsFilterFn = (val, update, abort) => {
 const plantTypesFilterFn = (val, update, abort) => {
     update(async () => {
     const needle = val.toLowerCase();
-    const filteredPLantTypes = await findplanttypes(assetLink.entitySource);
-    plantTypesOptions.value = filteredPLantTypes.filter((plant_type) =>
+    const filteredPlantTypes = await findplanttypes(assetLink.entitySource);
+    plantTypesOptions.value = filteredPlantTypes.filter((plant_type) =>
       plant_type.toLowerCase().indexOf(needle) > -1
     );
   });
@@ -436,7 +436,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.71')
+      console.log('V0.72')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
