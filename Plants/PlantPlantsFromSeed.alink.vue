@@ -435,7 +435,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.69')
+      console.log('V0.70')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
