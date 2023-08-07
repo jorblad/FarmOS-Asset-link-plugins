@@ -337,12 +337,14 @@ const seedAssetOptionsWithLabel = computed(() => {
             <q-toggle 
                 v-model="replanting"
                 label="Replanting"
+                icon="mdi-sprout"
             />
         </div>
         <div class="q-pa-md">
             <q-toggle 
                 v-model="harvest"
                 label="Harvest"
+                icon="mdi-basket-outline"
             />
         </div>
 
