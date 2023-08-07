@@ -121,6 +121,7 @@ onMounted(async () => {
 });
 
 const plantSeason = ref(null);
+const plantSeason2 = ref(null);
 const plantType = ref(null);
 const seedAsset = ref(null);
 
@@ -208,6 +209,7 @@ watch(plantType, (newValue) => {
   }
 });
 
+
 // Create a computed property for seed asset options with labels
 const seedAssetOptionsWithLabel = computed(() => {
   return seedAssetsOptions.value.map((seed_asset) => ({
@@ -240,7 +242,7 @@ const seedAssetOptionsWithLabel = computed(() => {
             />
         </div>
         <div class="q-pa-md">
-            <q-select
+             <q-select
                 filled
                 v-model="plantSeason"
                 :options="seasonsOptions"
@@ -250,7 +252,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 datalist
                 @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
-            />
+            /> 
         </div>
         <div class="q-pa-md">
             <q-select
@@ -342,10 +344,11 @@ export default {
     await assetLink.booted;
 
 
-    handle.defineSlot('se.sj-tech.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
+    handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
       action.type('asset-action');
+      action.weight(-10);
 
-      console.log('V0.65')
+      console.log('V0.66')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
