@@ -22,10 +22,10 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
-const replanting = ref(false)
+const transPlanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
-const replantingDate = ref(null)
+const transPlantingDate = ref(null)
 const harvestDate = ref(null)
 
 
@@ -163,45 +163,11 @@ const seedAssetsFilterFn = async (val, update, abort) => {
   });
 };
 
-const seasonsFilterFn2 = async (val, update, abort) => {
-  const searchRequest = {
-    id: uuidv4(),
-    type: 'text-search',
-    entityType: 'taxonomy_term',
-    entityBundles: 'season',
-    term: val,
-  };
-
-  let searchResultCursor = assetLink.searchEntities(searchRequest, 'local');
-
-  if (assetLink.connectionStatus.isOnline.value) {
-    searchResultCursor = new RacingLocalRemoteAsyncIterator(
-      searchResultCursor,
-      assetLink.searchEntities(searchRequest, 'remote')
-    );
-  }
-
-  const options = [];
-
-  let searchIterItem = {};
-  while (options.length < maxDesiredSearchEntries && !searchIterItem.done) {
-    searchIterItem = await searchResultCursor.next();
-
-    if (searchIterItem.value) {
-      options.push(searchIterItem.value.entity.attributes.name);
-    }
-  }
-
-  update(() => {
-    seasonsOptions.value = options;
-  });
-};
-
 
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, replanting: replanting.value, replantingDate: replantingDate.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 // Define a ref for presetting plantType
@@ -253,6 +219,15 @@ watch(plantType, (newValue) => {
   }
 });
 
+// Create a computed property for seed asset options with labels
+const plantTypeOptionsWithLabel = computed(() => {
+  return plantTypesOptions.value.map((plant_type) => ({
+    label: `${plant_type.attributes.name} (${plant_type.attributes.drupal_internal__tid})`,
+    value: plant_type.id,
+    transplatning_days: plant_type.attributes.transplant_days,
+    maturity_days: plant_type.attributes.maturity_days
+  }));
+});
 
 // Create a computed property for seed asset options with labels
 const seedAssetOptionsWithLabel = computed(() => {
@@ -317,7 +292,7 @@ const seedAssetOptionsWithLabel = computed(() => {
             <q-select
                 filled
                 v-model="plantType"
-                :options="plantTypesOptions"
+                :options="plantTypeOptionsWithLabel"
                 label="Species"
                 use-input
                 clearable
@@ -337,24 +312,24 @@ const seedAssetOptionsWithLabel = computed(() => {
         </div>
         <div class="q-pa-md">
             <q-toggle 
-                v-model="replanting"
-                label="Create replanting log"
+                v-model="transPlanting"
+                label="Create transplanting log"
                 icon="mdi-sprout"
                 size="xl"
                 color="green"
             />
         </div>
-        <div v-if="replanting">
+        <div v-if="transPlanting">
             <div class="q-pa-md">
-                Replanting
-                <q-input filled v-model="replantingDate" mask="date" :rules="['date']">
+                Transplanting
+                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
-                                v-model="replantingDate"
+                                v-model="transPlantingDate"
                                 today-btn
-                                subtitle="Replanting date"
+                                subtitle="Transplanting date"
                             >
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
