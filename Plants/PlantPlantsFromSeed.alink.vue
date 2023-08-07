@@ -220,7 +220,7 @@ watch(plantType, (newValue) => {
 
     // Calculate the date after adding maturity_days
     const prefillDate = new Date();
-    prefillDate.setDate(prefillDate.getDate() + maturityDays);
+    prefillDate.setDate(prefillDate.getDate() + parseInt(maturityDays));
     console.log("Harvest Date", prefillDate)
     console.log("harvestDate: ", harvestDate)
 
@@ -458,7 +458,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.82')
+      console.log('V0.83')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
