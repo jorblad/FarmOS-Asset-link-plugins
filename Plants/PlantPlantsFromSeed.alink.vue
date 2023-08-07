@@ -186,10 +186,15 @@ watch(seedAsset, async (newValue) => {
       // Extract the relationships, specifically the plant_type ID
       const plantTypeId = newValue.plantTypeID;
 
+      console.log("plantTypeOptionsWithLabel: ", plantTypeOptionsWithLabel)
+
+
+
       // Find the corresponding plant type in plantTypeOptionsWithLabel
       const matchingPlantType = plantTypeOptionsWithLabel.value.find(
         (plantType) => plantType.value === plantTypeId
       );
+      console.log("Matchin planttype: ", matchingPlantType)
 
       // Update the presetPlantType value
       if (matchingPlantType) {
@@ -216,6 +221,7 @@ watch(plantType, (newValue) => {
     // Calculate the date after adding maturity_days
     const prefillDate = new Date();
     prefillDate.setDate(prefillDate.getDate() + maturityDays);
+    console.log("Harvest Date", prefillDate)
 
     // Update selectedDate with the prefill date
     harvestDate.value = prefillDate;
@@ -452,7 +458,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.80')
+      console.log('V0.81')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
