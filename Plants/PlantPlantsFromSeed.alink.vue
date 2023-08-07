@@ -209,14 +209,6 @@ watch(plantType, (newValue) => {
   }
 });
 
-// Watch for changes in the selected plantType
-watch(plantSeason2, (newValue) => {
-  if (newValue) {
-    // Perform actions based on the selected plantType
-    console.log('Selected plantSeason:', newValue);
-    // Your custom logic here...
-  }
-});
 
 // Create a computed property for seed asset options with labels
 const seedAssetOptionsWithLabel = computed(() => {
@@ -262,12 +254,6 @@ const seedAssetOptionsWithLabel = computed(() => {
                 new-value-mode="add-unique"
             /> 
         </div>
-        <entity-select
-            label="Plant Season"
-            entity-type="taxonomy_term"
-            :entity-bundles="['season']"
-            v-model="plantSeason2"
-        ></entity-select>   
         <div class="q-pa-md">
             <q-select
                 filled
