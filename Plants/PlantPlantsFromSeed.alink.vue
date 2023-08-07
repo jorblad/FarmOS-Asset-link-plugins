@@ -287,7 +287,7 @@ const seedAssetOptionsWithLabel = computed(() => {
              <q-select
                 filled
                 v-model="plantSeason"
-                :options="seasonsOptions"
+                :options="options"
                 label="Season"
                 use-input
                 clearable
@@ -338,6 +338,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 v-model="replanting"
                 label="Replanting"
                 icon="mdi-sprout"
+                size="xl"
             />
         </div>
         <div class="q-pa-md">
@@ -345,6 +346,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 v-model="harvest"
                 label="Harvest"
                 icon="mdi-basket-outline"
+                size="xl"
             />
         </div>
 
@@ -408,7 +410,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.67')
+      console.log('V0.68')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
