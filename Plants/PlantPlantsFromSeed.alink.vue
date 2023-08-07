@@ -349,7 +349,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 Replanting
                 <q-input filled v-model="replantingDate" mask="date" :rules="['date']">
                     <template v-slot:append>
-                        <q-icon name="today" class="cursor-pointer">
+                        <q-icon name="mdi-CalendarRange" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
                                 v-model="replantingDate"
@@ -357,7 +357,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                                 subtitle="Replanting date"
                             >
                             <div class="row items-center justify-end">
-                                <q-btn v-close-popup label="Close" color="primary" flat icon="close" />
+                                <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
                             </div>
                             </q-date>
                         </q-popup-proxy>
@@ -382,7 +382,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 Harvest
                 <q-input filled v-model="harvestDate" mask="date" :rules="['date']">
                     <template v-slot:append>
-                        <q-icon name="today" class="cursor-pointer">
+                        <q-icon name="mdi-CalendarRange" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
                                 v-model="harvestDate"
@@ -390,7 +390,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                                 subtitle="Harvest date"
                             >
                             <div class="row items-center justify-end">
-                                <q-btn v-close-popup label="Close" color="primary" flat />
+                                <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close"/>
                             </div>
                             </q-date>
                         </q-popup-proxy>
