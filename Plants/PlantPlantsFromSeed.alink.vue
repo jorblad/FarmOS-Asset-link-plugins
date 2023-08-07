@@ -289,7 +289,7 @@ const seedAssetOptionsWithLabel = computed(() => {
              <q-select
                 filled
                 v-model="plantSeason"
-                :options="seasonOptions"
+                :options="seasonsOptions"
                 label="Season"
                 use-input
                 clearable
@@ -349,7 +349,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 Replanting
                 <q-input filled v-model="replantingDate" mask="date" :rules="['date']">
                     <template v-slot:append>
-                        <q-icon name="mdi-CalendarRange" class="cursor-pointer">
+                        <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
                                 v-model="replantingDate"
@@ -382,7 +382,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 Harvest
                 <q-input filled v-model="harvestDate" mask="date" :rules="['date']">
                     <template v-slot:append>
-                        <q-icon name="mdi-CalendarRange" class="cursor-pointer">
+                        <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
                                 v-model="harvestDate"
