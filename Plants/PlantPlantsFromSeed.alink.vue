@@ -1,7 +1,11 @@
 <script setup>
 import { inject, ref, watch, onMounted,  computed } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import RacingLocalRemoteAsyncIterator from '../RacingLocalRemoteAsyncIterator';
+
+
 const assetLink = inject('assetLink');
+
 
 const props = defineProps({
   asset: {
@@ -30,8 +34,6 @@ const capturedPhotos = ref([]);
 
 const photoCaptureModel = ref(null);
 const carouselPosition = ref("capture-photo");
-
-const maxDesiredSearchEntries = 20;
 
 watch(photoCaptureModel, async () => {
   const file = photoCaptureModel.value;
@@ -123,7 +125,6 @@ onMounted(async () => {
 });
 
 const plantSeason = ref(null);
-const plantSeason2 = ref(null);
 const plantType = ref(null);
 const seedAsset = ref(null);
 
@@ -156,57 +157,40 @@ const seedAssetsFilterFn = async (val, update, abort) => {
   });
 };
 
-const filterSeasonFn = async (val, update, abort) => {
+const seasonsFilterFn2 = async (val, update, abort) => {
   const searchRequest = {
     id: uuidv4(),
-    type: "text-search",
-    entityType: "taxonomy_term",
-    entityBundles: "season",
+    type: 'text-search',
+    entityType: 'taxonomy_term',
+    entityBundles: 'season',
     term: val,
   };
 
-
-  let entitySearchResultCursor = assetLink.searchEntities(
-    searchRequest,
-    "local"
-  );
+  let searchResultCursor = assetLink.searchEntities(searchRequest, 'local');
 
   if (assetLink.connectionStatus.isOnline.value) {
-    entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
-      entitySearchResultCursor,
-      assetLink.searchEntities(searchRequest, "remote")
+    searchResultCursor = new RacingLocalRemoteAsyncIterator(
+      searchResultCursor,
+      assetLink.searchEntities(searchRequest, 'remote')
     );
   }
 
-  update(() => {
-    options.value = [];
-  });
-
-  const alreadyFoundEntityIds = new Set();
+  const options = [];
 
   let searchIterItem = {};
-  while (
-    options.value.length < maxDesiredSearchEntries &&
-    !searchIterItem.done
-  ) {
-    searchIterItem = await entitySearchResultCursor.next();
+  while (options.length < maxDesiredSearchEntries && !searchIterItem.done) {
+    searchIterItem = await searchResultCursor.next();
 
-    if (
-      searchIterItem.value &&
-      !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
-    ) {
-      alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
-
-      update(() => {
-        options.value.push(searchIterItem.value);
-      });
+    if (searchIterItem.value) {
+      options.push(searchIterItem.value.entity.attributes.name);
     }
   }
+
+  update(() => {
+    seasonsOptions.value = options;
+  });
 };
 
-const abortSeasonFilterFn = () => {
-  console.log("delayed filter aborted");
-};
 
 
 
@@ -302,9 +286,10 @@ const seedAssetOptionsWithLabel = computed(() => {
                 :options="seasonsOptions"
                 label="Season"
                 use-input
+                clearable
                 input-debounce="300"
                 datalist
-                @filter="filterSeasonFn"
+                @filter="seasonsFilterFn2"
                 new-value-mode="add-unique"
             /> 
         </div>
@@ -315,6 +300,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 :options="seedAssetOptionsWithLabel"
                 label="Seed asset"
                 use-input
+                clearable
                 input-debounce="300"
                 datalist
                 @filter="seedAssetsFilterFn"
@@ -328,6 +314,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 :options="plantTypesOptions"
                 label="Species"
                 use-input
+                clearable
                 input-debounce="300"
                 datalist
                 @filter="plantTypesFilterFn"
@@ -402,7 +389,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.66')
+      console.log('V0.67')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
