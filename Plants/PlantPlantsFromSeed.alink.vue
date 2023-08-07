@@ -1,7 +1,7 @@
 <script setup>
 import { inject, ref, watch, onMounted,  computed } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
-import RacingLocalRemoteAsyncIterator from '../RacingLocalRemoteAsyncIterator';
+import { RacingLocalRemoteAsyncIterator } from 'assetlink-plugin-api';
 
 
 const assetLink = inject('assetLink');
