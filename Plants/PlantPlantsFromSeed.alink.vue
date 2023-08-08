@@ -182,19 +182,25 @@ watch(seedAsset, async (newValue) => {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
 
-      // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
-      const selectedPlantType = plantTypeOptionsWithLabel.value.find(
-        (plantTypeObj) => plantTypeObj.value === newValue.plantTypeID
-      );
+      if (newValue.plantTypeID) {
+        // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
+        const selectedPlantType = plantTypeOptionsWithLabel.value.find(
+          (plantTypeObj) => plantTypeObj.value === newValue.plantTypeID
+        );
 
-      // Update the plantType with the selected plant type object
-      plantType.value = selectedPlantType;
+        // Update the plantType with the selected plant type object
+        plantType.value = selectedPlantType;
+      } else {
+        // If there is no associated plant type, set plantType to null
+        plantType.value = null;
+      }
 
     } catch (error) {
       console.error('Error fetching seed:', error);
     }
   }
 });
+
 
 
 
@@ -213,10 +219,10 @@ watch(plantType, (newValue) => {
     const prefillHarvestDate = new Date();
     prefillHarvestDate.setDate(prefillHarvestDate.getDate() + parseInt(maturityDays));
     console.log("Harvest Date", prefillHarvestDate)
-    const harvestDate = new Date(prefillHarvestDate);
-    const harvestYear = harvestDate.getFullYear();
-    const harvestMonth = (harvestDate.getMonth() + 1).toString().padStart(2, '0');
-    const harvestDay = harvestDate.getDate().toString().padStart(2, '0');
+    const harvest_date = new Date(prefillHarvestDate);
+    const harvestYear = harvest_date.getFullYear();
+    const harvestMonth = (harvest_date.getMonth() + 1).toString().padStart(2, '0');
+    const harvestDay = harvest_date.getDate().toString().padStart(2, '0');
 
     // Update selectedDate with the prefill date
     harvestDate.value = `${harvestYear}/${harvestMonth}/${harvestDay}`;
@@ -226,10 +232,10 @@ watch(plantType, (newValue) => {
     const prefillTransplantDate = new Date();
     prefillTransplantDate.setDate(prefillTransplantDate.getDate() + parseInt(transplantDays));
     console.log("Transplant Date", prefillTransplantDate)
-    const transplantDate = new Date(prefillTransplantDate);
-    const transplantYear = transplantDate.getFullYear();
-    const transplantMonth = (transplantDate.getMonth() + 1).toString().padStart(2, '0');
-    const transplantDay = transplantDate.getDate().toString().padStart(2, '0');
+    const transplant_date = new Date(prefillTransplantDate);
+    const transplantYear = transplant_date.getFullYear();
+    const transplantMonth = (transplant_date.getMonth() + 1).toString().padStart(2, '0');
+    const transplantDay = transplant_date.getDate().toString().padStart(2, '0');
 
     // Update selectedDate with the prefill date
     transplantDate.value = `${transplantYear}/${transplantMonth}/${transplantDay}`;
@@ -468,7 +474,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.91')
+      console.log('V0.92')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
