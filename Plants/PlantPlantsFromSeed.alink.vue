@@ -213,9 +213,9 @@ watch(plantType, (newValue) => {
     prefillHarvestDate.setDate(prefillHarvestDate.getDate() + parseInt(maturityDays));
     console.log("Harvest Date", prefillHarvestDate)
     const harvestDate = new Date(prefillHarvestDate);
-    const harvestYear = date.getFullYear();
-    const harvestMonth = (date.getMonth() + 1).toString().padStart(2, '0');
-    const harvestDay = date.getDate().toString().padStart(2, '0');
+    const harvestYear = harvestDate.getFullYear();
+    const harvestMonth = (harvestDate.getMonth() + 1).toString().padStart(2, '0');
+    const harvestDay = harvestDate.getDate().toString().padStart(2, '0');
 
     // Update selectedDate with the prefill date
     harvestDate.value = `${harvestYear}/${harvestMonth}/${harvestDay}`;
@@ -226,9 +226,9 @@ watch(plantType, (newValue) => {
     prefillTransplantDate.setDate(prefillTransplantDate.getDate() + parseInt(transplantDays));
     console.log("Transplant Date", prefillTransplantDate)
     const transplantDate = new Date(prefillTransplantDate);
-    const transplantYear = date.getFullYear();
-    const transplantMonth = (date.getMonth() + 1).toString().padStart(2, '0');
-    const transplantDay = date.getDate().toString().padStart(2, '0');
+    const transplantYear = transplantDate.getFullYear();
+    const transplantMonth = (transplantDate.getMonth() + 1).toString().padStart(2, '0');
+    const transplantDay = transplantDate.getDate().toString().padStart(2, '0');
 
     // Update selectedDate with the prefill date
     transplantDate.value = `${transplantYear}/${transplantMonth}/${transplantDay}`;
@@ -467,7 +467,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.89')
+      console.log('V0.90')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
