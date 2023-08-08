@@ -238,6 +238,15 @@ const seedAssetOptionsWithLabel = computed(() => {
   }));
 });
 
+const formattedHarvestDate = computed(() => {
+  if (!harvestDate.value) return '';
+  const date = new Date(harvestDate.value);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}/${month}/${day}`;
+});
+
 </script>
 
 <template>
@@ -368,12 +377,12 @@ const seedAssetOptionsWithLabel = computed(() => {
         </div>
         <div v-if="harvest">
             <div class="q-pa-md">
-                <q-input filled v-model="harvestDate.value" mask="date" :rules="['date']" label="Harvest date">
+                <q-input filled v-model="formattedHarvestDate" mask="date" :rules="['date']" label="Harvest date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
-                                v-model="harvestDate.value"
+                                v-model="HarvestDate"
                                 today-btn
                                 subtitle="Harvest date"
                             >
@@ -448,7 +457,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.85')
+      console.log('V0.86')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
