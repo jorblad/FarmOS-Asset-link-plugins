@@ -174,32 +174,28 @@ const onSubmit = () => {
 
 watch(seedAsset, async (newValue) => {
   console.log("Type of seed", typeof newValue);
-  if (newValue) {
+  if (newValue !== null && typeof newValue !== 'string' && newValue.plantTypeID) {
     try {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
 
-      if (newValue.plantTypeID) {
-        // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
-        const selectedPlantType = plantTypeOptionsWithLabel.value.find(
-          (plantTypeObj) => plantTypeObj.value === newValue.plantTypeID
-        );
+      // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
+      const selectedPlantType = plantTypeOptionsWithLabel.value.find(
+        (plantTypeObj) => plantTypeObj.value === newValue.plantTypeID
+      );
 
-        // Update the plantType with the selected plant type object
-        plantType.value = selectedPlantType;
-      } else {
-        // If there is no associated plant type, set plantType to null
-        plantType.value = null;
-      }
+      // Update the plantType with the selected plant type object
+      plantType.value = selectedPlantType;
 
     } catch (error) {
       console.error('Error fetching seed:', error);
     }
   } else {
-    // If seedAsset is cleared (set to null), set plantType to null as well
+    // If seedAsset is null or does not have a valid plantTypeID, set plantType to null
     plantType.value = null;
   }
 });
+
 
 
 
@@ -475,7 +471,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.93')
+      console.log('V0.94')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
