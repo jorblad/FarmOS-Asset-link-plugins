@@ -219,7 +219,7 @@ watch(plantType, (newValue) => {
 
     // Update selectedDate with the prefill date
     harvestDate.value = `${year}/${month}/${day}`;
-    console.log("harvestDate: ", harvestDate.value)
+    console.log("harvestDate: ", harvestDate)
   }
 });
 
@@ -335,6 +335,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                                 v-model="transPlantingDate.value"
                                 today-btn
                                 subtitle="Transplanting date"
+                                first-day-of-week="1"
                             >
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
@@ -373,14 +374,15 @@ const seedAssetOptionsWithLabel = computed(() => {
         </div>
         <div v-if="harvest">
             <div class="q-pa-md">
-                <q-input filled v-model="HarvestDate" mask="date" :rules="['date']" label="Harvest date">
+                <q-input filled v-model="harvestDate" mask="date" :rules="['date']" label="Harvest date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
-                                v-model="HarvestDate"
+                                v-model="harvestDate"
                                 today-btn
                                 subtitle="Harvest date"
+                                first-day-of-week="1"
                             >
                             <div class="row items-center justify-end">
                                 <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close"/>
@@ -453,7 +455,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.87')
+      console.log('V0.88')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
