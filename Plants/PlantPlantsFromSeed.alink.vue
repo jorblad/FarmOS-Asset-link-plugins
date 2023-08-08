@@ -25,7 +25,7 @@ const seedCount = ref(0);
 const transPlanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
-const transPlantingDate = ref(new Date())
+const transPlantingDate = ref(null)
 const harvestDate = ref(null)
 
 
@@ -171,13 +171,10 @@ const onSubmit = () => {
   onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
-// Define a ref for presetting plantType
-const presetPlantType = ref(null);
-
 
 watch(seedAsset, async (newValue) => {
   console.log("Type of seed", typeof newValue);
-  if (seedAsset && typeof newValue !== 'string') {
+  if (newValue) {
     try {
       // Perform actions based on the selected seedAsset
       console.log('Selected seedAsset:', newValue);
@@ -198,8 +195,12 @@ watch(seedAsset, async (newValue) => {
     } catch (error) {
       console.error('Error fetching seed:', error);
     }
+  } else {
+    // If seedAsset is cleared (set to null), set plantType to null as well
+    plantType.value = null;
   }
 });
+
 
 
 
@@ -238,8 +239,8 @@ watch(plantType, (newValue) => {
     const transplantDay = transplant_date.getDate().toString().padStart(2, '0');
 
     // Update selectedDate with the prefill date
-    transplantDate.value = `${transplantYear}/${transplantMonth}/${transplantDay}`;
-    console.log("TransplantDate: ", transplantDate)
+    transPlantingDate.value = `${transplantYear}/${transplantMonth}/${transplantDay}`;
+    console.log("transPlantingDate: ", transPlantingDate)
   }
 });
 
