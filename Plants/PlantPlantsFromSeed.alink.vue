@@ -206,20 +206,33 @@ watch(plantType, (newValue) => {
     console.log('Selected plantType:', newValue);
     // Extract maturity_days from newValue
     const maturityDays = newValue.maturity_days;
+    const transplantDays = newValue.transplant_days;
 
     // Calculate the date after adding maturity_days
-    const prefillDate = new Date();
-    prefillDate.setDate(prefillDate.getDate() + parseInt(maturityDays));
-    console.log("Harvest Date", prefillDate)
-    console.log("harvestDate: ", harvestDate.value)
-    const date = new Date(prefillDate);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
+    const prefillHarvestDate = new Date();
+    prefillHarvestDate.setDate(prefillHarvestDate.getDate() + parseInt(maturityDays));
+    console.log("Harvest Date", prefillHarvestDate)
+    const harvestDate = new Date(prefillHarvestDate);
+    const harvestYear = date.getFullYear();
+    const harvestMonth = (date.getMonth() + 1).toString().padStart(2, '0');
+    const harvestDay = date.getDate().toString().padStart(2, '0');
 
     // Update selectedDate with the prefill date
-    harvestDate.value = `${year}/${month}/${day}`;
+    harvestDate.value = `${harvestYear}/${harvestMonth}/${harvestDay}`;
     console.log("harvestDate: ", harvestDate)
+
+    // Calculate the date after adding transplant_days
+    const prefillTransplantDate = new Date();
+    prefillTransplantDate.setDate(prefillTransplantDate.getDate() + parseInt(transplantDays));
+    console.log("Transplant Date", prefillTransplantDate)
+    const transplantDate = new Date(prefillTransplantDate);
+    const transplantYear = date.getFullYear();
+    const transplantMonth = (date.getMonth() + 1).toString().padStart(2, '0');
+    const transplantDay = date.getDate().toString().padStart(2, '0');
+
+    // Update selectedDate with the prefill date
+    transplantDate.value = `${transplantYear}/${transplantMonth}/${transplantDay}`;
+    console.log("TransplantDate: ", transplantDate)
   }
 });
 
@@ -228,7 +241,7 @@ const plantTypeOptionsWithLabel = computed(() => {
   return plantTypesOptions.value.map((plant_type) => ({
     label: `${plant_type.attributes.name} (${plant_type.attributes.drupal_internal__tid})`,
     value: plant_type.id,
-    transplatning_days: plant_type.attributes.transplant_days,
+    transplant_days: plant_type.attributes.transplant_days,
     maturity_days: plant_type.attributes.maturity_days
   }));
 });
@@ -326,13 +339,12 @@ const seedAssetOptionsWithLabel = computed(() => {
         </div>
         <div v-if="transPlanting">
             <div class="q-pa-md">
-                Transplanting
-                <q-input filled v-model="transPlantingDate.value" mask="date" :rules="['date']" label="Transplanting date">
+                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
-                                v-model="transPlantingDate.value"
+                                v-model="transPlantingDate"
                                 today-btn
                                 subtitle="Transplanting date"
                                 first-day-of-week="1"
@@ -455,7 +467,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.88')
+      console.log('V0.89')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
