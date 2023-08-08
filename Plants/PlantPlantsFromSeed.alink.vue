@@ -322,12 +322,12 @@ const seedAssetOptionsWithLabel = computed(() => {
         <div v-if="transPlanting">
             <div class="q-pa-md">
                 Transplanting
-                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
+                <q-input filled v-model="transPlantingDate.value" mask="date" :rules="['date']" label="Transplanting date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
-                                v-model="transPlantingDate"
+                                v-model="transPlantingDate.value"
                                 today-btn
                                 subtitle="Transplanting date"
                             >
@@ -368,12 +368,12 @@ const seedAssetOptionsWithLabel = computed(() => {
         </div>
         <div v-if="harvest">
             <div class="q-pa-md">
-                <q-input filled v-model="harvestDate" mask="date" :rules="['date']" label="Harvest date">
+                <q-input filled v-model="harvestDate.value" mask="date" :rules="['date']" label="Harvest date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
-                                v-model="harvestDate"
+                                v-model="harvestDate.value"
                                 today-btn
                                 subtitle="Harvest date"
                             >
@@ -448,7 +448,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.84')
+      console.log('V0.85')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
