@@ -26,7 +26,7 @@ const transPlanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
 const transPlantingDate = ref(new Date())
-const harvestDate = ref(new Date())
+const harvestDate = ref(null)
 
 
 const seasonsOptions = ref([]);
@@ -212,9 +212,13 @@ watch(plantType, (newValue) => {
     prefillDate.setDate(prefillDate.getDate() + parseInt(maturityDays));
     console.log("Harvest Date", prefillDate)
     console.log("harvestDate: ", harvestDate.value)
+    const date = new Date(prefillDate);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
 
     // Update selectedDate with the prefill date
-    harvestDate.value = prefillDate;
+    harvestDate.value = `${year}/${month}/${day}`;
     console.log("harvestDate: ", harvestDate.value)
   }
 });
@@ -238,14 +242,6 @@ const seedAssetOptionsWithLabel = computed(() => {
   }));
 });
 
-const formattedHarvestDate = computed(() => {
-  if (!harvestDate.value) return '';
-  const date = new Date(harvestDate.value);
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  return `${year}/${month}/${day}`;
-});
 
 </script>
 
@@ -377,7 +373,7 @@ const formattedHarvestDate = computed(() => {
         </div>
         <div v-if="harvest">
             <div class="q-pa-md">
-                <q-input filled v-model="formattedHarvestDate" mask="date" :rules="['date']" label="Harvest date">
+                <q-input filled v-model="HarvestDate" mask="date" :rules="['date']" label="Harvest date">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -457,7 +453,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.86')
+      console.log('V0.87')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
