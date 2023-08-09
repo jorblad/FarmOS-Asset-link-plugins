@@ -81,7 +81,8 @@ watch(photoCaptureModel, async () => {
 // Find functions
 
 const findseasons = async (entitySource, searchQuery) => {
-  const results = await entitySource.query((q) =>
+    console.log('Search query:', searchQuery);
+    const results = await entitySource.query((q) =>
         q.findRecords('taxonomy_term--season').filter({ attribute: 'name', op: 'some', value: searchQuery})
     );
 
