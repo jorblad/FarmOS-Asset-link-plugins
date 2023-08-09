@@ -117,15 +117,29 @@ const findseedassets = async (entitySource) => {
   return seed_assets;
 };
 
+const findlocationassets = async (entitySource) => {
+  const results = await entitySource.query((q) =>
+    q.findRecords('asset').filter({ attribute: 'is_location', op: 'equal', value: true })
+  );
+
+  const seed_assets = results.flatMap((l) => l);
+
+  console.log('All asset--seed records:', seed_assets);
+
+  return seed_assets;
+};
+
 const seasons = ref([]);
 const plant_types = ref([]);
 const seed_assets = ref([]);
+const location_assets = ref([]);
 
 
 onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
   seed_assets.value = await findseedassets(assetLink.entitySource);
+  location_assets.value = await findlocationassets(assetLink.entitySource);
   plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
   
   
@@ -134,6 +148,7 @@ onMounted(async () => {
 const plantSeason = ref(null);
 const plantType = ref(null);
 const seedAsset = ref(null);
+const locationAsset = ref(null);
 
 const seasonsFilterFn = (val, update, abort) => {
   update(() => {
@@ -165,6 +180,16 @@ const seedAssetsFilterFn = async (val, update, abort) => {
   });
 };
 
+const locationFilterFn = async (val, update, abort) => {
+  update(async () => {
+    const needle = val.toLowerCase();
+    const filteredLocations = await findlocationassets(assetLink.entitySource);
+    seedAssetsOptions.value = filteredLocations.filter((location_asset) =>
+      location_asset.attributes.name.toLowerCase().indexOf(needle) > -1
+    );
+    console.log("locationsOptions: ", locationOptions);
+  });
+};
 
 
 
@@ -364,22 +389,16 @@ const seedAssetOptionsWithLabel = computed(() => {
                 </q-input>
             </div>
             <div class="q-pa-md">
-                <entity-select
-                label="Transplant location"
-                entity-type="asset"
-                v-model="transplantLocation"
-                additional-filters="[{ attribute: 'is_location', op: 'equal', value: 'true' }]"
-                ></entity-select>
                 <q-select
                     filled
-                    v-model="plantSeason"
-                    :options="seasonsOptions"
-                    label="Location"
+                    v-model="transplantLocation"
+                    :options="locationOptions"
+                    label="Transplant location"
                     use-input
                     clearable
                     input-debounce="300"
                     datalist
-                    @filter="seasonsFilterFn"
+                    @filter="locationFilterFn"
                     new-value-mode="add-unique"
                 /> 
         </div>
@@ -478,7 +497,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.97')
+      console.log('V0.98')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
