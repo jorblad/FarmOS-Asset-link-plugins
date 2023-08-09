@@ -119,14 +119,14 @@ const findseedassets = async (entitySource) => {
 
 const findlocationassets = async (entitySource) => {
   const results = await entitySource.query((q) =>
-    q.findRecords('asset').filter({ attribute: 'is_location', op: 'equal', value: true })
+    q.findRelatedRecords({ attribute: 'is_location', op: 'equal', value: true })
   );
 
-  const seed_assets = results.flatMap((l) => l);
+  const location_assets = results.flatMap((l) => l);
 
-  console.log('All asset--seed records:', seed_assets);
+  console.log('All asset--location records:', location_assets);
 
-  return seed_assets;
+  return location_assets;
 };
 
 const seasons = ref([]);
@@ -497,7 +497,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.98')
+      console.log('V0.99')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
