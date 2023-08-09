@@ -80,10 +80,10 @@ watch(photoCaptureModel, async () => {
 
 // Find functions
 
-const findseasons = async (entitySource, searchQuery) => {
+const findseasons = async (entitySource, searchQuery = '') => {
     console.log('Search query:', searchQuery);
     const results = await entitySource.query((q) =>
-        q.findRecords('taxonomy_term--season').filter({ attribute: 'name', op: 'contain', value: searchQuery})
+        q.findRecords('taxonomy_term--season').filter({ attribute: 'name', op: 'equal', value: searchQuery})
     );
 
   const seasons = results.flatMap((l) => l);
@@ -508,7 +508,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.102')
+      console.log('V0.103')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
