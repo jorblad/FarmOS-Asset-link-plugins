@@ -394,7 +394,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 label="Transplant location"
                 entity-type="asset"
                 v-model="transplantLocation"
-                additionalFilters="[{ attribute: 'name', op: 'CONTAINS', value: 'Sven' }]"
+                additionalFilters="[{ attribute: 'is_location', op: 'eq', value: 'true' }]"
                 ></entity-select>
                 <q-select
                     filled
