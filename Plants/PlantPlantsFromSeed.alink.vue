@@ -26,6 +26,7 @@ const transPlanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
 const transPlantingDate = ref(null)
+const transplantLocation = ref(null)
 const harvestDate = ref(null)
 
 
@@ -194,7 +195,7 @@ const locationFilterFn = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 
