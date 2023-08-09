@@ -80,9 +80,16 @@ watch(photoCaptureModel, async () => {
 
 // Find functions
 
-const findseasons = async (entitySource) => {
+const findseasons = async (entitySource, searchQuery) => {
   const results = await entitySource.query((q) =>
-    q.findRecords('taxonomy_term--season')
+    q.findRecords('taxonomy_term--season', {
+      filter: {
+        name: {
+          icontains: searchQuery
+        }
+      },
+      // Add any additional query parameters you may need
+    })
   );
 
   const seasons = results.flatMap((l) => l);
@@ -90,8 +97,9 @@ const findseasons = async (entitySource) => {
   console.log('All taxonomy_term--season records:', seasons);
 
   // Extract the attributes.name from each element and return as a list
-  return results.map((season) => season.attributes.name);
+  return seasons.map((season) => season.attributes.name);
 };
+
 
 const findplanttypes = async (entitySource) => {
   const results = await entitySource.query((q) =>
@@ -151,14 +159,16 @@ const plantType = ref(null);
 const seedAsset = ref(null);
 const locationAsset = ref(null);
 
-const seasonsFilterFn = (val, update, abort) => {
-  update(() => {
+const seasonsFilterFn = async (val, update, abort) => {
+  update(async () => {
     const needle = val.toLowerCase();
-    seasonsOptions.value = seasons.value.filter((season) =>
-      season.toLowerCase().indexOf(needle) > -1
-    );
+    
+    const filteredSeasons = await findseasons(assetLink.entitySource, needle);
+    
+    seasonsOptions.value = filteredSeasons;
   });
 };
+
 
 const plantTypesFilterFn = (val, update, abort) => {
     update(async () => {
@@ -504,7 +514,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.101')
+      console.log('V0.102')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
