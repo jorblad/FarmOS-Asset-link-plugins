@@ -179,6 +179,7 @@ watch(seedAsset, async (newValue) => {
         // Perform actions based on the selected seedAsset
         console.log('Selected seedAsset:', newValue);
         console.log('plantType:', plantType);
+        console.log('plantTypeOptionsWithLabel:', plantTypeOptionsWithLabel);
 
         // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
         const selectedPlantType = plantTypeOptionsWithLabel.value.find(
@@ -474,7 +475,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.95')
+      console.log('V0.96')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
