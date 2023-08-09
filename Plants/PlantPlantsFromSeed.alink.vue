@@ -118,17 +118,17 @@ const findseedassets = async (entitySource) => {
   return seed_assets;
 };
 
-const findlocationassets = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRelatedRecords({ attribute: 'is_location', op: 'equal', value: true })
-  );
+// const findlocationassets = async (entitySource) => {
+//   const results = await entitySource.query((q) =>
+//     q.findRelatedRecords({ attribute: 'is_location', op: 'equal', value: true })
+//   );
 
-  const location_assets = results.flatMap((l) => l);
+//   const location_assets = results.flatMap((l) => l);
 
-  console.log('All asset--location records:', location_assets);
+//   console.log('All asset--location records:', location_assets);
 
-  return location_assets;
-};
+//   return location_assets;
+// };
 
 const seasons = ref([]);
 const plant_types = ref([]);
@@ -140,7 +140,7 @@ onMounted(async () => {
   seasons.value = await findseasons(assetLink.entitySource);
   plant_types.value = await findplanttypes(assetLink.entitySource);
   seed_assets.value = await findseedassets(assetLink.entitySource);
-  location_assets.value = await findlocationassets(assetLink.entitySource);
+  //location_assets.value = await findlocationassets(assetLink.entitySource);
   plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
   
   
@@ -181,7 +181,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
   });
 };
 
-const locationFilterFn = async (val, update, abort) => {
+/* const locationFilterFn = async (val, update, abort) => {
   update(async () => {
     const needle = val.toLowerCase();
     const filteredLocations = await findlocationassets(assetLink.entitySource);
@@ -190,7 +190,7 @@ const locationFilterFn = async (val, update, abort) => {
     );
     console.log("locationsOptions: ", locationOptions);
   });
-};
+}; */
 
 
 
