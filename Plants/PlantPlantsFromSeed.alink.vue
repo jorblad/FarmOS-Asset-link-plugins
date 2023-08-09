@@ -166,13 +166,60 @@ const plantType = ref(null);
 const seedAsset = ref(null);
 const locationAsset = ref(null);
 
-const seasonsFilterFn = (val, update, abort) => {
-  update(() => {
-    const needle = val.toLowerCase();
-    seasonsOptions.value = seasons.value.filter((season) =>
-      season.toLowerCase().indexOf(needle) > -1
+// const seasonsFilterFn = (val, update, abort) => {
+//   update(() => {
+//     const needle = val.toLowerCase();
+//     seasonsOptions.value = seasons.value.filter((season) =>
+//       season.toLowerCase().indexOf(needle) > -1
+//     );
+//   });
+// };
+
+const seasonsFilterFn = async (val, update, abort) => {
+    const searchRequest = {
+        id: uuidv4(),
+        type: "text-search",
+        entityType: "taxonomy_term",
+        entityBundles: "season",
+        term: val,
+    };
+
+    let entitySearchResultCursor = assetLink.searchEntities(
+        searchRequest,
+        "local"
     );
-  });
+
+    if (assetLink.connectionStatus.isOnline.value) {
+        entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+        entitySearchResultCursor,
+        assetLink.searchEntities(searchRequest, "remote")
+        );
+    }
+
+    update(() => {
+        seasonsOptions.value = [];
+    });
+
+    const alreadyFoundEntityIds = new Set();
+
+    let searchIterItem = {};
+    while (
+        seasonsOptions.value.length < maxDesiredSearchEntries &&
+        !searchIterItem.done
+    ) {
+        searchIterItem = await entitySearchResultCursor.next();
+
+        if (
+        searchIterItem.value &&
+        !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+        ) {
+        alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+        update(() => {
+            seasonsOptions.value.push(searchIterItem.value);
+        });
+        }
+    }
 };
 
 
@@ -520,7 +567,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.104')
+      console.log('V0.105')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
