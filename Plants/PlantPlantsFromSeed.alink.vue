@@ -396,7 +396,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 v-model="transplantLocation"
                 additionalFilters="[{ attribute: 'is_location', op: 'eq', value: 'true' }]"
                 ></entity-select>
-                <q-select
+                <!-- <q-select
                     filled
                     v-model="transplantLocation"
                     :options="locationOptions"
@@ -407,7 +407,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                     datalist
                     @filter="locationFilterFn"
                     new-value-mode="add-unique"
-                /> 
+                />  -->
         </div>
             
             
