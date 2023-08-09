@@ -179,17 +179,13 @@ watch(seedAsset, async (newValue) => {
     try {
         // Perform actions based on the selected seedAsset
         console.log('Selected seedAsset:', newValue);
-        console.log('plantType:', plantType);
-        console.log('plantTypeOptionsWithLabel:', plantTypeOptionsWithLabel);
 
         // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
         const selectedPlantType = plantTypeOptionsWithLabel.value.find(
             (plantTypeObj) => plantTypeObj.value === newValue.plantTypeID
         );
-        console.log('selectedPlantType:', selectedPlantType);
         // Update the plantType with the selected plant type object
         plantType.value = selectedPlantType;
-        console.log('plantType:', plantType);
 
     } catch (error) {
         console.error('Error fetching seed:', error);
