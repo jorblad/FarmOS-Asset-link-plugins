@@ -394,6 +394,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 label="Transplant location"
                 entity-type="asset"
                 v-model="transplantLocation"
+                additionalFilters="{ attribute: 'name', op: 'CONTAINS', value: 'Sven' }"
                 ></entity-select>
                 <q-select
                     filled
@@ -503,7 +504,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.100')
+      console.log('V0.101')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
