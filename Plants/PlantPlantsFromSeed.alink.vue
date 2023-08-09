@@ -389,6 +389,11 @@ const seedAssetOptionsWithLabel = computed(() => {
                 </q-input>
             </div>
             <div class="q-pa-md">
+                <entity-select
+                label="Transplant location"
+                entity-type="asset"
+                v-model="transplantLocation"
+                ></entity-select>
                 <q-select
                     filled
                     v-model="transplantLocation"
@@ -497,7 +502,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.99')
+      console.log('V0.100')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
