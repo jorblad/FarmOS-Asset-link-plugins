@@ -368,18 +368,24 @@ const seedAssetOptionsWithLabel = computed(() => {
                 </q-input>
             </div>
             <div class="q-pa-md">
-             <q-select
-                filled
-                v-model="plantSeason"
-                :options="seasonsOptions"
-                label="Location"
-                use-input
-                clearable
-                input-debounce="300"
-                datalist
-                @filter="seasonsFilterFn"
-                new-value-mode="add-unique"
-            /> 
+                <entity-select
+                label="Transplant location"
+                entity-type="asset"
+                v-model="transplantLocation"
+                additional-filters="[{ attribute: 'is_location', op: 'equal', value: 'True' }]"
+                ></entity-select>
+                <q-select
+                    filled
+                    v-model="plantSeason"
+                    :options="seasonsOptions"
+                    label="Location"
+                    use-input
+                    clearable
+                    input-debounce="300"
+                    datalist
+                    @filter="seasonsFilterFn"
+                    new-value-mode="add-unique"
+                /> 
         </div>
             
             
@@ -476,7 +482,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.96')
+      console.log('V0.97')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
