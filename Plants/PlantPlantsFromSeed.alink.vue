@@ -81,7 +81,6 @@ watch(photoCaptureModel, async () => {
 // Find functions
 
 const findseasons = async (entitySource) => {
-    console.log('Search query:', searchQuery);
     
     let page = 1;
     let allResults = [];
