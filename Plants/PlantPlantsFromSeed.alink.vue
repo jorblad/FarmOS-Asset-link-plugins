@@ -80,19 +80,33 @@ watch(photoCaptureModel, async () => {
 
 // Find functions
 
-const findseasons = async (entitySource, searchQuery = '') => {
+const findseasons = async (entitySource) => {
     console.log('Search query:', searchQuery);
-    const results = await entitySource.query((q) =>
-        q.findRecords('taxonomy_term--season').filter({ attribute: 'name', op: 'equal', value: searchQuery})
-    );
+    
+    let page = 1;
+    let allResults = [];
 
-  const seasons = results.flatMap((l) => l);
+    // Loop through pages until no more results are returned
+    while (true) {
+        const results = await entitySource.query((q) =>
+            q.findRecords('taxonomy_term--season')
+                .page({ number: page, size: 500 })
+        );
 
-  console.log('All taxonomy_term--season records:', seasons);
+        if (results.length === 0) {
+            break;
+        }
 
-  // Extract the attributes.name from each element and return as a list
-  return seasons.map((season) => season.attributes.name);
+        allResults = allResults.concat(results);
+        page++;
+    }
+
+    console.log('All taxonomy_term--season records:', allResults);
+
+    // Extract the attributes.name from each element and return as a list
+    return allResults.map((season) => season.attributes.name);
 };
+
 
 
 const findplanttypes = async (entitySource) => {
@@ -153,13 +167,12 @@ const plantType = ref(null);
 const seedAsset = ref(null);
 const locationAsset = ref(null);
 
-const seasonsFilterFn = async (val, update, abort) => {
-  update(async () => {
+const seasonsFilterFn = (val, update, abort) => {
+  update(() => {
     const needle = val.toLowerCase();
-    
-    const filteredSeasons = await findseasons(assetLink.entitySource, needle);
-    
-    seasonsOptions.value = filteredSeasons;
+    seasonsOptions.value = seasons.value.filter((season) =>
+      season.toLowerCase().indexOf(needle) > -1
+    );
   });
 };
 
@@ -508,7 +521,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.103')
+      console.log('V0.104')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
