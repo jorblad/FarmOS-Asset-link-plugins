@@ -48,7 +48,7 @@ const onSubmit = () => {
 };
 </script>
 
-<template>
+<template alink-slot[se.jorblad.farmos_asset_link.log_actions.v0.harvest]="log-action(showIf: 'log.attributes.status != `done`')>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
       <h4>How much did you harvest?</h4>
@@ -166,23 +166,22 @@ export default {
             };
 
             const harvestLog = {
-            type: 'log--harvest',
-            attributes: {
                 type: props.log.type,
                 id: props.log.id,
-                timestamp: formatRFC3339(new Date()),
-                status: "done",
-            },
-            relationships: {
-                quantity: {
-                data: [
-                    {
-                    type: harvestQuantity.type,
-                    id: harvestQuantity.id,
-                    }
-                ]
+                attributes: {
+                    timestamp: formatRFC3339(new Date()),
+                    status: "done",
                 },
-            },
+                relationships: {
+                    quantity: {
+                    data: [
+                        {
+                        type: harvestQuantity.type,
+                        id: harvestQuantity.id,
+                        }
+                    ]
+                    },
+                },
             };
 
             assetLink.entitySource.update(
