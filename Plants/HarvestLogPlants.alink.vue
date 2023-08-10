@@ -10,22 +10,41 @@ const props = defineProps({
   },
 });
 
-const doActionWorkflow = async () => {
-  const confirmed = await assetLink.ui.dialog.confirm(`Are you sure you want to mark this log as completed?`);
+defineEmits([
+  ...useDialogPluginComponent.emits
+]);
 
-  if (!confirmed) {
-    return undefined;
-  }
+const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-  const res = await assetLink.entitySource.update((t) => {
-    return t.updateRecord({
-      type: props.log.type,
-      id: props.log.id,
-      attributes: {
-        status: 'done',
-      },
-    });
-  }, {label: `Mark log as completed: ${props.log.attributes.name}`});
+const harvestCount = ref(0);
+
+
+const findUnitTerms = async (entitySource) => {
+  const results = await entitySource.query((q) =>
+    q.findRecords('taxonomy_term--unit')
+  );
+
+
+  const unitTerms = results.flatMap((l) => l);
+
+  console.log('All taxonomy_term--unit records:', unitTerms);
+
+  return unitTerms;
+};
+
+const unitTerms = ref([]);
+
+onMounted(async () => {
+  unitTerms.value = await findUnitTerms(assetLink.entitySource);
+  
+});
+
+
+const quantityType = ref(null);
+const unitLabelFn = unitTerm => unitTerm.attributes.name;
+
+const onSubmit = () => {
+  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value });
 };
 </script>
 
