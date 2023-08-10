@@ -1,5 +1,6 @@
 <script setup>
 import { inject } from 'vue';
+import { useDialogPluginComponent } from 'quasar'
 
 const assetLink = inject('assetLink');
 
