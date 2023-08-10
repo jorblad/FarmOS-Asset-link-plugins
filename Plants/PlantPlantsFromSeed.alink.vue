@@ -571,7 +571,7 @@ export default {
       action.type('asset-action');
       action.weight(-10);
 
-      console.log('V0.105')
+      console.log('PLanting plugin: V0.105')
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...

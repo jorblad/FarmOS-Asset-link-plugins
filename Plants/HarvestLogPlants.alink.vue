@@ -106,6 +106,8 @@ export default {
 
         action.type('log-action');
 
+        console.log("Log: ", log)
+
         action.showIf(({ log }) => {
             if (log.attributes.status != 'done') {
             return false;
