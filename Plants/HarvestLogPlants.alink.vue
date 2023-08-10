@@ -51,7 +51,7 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How much did you harvest from {{ props.asset.attributes.name }}?</h4>
+      <h4>How much did you harvest?</h4>
       <div class="q-pa-md">
       <q-slider
         v-model="harvestCount"
@@ -115,8 +115,8 @@ export default {
         });
 
 
-        const doActionWorkflow = async (asset) => {
-            const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+        const doActionWorkflow = async (log) => {
+            const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { log });
             console.log('Dialog result:', dialogResult);
             const harvestCount = dialogResult.harvestCount;
             console.log('Harvest Count:', harvestCount);
@@ -190,11 +190,11 @@ export default {
                 t.addRecord(harvestQuantity),
                 t.updateRecord(harvestLog),
                 ],
-                {label: `Record harvest for ${asset.attributes.name}`});
+                {label: `Record harvest`});
         };
 
-        action.component(({ asset }) =>
-            h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
+        action.component(({ log }) =>
+            h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(log), 'no-caps': true },  "Record Harvest" ));
         });
 
     }
