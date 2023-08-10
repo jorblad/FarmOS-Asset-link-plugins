@@ -106,6 +106,7 @@ export default {
         action.weight(-10);
 
         console.log('Harvest log: V0.3')
+        console.log("Log: ", log)
 
         action.showIf(({ log }) => log.attributes.status != `done` );
         const doActionWorkflow = async (log) => {
