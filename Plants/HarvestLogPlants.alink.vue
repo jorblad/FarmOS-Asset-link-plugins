@@ -106,10 +106,10 @@ export default {
         action.type('log-action');
         action.weight(-10);
 
-        console.log('Harvest log: V0.3')
+        console.log('Harvest log: V0.4')
 
 
-        action.showIf(({ log }) => log.attributes.status != `done` );
+        action.showIf(({ log }) => log.attributes.status != `done` && log.type === 'log--harvest' );
         const doActionWorkflow = async (log) => {
             const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { log });
             console.log('Dialog result:', dialogResult);
