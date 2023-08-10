@@ -176,6 +176,7 @@ const locationAsset = ref(null);
 // };
 
 const seasonsFilterFn = async (val, update, abort) => {
+    console.log("val", val)
     const searchRequest = {
         id: uuidv4(),
         type: "text-search",
@@ -183,6 +184,7 @@ const seasonsFilterFn = async (val, update, abort) => {
         entityBundles: "season",
         term: val,
     };
+    console.log("searchRequest", searchRequest)
 
     let entitySearchResultCursor = assetLink.searchEntities(
         searchRequest,
@@ -197,7 +199,9 @@ const seasonsFilterFn = async (val, update, abort) => {
     }
 
     update(() => {
+        console.log("seasonsOptions before update", seasonsOptions)
         seasonsOptions.value = [];
+        console.log("seasonsOptions after update", seasonsOptions)
     });
 
     const alreadyFoundEntityIds = new Set();
