@@ -183,7 +183,7 @@ export default {
                 type: 'taxonomy_term--unit',
                 id: uuidv4(),
                 '$relateByName': {
-                  name: UNIT_NAME,
+                  name: harvestUnitTerm.attributes.name,
                 },
               }
             },
