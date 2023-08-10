@@ -32,3 +32,25 @@ const doActionWorkflow = async () => {
 <template alink-slot[se.jorblad.farmos_asset_link.log_actions.v0.complete]="log-action(showIf: 'log.attributes.status != `done`')">
   <q-btn block color="secondary" no-caps @click="() => doActionWorkflow()">Harvest</q-btn>
 </template>
+
+<script>
+import { h } from 'vue';
+import { QBtn } from 'quasar';
+import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
+
+export default {
+  async onLoad(handle, assetLink) {
+    await assetLink.booted;
+
+
+    handle.defineSlot('se.jorblad.farmos_asset_link.log_actions.v0.harvest_log', action => {
+        action.type('log-action');
+        action.weight(-10);
+
+        console.log('Harvest log: V0.1')
+
+        action.showIf(({ log }) => log.attributes.status != `done` );
+    });
+    }
+}
+</script>
