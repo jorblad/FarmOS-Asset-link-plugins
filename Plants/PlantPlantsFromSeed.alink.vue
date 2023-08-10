@@ -181,7 +181,7 @@ const seasonsFilterFn = async (val, update, abort) => {
         id: uuidv4(),
         type: "text-search",
         entityType: "taxonomy_term",
-        entityBundles: "season",
+        entityBundles: ["season"],
         term: val,
     };
     console.log("searchRequest", searchRequest)
@@ -291,12 +291,6 @@ watch(seedAsset, async (newValue) => {
 });
 
 
-
-
-
-
-
-
 // Watch for changes in the selected plantType
 watch(plantType, (newValue) => {
   if (newValue) {
@@ -353,6 +347,12 @@ const seedAssetOptionsWithLabel = computed(() => {
   }));
 });
 
+const additionalFilters = [
+  // Only allow moving to locations
+  { attribute: 'is_location', op: 'equal', value: true },
+  // Do not allow moving to self
+  { attribute: 'drupal_internal__id', op: '<>', value: props.asset.attributes.drupal_internal__id },
+];
 
 </script>
 
@@ -461,7 +461,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 label="Transplant location"
                 entity-type="asset"
                 v-model="transplantLocation"
-                additionalFilters="[{ attribute: 'is_location', op: 'eq', value: 'true' }]"
+                :additional-filters="additionalFilters"
                 ></entity-select>
                 <!-- <q-select
                     filled
@@ -571,7 +571,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.105')
+        console.log('Planting plugin: V0.106')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
