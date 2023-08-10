@@ -105,7 +105,7 @@ export default {
         action.type('log-action');
         action.weight(-10);
 
-        console.log('Harvest log: V0.1')
+        console.log('Harvest log: V0.2')
 
         action.showIf(({ log }) => log.attributes.status != `done` );
         const doActionWorkflow = async (log) => {
@@ -159,8 +159,8 @@ export default {
             };
 
             const harvestLog = {
-            type: props.log.type,
-            id: props.log.id,
+            type: log.type,
+            id: log.id,
             attributes: {
                 timestamp: formatRFC3339(new Date()),
                 status: "done",
