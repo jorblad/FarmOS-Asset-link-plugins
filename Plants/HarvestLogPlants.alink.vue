@@ -105,7 +105,7 @@ export default {
         action.type('log-action');
         action.weight(-10);
 
-        console.log('Harvest log: V0.2')
+        console.log('Harvest log: V0.3')
 
         action.showIf(({ log }) => log.attributes.status != `done` );
         const doActionWorkflow = async (log) => {
@@ -151,7 +151,7 @@ export default {
                     type: 'taxonomy_term--unit',
                     id: uuidv4(),
                     '$relateByName': {
-                    name: harvestUnitTerm,
+                    name: harvestUnitTerm.attributes.name,
                     },
                 }
                 },
