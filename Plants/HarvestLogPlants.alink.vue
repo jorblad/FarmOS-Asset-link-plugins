@@ -104,96 +104,97 @@ export default {
 
     handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.harvestlog', action => {
 
-      action.type('log-action');
+        action.type('log-action');
 
-      action.showIf(({ log }) => {
-        if (log.attributes.status != 'done') {
-          return false;
-        }
-
-
-      const doActionWorkflow = async (asset) => {
-        const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-        console.log('Dialog result:', dialogResult);
-        const harvestCount = dialogResult.harvestCount;
-        console.log('Harvest Count:', harvestCount);
-        const harvestUnitTerm = dialogResult.quantityType;
-        console.log('QuantityType:', harvestUnitTerm);
-
-        if (!harvestUnitTerm) {
-          return;
-        }
+        action.showIf(({ log }) => {
+            if (log.attributes.status != 'done') {
+            return false;
+            }
+        });
 
 
-        if (!harvestCount || harvestCount <= 0) {
-          return;
-        }
+        const doActionWorkflow = async (asset) => {
+            const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+            console.log('Dialog result:', dialogResult);
+            const harvestCount = dialogResult.harvestCount;
+            console.log('Harvest Count:', harvestCount);
+            const harvestUnitTerm = dialogResult.quantityType;
+            console.log('QuantityType:', harvestUnitTerm);
 
-        let harvestQuantityMeasure = "count";
-        if (harvestUnitTerm.attributes.name === "gram" ) {
-          harvestQuantityMeasure = "weight";
-        } else {
-          harvestQuantityMeasure = "count";
-        }
+            if (!harvestUnitTerm) {
+                return;
+            }
+
+
+            if (!harvestCount || harvestCount <= 0) {
+                return;
+            }
+
+            let harvestQuantityMeasure = "count";
+            if (harvestUnitTerm.attributes.name === "gram" ) {
+                harvestQuantityMeasure = "weight";
+            } else {
+                harvestQuantityMeasure = "count";
+            }
 
 
 
-        const harvestQuantity = {
-          type: 'quantity--standard',
-          id: uuidv4(),
-          attributes: {
-            measure: harvestQuantityMeasure,
-            value: {
-              numerator: harvestCount,
-              denominator: 1,
-              decimal: `${harvestCount}`,
-            },
-          },
-          relationships: {
-            units: {
-              data: {
-                type: 'taxonomy_term--unit',
-                id: uuidv4(),
-                '$relateByName': {
-                  name: UNIT_NAME,
+            const harvestQuantity = {
+            type: 'quantity--standard',
+            id: uuidv4(),
+            attributes: {
+                measure: harvestQuantityMeasure,
+                value: {
+                    numerator: harvestCount,
+                    denominator: 1,
+                    decimal: `${harvestCount}`,
                 },
-              }
             },
-          },
+            relationships: {
+                units: {
+                    data: {
+                        type: 'taxonomy_term--unit',
+                        id: uuidv4(),
+                        '$relateByName': {
+                        name: UNIT_NAME,
+                        },
+                    }
+                },
+            },
+            };
+
+            const harvestLog = {
+            type: 'log--harvest',
+            attributes: {
+                type: props.log.type,
+                id: props.log.id,
+                timestamp: formatRFC3339(new Date()),
+                status: "done",
+            },
+            relationships: {
+                quantity: {
+                data: [
+                    {
+                    type: harvestQuantity.type,
+                    id: harvestQuantity.id,
+                    }
+                ]
+                },
+            },
+            };
+
+            assetLink.entitySource.update(
+                (t) => [
+                t.addRecord(harvestQuantity),
+                t.updateRecord(harvestLog),
+                ],
+                {label: `Record harvest for ${asset.attributes.name}`});
         };
 
-        const harvestLog = {
-          type: 'log--harvest',
-          attributes: {
-            type: props.log.type,
-            id: props.log.id,
-            timestamp: formatRFC3339(new Date()),
-            status: "done",
-          },
-          relationships: {
-            quantity: {
-              data: [
-                {
-                  type: harvestQuantity.type,
-                  id: harvestQuantity.id,
-                }
-              ]
-            },
-          },
-        };
+        action.component(({ asset }) =>
+            h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
+        });
 
-        assetLink.entitySource.update(
-            (t) => [
-              t.addRecord(harvestQuantity),
-              t.updateRecord(harvestLog),
-            ],
-            {label: `Record harvest for ${asset.attributes.name}`});
-      };
-
-      action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
-    });
-
-  }
+    }
 }
 </script>
