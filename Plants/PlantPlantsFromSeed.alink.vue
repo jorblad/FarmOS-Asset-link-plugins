@@ -329,6 +329,14 @@ watch(plantType, (newValue) => {
 });
 
 // Create a computed property for seed asset options with labels
+const seasonOptionsWithLabel = computed(() => {
+  return seasonsOptions.value.map((season) => ({
+    label: `${season.attributes.name} (${season.attributes.drupal_internal__tid})`,
+    value: season.id
+  }));
+});
+
+// Create a computed property for seed asset options with labels
 const plantTypeOptionsWithLabel = computed(() => {
   return plantTypesOptions.value.map((plant_type) => ({
     label: `${plant_type.attributes.name} (${plant_type.attributes.drupal_internal__tid})`,
@@ -380,7 +388,7 @@ const additionalFilters = [
              <q-select
                 filled
                 v-model="plantSeason"
-                :options="seasonsOptions"
+                :options="seasonOptionsWithLabel"
                 label="Season"
                 use-input
                 clearable
@@ -571,7 +579,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.106')
+        console.log('Planting plugin: V0.107')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
