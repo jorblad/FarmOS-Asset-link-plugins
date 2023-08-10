@@ -106,7 +106,7 @@ export default {
 
       action.type('log-action');
 
-      action.showIf(({ asset }) => {
+      action.showIf(({ log }) => {
         if (log.attributes.status != 'done') {
           return false;
         }
@@ -214,7 +214,7 @@ export default {
               t.addRecord(harvestQuantity),
               t.updateRecord(harvestLog),
             ],
-            {label: `Record harvest harvest for ${asset.attributes.name}`});
+            {label: `Record harvest for ${asset.attributes.name}`});
       };
 
       action.component(({ asset }) =>
