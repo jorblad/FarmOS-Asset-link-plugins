@@ -328,10 +328,11 @@ watch(plantType, (newValue) => {
   }
 });
 
-// Create a computed property for seed asset options with labels
+
+// Create a computed property for season options with labels
 const seasonOptionsWithLabel = computed(() => {
   return seasonsOptions.value.map((season) => ({
-    label: `${season.attributes.name} (${season.attributes.drupal_internal__tid})`,
+    label: `${season.entity.attributes.name} (${season.entity.attributes.drupal_internal__tid})`,
     value: season.id
   }));
 });
@@ -579,7 +580,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.107')
+        console.log('Planting plugin: V0.108')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
