@@ -29,8 +29,7 @@ const doActionWorkflow = async () => {
 };
 </script>
 
-<template alink-slot[se.jorblad.farmos_asset_link.log_actions.v0.complete]="log-action(showIf: 'log.attributes.status != `done`')">
-  <q-btn block color="secondary" no-caps @click="() => doActionWorkflow()">Harvest</q-btn>
+<template>
 </template>
 
 <script>
@@ -50,6 +49,12 @@ export default {
         console.log('Harvest log: V0.1')
 
         action.showIf(({ log }) => log.attributes.status != `done` );
+        try {
+            action.component(({ log }) =>
+                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(log), 'no-caps': true },  "Harvest" ));
+        } catch (error) {
+                console.error('Error in doActionWorkflow:', error);
+        }
     });
     }
 }
