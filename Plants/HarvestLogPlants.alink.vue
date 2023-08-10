@@ -50,7 +50,7 @@ export default {
 
         action.showIf(({ log }) => log.attributes.status != `done` );
         const doActionWorkflow = async (asset) => {
-            const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+            const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { log });
             console.log('Dialog result:', dialogResult);
             const harvestCount = dialogResult.harvestCount;
             console.log('Harvest Count:', harvestCount);
