@@ -50,6 +50,45 @@ const onSubmit = () => {
 </script>
 
 <template>
+    <q-dialog ref="dialogRef" @hide="onDialogHide">
+        <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
+        <h4>How much did you harvest?</h4>
+        <div class="q-pa-md">
+        <q-slider
+            v-model="harvestCount"
+            :min="0"
+            :max="20"
+            :step="1"
+            snap
+            label
+        />
+        <q-input
+            v-model.number="harvestCount"
+            type="number"
+            filled
+        />
+        </div>
+        <div class="q-pa-md">
+
+        <q-select
+            filled v-model="quantityType"
+            :options="unitTerms"
+            :option-label="unitLabelFn"
+            label="Standard"
+        />
+        
+        </div>
+        <div class="q-pa-sm q-gutter-sm row justify-end">
+            <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+            <q-btn
+            color="primary"
+            label="Record"
+            @click="onSubmit"
+            :disabled="harvestCount <= 0"
+            />
+        </div>
+        </q-card>
+    </q-dialog>
 </template>
 
 <script>
@@ -69,7 +108,7 @@ export default {
         console.log('Harvest log: V0.1')
 
         action.showIf(({ log }) => log.attributes.status != `done` );
-        const doActionWorkflow = async (asset) => {
+        const doActionWorkflow = async (log) => {
             const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { log });
             console.log('Dialog result:', dialogResult);
             const harvestCount = dialogResult.harvestCount;
