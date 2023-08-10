@@ -580,7 +580,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.108')
+        console.log('Planting plugin: V0.109')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -594,8 +594,21 @@ export default {
                 console.log('seedCount', seedCount)
                 const plantSeason = dialogResult.plantSeason;
                 console.log('plantSeason', plantSeason)
+                let seasonName;
+                if (typeof plantSeason === 'string') {
+                    seasonName = plantSeason
+                } else {
+                    seasonName = plantSeason.label
+                }
+                console.log('seasonName', seasonName)
                 const plantType = dialogResult.plantType;
                 console.log('plantType', plantType)
+                let plantTypeName;
+                if (typeof plantSeason === 'string') {
+                    plantTypeName = plantType
+                } else {
+                    plantTypeName = plantType.label
+                }
                 const notes = dialogResult.notes;
                 console.log('notes', notes)
                 const seedAsset = dialogResult.seedAsset;
@@ -622,7 +635,7 @@ export default {
                                         type: 'taxonomy_term--plant_type',
                                         id: uuidv4(),
                                         '$relateByName': {
-                                        name: plantType,
+                                        name: plantTypeName,
                                         },
                                     }
                                 ]
@@ -646,7 +659,7 @@ export default {
 
                 console.log('Final Seed ID', seed_id);
 
-                const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
+                const plantName = `${seasonName} ${asset.attributes.name} ${plantTypeName}`;
 
                 const plantID = uuidv4();
 
@@ -670,7 +683,7 @@ export default {
                                     type: 'taxonomy_term--plant_type',
                                     id: uuidv4(),
                                     '$relateByName': {
-                                    name: plantType,
+                                    name: plantTypeName,
                                     },
                                 }
                             ]
@@ -681,7 +694,7 @@ export default {
                                     type: 'taxonomy_term--season',
                                     id: uuidv4(),
                                     '$relateByName': {
-                                    name: plantSeason,
+                                    name: seasonName,
                                     },
                                 }
                             ]
