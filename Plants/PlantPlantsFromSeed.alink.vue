@@ -391,6 +391,34 @@ const seedAssetOptionsWithLabel = computed(() => {
   }));
 });
 
+const isSubmitDisabled = computed(() => {
+    if (this.transPlanting) {
+        return (
+          this.seedCount <= 0 ||
+          !this.seedAsset ||
+          !this.plantSeason ||
+          !this.plantType ||
+          !this.transPlantingDate ||
+          !this.transPlantLocation
+        );
+      } else if (this.harvest) {
+        return (
+          this.seedCount <= 0 ||
+          !this.seedAsset ||
+          !this.plantSeason ||
+          !this.plantType ||
+          !this.harvestDate
+        );
+      } else {
+        return (
+          this.seedCount <= 0 ||
+          !this.seedAsset ||
+          !this.plantSeason ||
+          !this.plantType
+        );
+      }
+})
+
 const additionalFilters = [
   // Only allow moving to locations
   { attribute: 'is_location', op: 'equal', value: true },
@@ -580,7 +608,7 @@ const additionalFilters = [
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="seedCount <= 0 || !seedAsset || !plantSeason || !plantType"
+          :disabled="isSubmitDisabled"
         />
       </div>
     </q-card>
