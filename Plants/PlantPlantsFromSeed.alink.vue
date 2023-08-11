@@ -81,43 +81,53 @@ watch(photoCaptureModel, async () => {
 // Find functions
 
 
+const FindplantTypes = async () => {
+  const searchRequest = {
+    id: uuidv4(),
+    type: "text-search",
+    entityType: "taxonomy_term",
+    entityBundles: ["plant_type"],
+    term: '',
+  };
 
-// const findplanttypes = async (entitySource) => {
-//   const results = await entitySource.query((q) =>
-//     q.findRecords('taxonomy_term--plant_type')
-//   );
+  let entitySearchResultCursor = assetLink.searchEntities(
+    searchRequest,
+    "local"
+  );
 
-//   const plant_types = results.flatMap((l) => l);
+  if (assetLink.connectionStatus.isOnline.value) {
+    entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+      entitySearchResultCursor,
+      assetLink.searchEntities(searchRequest, "remote")
+    );
+  }
 
-//   console.log('All taxonomy_term--plant_type records:', plant_types);
+  plantTypesOptions.value = []; // Clear the array before populating
 
-//   // Extract the attributes.name from each element and return as a list
-//   return plant_types;
-// };
+  const alreadyFoundEntityIds = new Set();
 
-// const findseedassets = async (entitySource) => {
-//   const results = await entitySource.query((q) =>
-//     q.findRecords('asset--seed')
-//   );
+  let searchIterItem = {};
+  while (
+    !searchIterItem.done
+  ) {
+    searchIterItem = await entitySearchResultCursor.next();
 
-//   const seed_assets = results.flatMap((l) => l);
+    if (
+      searchIterItem.value &&
+      !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+    ) {
+      alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
 
-//   console.log('All asset--seed records:', seed_assets);
+      plantTypesOptions.value.push(searchIterItem.value);
+    }
+  }
+};
 
-//   return seed_assets;
-// };
 
-
-//const plant_types = ref([]);
-//const seed_assets = ref([]);
 
 
 onMounted(async () => {
-  //plant_types.value = await findplanttypes(assetLink.entitySource);
-  //seed_assets.value = await findseedassets(assetLink.entitySource);
-  //location_assets.value = await findlocationassets(assetLink.entitySource);
-  //plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
-  await plantTypesFilterFn('');
+  await FindplantTypes();
   
   
 });
@@ -593,7 +603,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.116')
+        console.log('Planting plugin: V0.117')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
