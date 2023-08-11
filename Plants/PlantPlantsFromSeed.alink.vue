@@ -455,9 +455,7 @@ const additionalFilters = [
                 self="top middle"
                 :offset="[0, 10]"
                 >
-                <template v-slot:content>
                     Disable this toggle if you are directly transplanting.
-                </template>
             </q-tooltip>
 
         </div>
