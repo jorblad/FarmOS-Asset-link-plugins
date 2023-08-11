@@ -392,29 +392,29 @@ const seedAssetOptionsWithLabel = computed(() => {
 });
 
 const isSubmitDisabled = computed(() => {
-    if (this.transPlanting) {
+    if (transPlanting) {
         return (
-          this.seedCount <= 0 ||
-          !this.seedAsset ||
-          !this.plantSeason ||
-          !this.plantType ||
-          !this.transPlantingDate ||
-          !this.transPlantLocation
+          seedCount <= 0 ||
+          !seedAsset ||
+          !plantSeason ||
+          !plantType ||
+          !transPlantingDate ||
+          !transplantLocation
         );
-      } else if (this.harvest) {
+      } else if (harvest) {
         return (
-          this.seedCount <= 0 ||
-          !this.seedAsset ||
-          !this.plantSeason ||
-          !this.plantType ||
-          !this.harvestDate
+          seedCount <= 0 ||
+          !seedAsset ||
+          !plantSeason ||
+          !plantType ||
+          !harvestDate
         );
       } else {
         return (
-          this.seedCount <= 0 ||
-          !this.seedAsset ||
-          !this.plantSeason ||
-          !this.plantType
+          seedCount <= 0 ||
+          !seedAsset ||
+          !plantSeason ||
+          !plantType
         );
       }
 })
