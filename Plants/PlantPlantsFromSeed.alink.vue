@@ -1,7 +1,11 @@
 <script setup>
 import { inject, ref, watch, onMounted,  computed } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import { RacingLocalRemoteAsyncIterator } from 'assetlink-plugin-api';
+
+
 const assetLink = inject('assetLink');
+
 
 const props = defineProps({
   asset: {
@@ -18,12 +22,19 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
+const transPlanting = ref(false)
+const harvest = ref(false)
 const notes = ref(null);
+const transPlantingDate = ref(null)
+const transplantLocation = ref(null)
+const harvestDate = ref(null)
 
 
 const seasonsOptions = ref([]);
 const plantTypesOptions = ref([]);
 const seedAssetsOptions = ref([]);
+
+const maxDesiredSearchEntries = 200;
 
 // Photo adding
 const capturedPhotos = ref([]);
@@ -69,155 +80,324 @@ watch(photoCaptureModel, async () => {
 
 // Find functions
 
-const findseasons = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRecords('taxonomy_term--season')
+
+const FindplantTypes = async () => {
+  const searchRequest = {
+    id: uuidv4(),
+    type: "text-search",
+    entityType: "taxonomy_term",
+    entityBundles: ["plant_type"],
+    term: '',
+  };
+
+  let entitySearchResultCursor = assetLink.searchEntities(
+    searchRequest,
+    "local"
   );
 
-  const seasons = results.flatMap((l) => l);
+  if (assetLink.connectionStatus.isOnline.value) {
+    entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+      entitySearchResultCursor,
+      assetLink.searchEntities(searchRequest, "remote")
+    );
+  }
 
-  console.log('All taxonomy_term--season records:', seasons);
+  plantTypesOptions.value = []; // Clear the array before populating
 
-  // Extract the attributes.name from each element and return as a list
-  return seasons.map((season) => season.attributes.name);
+  const alreadyFoundEntityIds = new Set();
+
+  let searchIterItem = {};
+  while (
+    !searchIterItem.done
+  ) {
+    searchIterItem = await entitySearchResultCursor.next();
+
+    if (
+      searchIterItem.value &&
+      !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+    ) {
+      alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+      plantTypesOptions.value.push(searchIterItem.value);
+    }
+  }
 };
 
-const findplanttypes = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRecords('taxonomy_term--plant_type')
-  );
 
-  const plant_types = results.flatMap((l) => l);
-
-  console.log('All taxonomy_term--plant_type records:', plant_types);
-
-  // Extract the attributes.name from each element and return as a list
-  return plant_types.map((plant_type) => plant_type.attributes.name);
-};
-
-const findseedassets = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRecords('asset--seed')
-  );
-
-  const seed_assets = results.flatMap((l) => l);
-
-  console.log('All asset--seed records:', seed_assets);
-
-  return seed_assets;
-};
-
-const seasons = ref([]);
-const plant_types = ref([]);
-const seed_assets = ref([]);
 
 
 onMounted(async () => {
-  seasons.value = await findseasons(assetLink.entitySource);
-  plant_types.value = await findplanttypes(assetLink.entitySource);
-  seed_assets.value = await findseedassets(assetLink.entitySource);
+  await FindplantTypes();
   
   
 });
 
 const plantSeason = ref(null);
-const plantSeason2 = ref(null);
 const plantType = ref(null);
 const seedAsset = ref(null);
 
-const seasonsFilterFn = (val, update, abort) => {
-  update(() => {
-    const needle = val.toLowerCase();
-    seasonsOptions.value = seasons.value.filter((season) =>
-      season.toLowerCase().indexOf(needle) > -1
+const seasonsFilterFn = async (val, update, abort) => {
+    console.log("val", val)
+    const searchRequest = {
+        id: uuidv4(),
+        type: "text-search",
+        entityType: "taxonomy_term",
+        entityBundles: ["season"],
+        term: val,
+    };
+    console.log("searchRequest", searchRequest)
+
+    let entitySearchResultCursor = assetLink.searchEntities(
+        searchRequest,
+        "local"
     );
-  });
+
+    if (assetLink.connectionStatus.isOnline.value) {
+        entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+        entitySearchResultCursor,
+        assetLink.searchEntities(searchRequest, "remote")
+        );
+    }
+
+    update(() => {
+        console.log("seasonsOptions before update", seasonsOptions)
+        seasonsOptions.value = [];
+        console.log("seasonsOptions after update", seasonsOptions)
+    });
+
+    const alreadyFoundEntityIds = new Set();
+
+    let searchIterItem = {};
+    while (
+        seasonsOptions.value.length < maxDesiredSearchEntries &&
+        !searchIterItem.done
+    ) {
+        searchIterItem = await entitySearchResultCursor.next();
+
+        if (
+        searchIterItem.value &&
+        !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+        ) {
+        alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+        update(() => {
+            seasonsOptions.value.push(searchIterItem.value);
+        });
+        }
+    }
 };
 
-const plantTypesFilterFn = (val, update, abort) => {
-  update(() => {
-    const needle = val.toLowerCase();
-    plantTypesOptions.value = plant_types.value.filter((plant_type) =>
-      plant_type.toLowerCase().indexOf(needle) > -1
+
+const plantTypesFilterFn = async (val, update = () => {}, abort = () => {}) => {
+    console.log("val", val)
+    const searchRequest = {
+        id: uuidv4(),
+        type: "text-search",
+        entityType: "taxonomy_term",
+        entityBundles: ["plant_type"],
+        term: val,
+    };
+    console.log("searchRequest", searchRequest)
+
+    let entitySearchResultCursor = assetLink.searchEntities(
+        searchRequest,
+        "local"
     );
-  });
+
+    if (assetLink.connectionStatus.isOnline.value) {
+        entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+        entitySearchResultCursor,
+        assetLink.searchEntities(searchRequest, "remote")
+        );
+    }
+
+    update(() => {
+        console.log("plantTypesOptions before update", plantTypesOptions)
+        plantTypesOptions.value = [];
+        console.log("plantTypesOptions after update", plantTypesOptions)
+    });
+
+    const alreadyFoundEntityIds = new Set();
+
+    let searchIterItem = {};
+    while (
+        plantTypesOptions.value.length < maxDesiredSearchEntries &&
+        !searchIterItem.done
+    ) {
+        searchIterItem = await entitySearchResultCursor.next();
+
+        if (
+        searchIterItem.value &&
+        !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+        ) {
+        alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+        update(() => {
+            plantTypesOptions.value.push(searchIterItem.value);
+        });
+        }
+    }
 };
+
 
 const seedAssetsFilterFn = async (val, update, abort) => {
-  update(async () => {
-    const needle = val.toLowerCase();
-    const filteredSeedAssets = await findseedassets(assetLink.entitySource);
-    seedAssetsOptions.value = filteredSeedAssets.filter((seed_asset) =>
-      seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
+    console.log("val", val)
+    const searchRequest = {
+        id: uuidv4(),
+        type: "text-search",
+        entityType: "asset",
+        entityBundles: ["seed"],
+        term: val,
+    };
+    console.log("searchRequest", searchRequest)
+
+    let entitySearchResultCursor = assetLink.searchEntities(
+        searchRequest,
+        "local"
     );
-    console.log("SeedAssetOptions: ", seedAssetsOptions);
-  });
+
+    if (assetLink.connectionStatus.isOnline.value) {
+        entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+        entitySearchResultCursor,
+        assetLink.searchEntities(searchRequest, "remote")
+        );
+    }
+
+    update(() => {
+        console.log("seedAssetsOptions before update", seedAssetsOptions)
+        seedAssetsOptions.value = [];
+        console.log("seedAssetsOptions after update", seedAssetsOptions)
+    });
+
+    const alreadyFoundEntityIds = new Set();
+
+    let searchIterItem = {};
+    while (
+        seedAssetsOptions.value.length < maxDesiredSearchEntries &&
+        !searchIterItem.done
+    ) {
+        searchIterItem = await entitySearchResultCursor.next();
+
+        if (
+        searchIterItem.value &&
+        !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+        ) {
+        alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+        update(() => {
+            seedAssetsOptions.value.push(searchIterItem.value);
+        });
+        }
+    }
 };
 
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
-// Define a ref for presetting plantType
-const presetPlantType = ref(null);
 
-
-// Watch for changes in the selected seedAsset
 watch(seedAsset, async (newValue) => {
-  console.log("Type of seed", typeof newValue)
-  if (seedAsset && typeof newValue != 'string') {
+  console.log("Type of seed", typeof newValue);
+  if (newValue !== null && typeof newValue !== 'string' && newValue.plantTypeID) {
     try {
-      // Perform actions based on the selected seedAsset
-      console.log('Selected seedAsset:', newValue);
+        // Perform actions based on the selected seedAsset
+        console.log('Selected seedAsset:', newValue);
 
-      // Extract the relationships, specifically the plant_type ID
-      const plantTypeId = newValue.plantTypeID;
-
-      // Perform further actions with plantTypeId if needed
-      //console.log('Plant Type ID:', plantTypeId);
-
-      const SeedPlantType = await assetLink.entitySource.query((q) =>
-        q.findRecords('taxonomy_term--plant_type').filter({ attribute: 'id', op: 'equal', value: plantTypeId })
-      );
-      const seedPlantName = SeedPlantType[0].attributes.name;
-      console.log('Plant Type:', seedPlantName)
-
-      // Set presetPlantType to the extracted name
-      presetPlantType.value = seedPlantName;
+        // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
+        const selectedPlantType = plantTypeOptionsWithLabel.value.find(
+            (plantTypeObj) => plantTypeObj.value === newValue.plantTypeID
+        );
+        // Update the plantType with the selected plant type object
+        plantType.value = selectedPlantType;
 
     } catch (error) {
-      console.error('Error fetching seed:', error);
+        console.error('Error fetching seed:', error);
     }
+  } else {
+    // If seedAsset is null or does not have a valid plantTypeID, set plantType to null
+    plantType.value = null;
+    console.log("Reset planttype")
   }
 });
 
-// Watch for changes in presetPlantType and update plantType accordingly
-watch(presetPlantType, (newValue) => {
-  if (newValue) {
-    plantType.value = newValue;
-  }
-});
 
 // Watch for changes in the selected plantType
 watch(plantType, (newValue) => {
   if (newValue) {
     // Perform actions based on the selected plantType
-    //console.log('Selected plantType:', newValue);
-    // Your custom logic here...
+    console.log('Selected plantType:', newValue);
+    // Extract maturity_days from newValue
+    const maturityDays = newValue.maturity_days;
+    const transplantDays = newValue.transplant_days;
+
+    // Calculate the date after adding maturity_days
+    const prefillHarvestDate = new Date();
+    prefillHarvestDate.setDate(prefillHarvestDate.getDate() + parseInt(maturityDays));
+    console.log("Harvest Date", prefillHarvestDate)
+    const harvest_date = new Date(prefillHarvestDate);
+    const harvestYear = harvest_date.getFullYear();
+    const harvestMonth = (harvest_date.getMonth() + 1).toString().padStart(2, '0');
+    const harvestDay = harvest_date.getDate().toString().padStart(2, '0');
+
+    // Update selectedDate with the prefill date
+    harvestDate.value = `${harvestYear}/${harvestMonth}/${harvestDay}`;
+    console.log("harvestDate: ", harvestDate)
+
+    // Calculate the date after adding transplant_days
+    const prefillTransplantDate = new Date();
+    prefillTransplantDate.setDate(prefillTransplantDate.getDate() + parseInt(transplantDays));
+    console.log("Transplant Date", prefillTransplantDate)
+    const transplant_date = new Date(prefillTransplantDate);
+    const transplantYear = transplant_date.getFullYear();
+    const transplantMonth = (transplant_date.getMonth() + 1).toString().padStart(2, '0');
+    const transplantDay = transplant_date.getDate().toString().padStart(2, '0');
+
+    // Update selectedDate with the prefill date
+    transPlantingDate.value = `${transplantYear}/${transplantMonth}/${transplantDay}`;
+    console.log("transPlantingDate: ", transPlantingDate)
   }
 });
 
 
+// Create a computed property for season options with labels
+const seasonOptionsWithLabel = computed(() => {
+  return seasonsOptions.value.map((season) => ({
+    label: `${season.entity.attributes.name} (${season.entity.attributes.drupal_internal__tid})`,
+    value: season.entity.id,
+    name: season.entity.attributes.name
+  }));
+});
+
+// Create a computed property for seed asset options with labels
+const plantTypeOptionsWithLabel = computed(() => {
+  return plantTypesOptions.value.map((plant_type) => ({
+    label: `${plant_type.entity.attributes.name} (${plant_type.entity.attributes.drupal_internal__tid})`,
+    value: plant_type.entity.id,
+    name: plant_type.entity.attributes.name,
+    transplant_days: plant_type.entity.attributes.transplant_days,
+    maturity_days: plant_type.entity.attributes.maturity_days
+  }));
+});
+
 // Create a computed property for seed asset options with labels
 const seedAssetOptionsWithLabel = computed(() => {
   return seedAssetsOptions.value.map((seed_asset) => ({
-    label: `${seed_asset.attributes.name} (${seed_asset.attributes.drupal_internal__id})`,
-    value: seed_asset.id,
-    plantTypeID: seed_asset.relationships.plant_type.data[0].id
+    label: `${seed_asset.entity.attributes.name} (${seed_asset.entity.attributes.drupal_internal__id})`,
+    value: seed_asset.entity.id,
+    name: seed_asset.entity.attributes.name,
+    plantTypeID: seed_asset.entity.relationships.plant_type.data[0].id
   }));
 });
+
+
+const additionalFilters = [
+  // Only allow moving to locations
+  { attribute: 'is_location', op: 'equal', value: true },
+  // Do not allow moving to self
+  { attribute: 'drupal_internal__id', op: '<>', value: props.asset.attributes.drupal_internal__id },
+];
 
 </script>
 
@@ -245,9 +425,10 @@ const seedAssetOptionsWithLabel = computed(() => {
              <q-select
                 filled
                 v-model="plantSeason"
-                :options="seasonsOptions"
+                :options="seasonOptionsWithLabel"
                 label="Season"
                 use-input
+                clearable
                 input-debounce="300"
                 datalist
                 @filter="seasonsFilterFn"
@@ -261,6 +442,7 @@ const seedAssetOptionsWithLabel = computed(() => {
                 :options="seedAssetOptionsWithLabel"
                 label="Seed asset"
                 use-input
+                clearable
                 input-debounce="300"
                 datalist
                 @filter="seedAssetsFilterFn"
@@ -271,9 +453,10 @@ const seedAssetOptionsWithLabel = computed(() => {
             <q-select
                 filled
                 v-model="plantType"
-                :options="plantTypesOptions"
+                :options="plantTypeOptionsWithLabel"
                 label="Species"
                 use-input
+                clearable
                 input-debounce="300"
                 datalist
                 @filter="plantTypesFilterFn"
@@ -287,6 +470,79 @@ const seedAssetOptionsWithLabel = computed(() => {
                 filled
                 autogrow
             />
+        </div>
+        <div class="q-pa-md">
+            <q-toggle 
+                v-model="transPlanting"
+                label="Create transplanting log"
+                icon="mdi-sprout"
+                size="xl"
+                color="green"
+            />
+        </div>
+        <div v-if="transPlanting">
+            <div class="q-pa-md">
+                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
+                    <template v-slot:append>
+                        <q-icon name="mdi-calendar" class="cursor-pointer">
+                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                            <q-date
+                                v-model="transPlantingDate"
+                                today-btn
+                                subtitle="Transplanting date"
+                                first-day-of-week="1"
+                            >
+                            <div class="row items-center justify-end">
+                                <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
+                            </div>
+                            </q-date>
+                        </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
+            </div>
+            <div class="q-pa-md">
+                <entity-select
+                label="Transplant location"
+                entity-type="asset"
+                v-model="transplantLocation"
+                :additional-filters="additionalFilters"
+                ></entity-select>
+        </div>
+            
+            
+        </div>
+        <div class="q-pa-md">
+            <q-toggle 
+                v-model="harvest"
+                label="Create harvest log"
+                icon="mdi-basket-outline"
+                size="xl"
+                color="green"
+            />
+        </div>
+        <div v-if="harvest">
+            <div class="q-pa-md">
+                <q-input filled v-model="harvestDate" mask="date" :rules="['date']" label="Harvest date">
+                    <template v-slot:append>
+                        <q-icon name="mdi-calendar" class="cursor-pointer">
+                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                            <q-date
+                                v-model="harvestDate"
+                                today-btn
+                                subtitle="Harvest date"
+                                first-day-of-week="1"
+                            >
+                            <div class="row items-center justify-end">
+                                <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close"/>
+                            </div>
+                            </q-date>
+                        </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
+            </div>
+            
         </div>
 
         <div class="q-pa-md">
@@ -325,7 +581,11 @@ const seedAssetOptionsWithLabel = computed(() => {
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="seedCount <= 0 || !seedAsset || !plantSeason || !plantType"
+          :disabled="
+                (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ||
+                (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
+                (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
+          "
         />
       </div>
     </q-card>
@@ -345,43 +605,114 @@ export default {
 
 
     handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.plant_seed_inventory', action => {
-      action.type('asset-action');
-      action.weight(-10);
+        action.type('asset-action');
+        action.weight(-10);
 
-      console.log('V0.66')
+        console.log('Planting plugin: V0.121')
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived'
-          // TODO: Implement a better predicate here...
-          && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) );
+        action.showIf(({ asset }) => asset.attributes.status !== 'archived'
+            // TODO: Implement a better predicate here...
+            && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) );
 
-      const doActionWorkflow = async (asset) => {
-        try {
-            const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-            console.log('Dialog result:', dialogResult);
-            const seedCount = dialogResult.seedCount;
-            console.log('seedCount', seedCount)
-            const plantSeason = dialogResult.plantSeason;
-            console.log('plantSeason', plantSeason)
-            const plantType = dialogResult.plantType;
-            console.log('plantType', plantType)
-            const notes = dialogResult.notes;
-            console.log('notes', notes)
-            const seedAsset = dialogResult.seedAsset;
-            console.log('seedAsset', seedAsset)
-            const photos = dialogResult.capturedPhotos;
-            console.log('Photos', photos)
-           
+        const doActionWorkflow = async (asset) => {
+            try {
+                const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
+                console.log('Dialog result:', dialogResult);
+                const seedCount = dialogResult.seedCount;
+                console.log('seedCount', seedCount)
+                const plantSeason = dialogResult.plantSeason;
+                console.log('plantSeason', plantSeason)
+                let seasonName;
+                if (typeof plantSeason === 'string') {
+                    seasonName = plantSeason
+                } else {
+                    seasonName = plantSeason.name
+                }
+                console.log('seasonName', seasonName)
+                const plantType = dialogResult.plantType;
+                console.log('plantType', plantType)
+                let plantTypeName;
+                if (typeof plantType === 'string') {
+                    plantTypeName = plantType
+                } else {
+                    plantTypeName = plantType.name
+                }
+                const notes = dialogResult.notes;
+                console.log('notes', notes)
+                const seedAsset = dialogResult.seedAsset;
+                console.log('seedAsset', seedAsset)
+                const photos = dialogResult.capturedPhotos;
+                console.log('Photos', photos)
+                const transPlanting = dialogResult.transPlanting;
+                console.log('transPlanting', transPlanting)
+                const transPlantingDate = dialogResult.transPlantingDate;
+                console.log('transPlantingDate', transPlantingDate)
+                const transplantLocation = dialogResult.transplantLocation;
+                console.log('transplantLocation', transplantLocation)
+                const harvest = dialogResult.harvest;
+                console.log('harvest', harvest)
+                const harvestDate = dialogResult.harvestDate;
+                console.log('harvestDate', harvestDate)
+            
 
-            let seed_id;
-            // If seed array is empty, add a new record
-            if (typeof seedAsset === 'string') {
-                console.log("Seed name for creaton of new seed", seedAsset)
-                seed_id = uuidv4();
-                const newSeedRecord = {
-                    type: 'asset--seed',
-                    id: seed_id,
+                let seed_id;
+                // If seed array is empty, add a new record
+                if (typeof seedAsset === 'string') {
+                    console.log("Seed name for creaton of new seed", seedAsset)
+                    seed_id = uuidv4();
+                    const newSeedRecord = {
+                        type: 'asset--seed',
+                        id: seed_id,
+                        attributes: {
+                            name: seedAsset
+                        },
+                        relationships: {
+                            plant_type: {
+                                data: [
+                                    {
+                                        type: 'taxonomy_term--plant_type',
+                                        id: uuidv4(),
+                                        '$relateByName': {
+                                        name: plantTypeName,
+                                        },
+                                    }
+                                ]
+                            },
+                        }
+                    };
+
+                    console.log('New Seed Record', newSeedRecord);
+                    assetLink.entitySource.update(
+                        (t) => [
+                        t.addRecord(newSeedRecord),
+                        ],
+                        {label: `Add new seeds`});
+
+                    console.log('Added Seed Record', newSeedRecord);
+
+                } else {
+                    // Extract the id from the first item (if available)
+                    seed_id = seedAsset.value;
+                }
+
+                console.log('Final Seed ID', seed_id);
+
+                const plantName = `${seasonName} ${asset.attributes.name} ${plantTypeName}`;
+
+                const plantID = uuidv4();
+
+
+                if (!seedCount || seedCount <= 0) {
+                return;
+                }
+
+
+                const plant = {
+                    type: 'asset--plant',
+                    id: plantID,
                     attributes: {
-                        name: seedAsset
+                        name: `${plantName}`,
+                        status: 'active',
                     },
                     relationships: {
                         plant_type: {
@@ -390,178 +721,193 @@ export default {
                                     type: 'taxonomy_term--plant_type',
                                     id: uuidv4(),
                                     '$relateByName': {
-                                    name: plantType,
+                                    name: plantTypeName,
                                     },
                                 }
                             ]
                         },
-                    }
-                };
-
-                console.log('New Seed Record', newSeedRecord);
-                assetLink.entitySource.update(
-                    (t) => [
-                    t.addRecord(newSeedRecord),
-                    ],
-                    {label: `Add new seeds`});
-
-                console.log('Added Seed Record', newSeedRecord);
-
-            } else {
-                // Extract the id from the first item (if available)
-                seed_id = seedAsset.value;
-            }
-
-            console.log('Final Seed ID', seed_id);
-
-            const plantName = `${plantSeason} ${asset.attributes.name} ${plantType}`;
-
-            const plantID = uuidv4();
-
-
-            if (!seedCount || seedCount <= 0) {
-            return;
-            }
-
-
-            const plant = {
-                type: 'asset--plant',
-                id: plantID,
-                attributes: {
-                    name: `${plantName}`,
-                    status: 'active',
-                },
-                relationships: {
-                    plant_type: {
-                        data: [
-                            {
-                                type: 'taxonomy_term--plant_type',
-                                id: uuidv4(),
-                                '$relateByName': {
-                                name: plantType,
-                                },
-                            }
-                        ]
-                    },
-                    season: {
-                        data: [
-                            {
-                                type: 'taxonomy_term--season',
-                                id: uuidv4(),
-                                '$relateByName': {
-                                name: plantSeason,
-                                },
-                            }
-                        ]
-                    },
-                    image: {
-                        data: photos.map(({ id, fileName, fileDataUrl }) =>
-                            ({
-                                type: 'file--file',
-                                id,
-                                '$upload': {
-                                    fileName,
-                                    fileDataUrl,
+                        season: {
+                            data: [
+                                {
+                                    type: 'taxonomy_term--season',
+                                    id: uuidv4(),
+                                    '$relateByName': {
+                                    name: seasonName,
+                                    },
                                 }
-                            })
-                            ),
+                            ]
+                        },
+                        image: {
+                            data: photos.map(({ id, fileName, fileDataUrl }) =>
+                                ({
+                                    type: 'file--file',
+                                    id,
+                                    '$upload': {
+                                        fileName,
+                                        fileDataUrl,
+                                    }
+                                })
+                                ),
+                            },
+                        },
+                    }
+                
+
+                console.log('plant:', plant)
+
+                const seedQuantity = {
+                    type: 'quantity--material',
+                    id: uuidv4(),
+                    attributes: {
+                        measure: 'count',
+                        value: {
+                            numerator: seedCount,
+                            denominator: 1,
+                            decimal: `${seedCount}`,
+                        },
+                        inventory_adjustment: 'decrement',
+                    },
+                    relationships: {
+                        inventory_asset: {
+                        data: {
+                            type: 'asset--seed',
+                            id: seed_id,
+                            }
+                        },
+                        units: {
+                            data: {
+                                type: 'taxonomy_term--unit',
+                                id: uuidv4(),
+                                '$relateByName': {
+                                name: UNIT_NAME,
+                                },
+                            }
                         },
                     },
+                };
+
+                console.log('seedQuantity:', seedQuantity)
+
+                const plantingLog = {
+                    type: 'log--seeding',
+                    attributes: {
+                        name: `Planted ${seedCount} seeds`,
+                        timestamp: formatRFC3339(new Date()),
+                        status: "done",
+                        notes: { value: `${notes}` },
+                    },
+                    relationships: {
+                        asset: {
+                            data: [
+                                {
+                                type: 'asset--plant',
+                                id: plantID,
+                                }
+                            ]
+                        },
+                        location: {
+                            data: [
+                                {
+                                type: asset.type,
+                                id: asset.id,
+                                }
+                            ]
+                        },
+                        quantity: {
+                            data: [
+                                {
+                                type: seedQuantity.type,
+                                id: seedQuantity.id,
+                                }
+                            ]
+                        },
+                    },
+                };
+                const transplantingLog = {
+                    type: 'log--transplant',
+                    attributes: {
+                        name: `Transplant ${plantName}`,
+                        timestamp: formatRFC3339(new Date(transPlantingDate)),
+                        status: "pending",
+
+                    },
+                    relationships: {
+                        asset: {
+                            data: [
+                                {
+                                type: 'asset--plant',
+                                id: plantID,
+                                }
+                            ]
+                        },
+                        location: {
+                            data: [
+                                {
+                                type: transplantLocation.type,
+                                id: transplantLocation.id,
+                                }
+                            ]
+                        },
+                    },
+                };
+
+                console.log('transplantingLog:', transplantingLog)
+
+                const harvestLog = {
+                    type: 'log--harvest',
+                    attributes: {
+                        name: `Harvest ${plantName}`,
+                        timestamp: formatRFC3339(new Date(harvestDate)),
+                        status: "pending",
+                        
+                    },
+                    relationships: {
+                        asset: {
+                            data: [
+                                {
+                                type: 'asset--plant',
+                                id: plantID,
+                                }
+                            ]
+                        },
+                    },
+                };
+
+                console.log('harvestLog:', harvestLog)
+
+
+                assetLink.entitySource.update(
+                (t) => [
+                    t.addRecord(plant),
+                    t.addRecord(seedQuantity),
+                    t.addRecord(plantingLog),
+                ],
+                {label: `Plant from seeds`});
+                if (transPlanting) {
+                    assetLink.entitySource.update(
+                        (t) => [
+                            t.addRecord(transplantingLog),
+                        ],
+                        {label: `Create transplanting log`});
                 }
+                if (harvest) {
+                    assetLink.entitySource.update(
+                        (t) => [
+                            t.addRecord(harvestLog),
+                        ],
+                        {label: `Create harvest log`});
+                }
+            } catch (error) {
+                console.error('Error in doActionWorkflow:', error);
+            }
             
-
-            console.log('plant:', plant)
-
-            const seedQuantity = {
-                type: 'quantity--material',
-                id: uuidv4(),
-                attributes: {
-                    measure: 'count',
-                    value: {
-                        numerator: seedCount,
-                        denominator: 1,
-                        decimal: `${seedCount}`,
-                    },
-                    inventory_adjustment: 'decrement',
-                },
-                relationships: {
-                    inventory_asset: {
-                    data: {
-                        type: 'asset--seed',
-                        id: seed_id,
-                        }
-                    },
-                    units: {
-                        data: {
-                            type: 'taxonomy_term--unit',
-                            id: uuidv4(),
-                            '$relateByName': {
-                            name: UNIT_NAME,
-                            },
-                        }
-                    },
-                },
-            };
-
-            console.log('seedQuantity:', seedQuantity)
-
-            const plantingLog = {
-                type: 'log--seeding',
-                attributes: {
-                    name: `Planted ${seedCount} seeds`,
-                    timestamp: formatRFC3339(new Date()),
-                    status: "done",
-                    notes: { value: `${notes}` },
-                },
-                relationships: {
-                    asset: {
-                        data: [
-                            {
-                            type: 'asset--plant',
-                            id: plantID,
-                            }
-                        ]
-                    },
-                    location: {
-                        data: [
-                            {
-                            type: asset.type,
-                            id: asset.id,
-                            }
-                        ]
-                    },
-                    quantity: {
-                        data: [
-                            {
-                            type: seedQuantity.type,
-                            id: seedQuantity.id,
-                            }
-                        ]
-                    },
-                },
-            };
-
-            console.log('plantingLog:', plantingLog)
-
-
-            assetLink.entitySource.update(
-            (t) => [
-              t.addRecord(plant),
-              t.addRecord(seedQuantity),
-              t.addRecord(plantingLog),
-            ],
-            {label: `Plant from seeds`});
+        };
+        try {
+            action.component(({ asset }) =>
+                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant from seeds" ));
         } catch (error) {
-            console.error('Error in doActionWorkflow:', error);
+                console.error('Error in doActionWorkflow:', error);
         }
-        
-      };
-      try {
-        action.component(({ asset }) =>
-            h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant from seeds" ));
-      } catch (error) {
-            console.error('Error in doActionWorkflow:', error);
-      }
       
     });
   }
