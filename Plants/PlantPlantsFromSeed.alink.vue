@@ -603,7 +603,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.117')
+        console.log('Planting plugin: V0.118')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -818,17 +818,80 @@ export default {
                         },
                     },
                 };
+                const transPlantingLog = {
+                    type: 'log--transplanting',
+                    attributes: {
+                        name: `Transplanted ${seedCount} plants`,
+                        timestamp: formatRFC3339(new Date(transPlantingDate)),
+                        status: "pending",
 
-                console.log('plantingLog:', plantingLog)
+                    },
+                    relationships: {
+                        asset: {
+                            data: [
+                                {
+                                type: 'asset--plant',
+                                id: plantID,
+                                }
+                            ]
+                        },
+                        location: {
+                            data: [
+                                {
+                                type: transPlantLocation.type,
+                                id: transPlantLocation.id,
+                                }
+                            ]
+                        },
+                    },
+                };
+
+                console.log('transPlantingLog:', transPlantingLog)
+
+                const harvestLog = {
+                    type: 'log--harvest',
+                    attributes: {
+                        name: `Harvest ${plantName}`,
+                        timestamp: formatRFC3339(new Date(harvestDate)),
+                        status: "pending",
+                        
+                    },
+                    relationships: {
+                        asset: {
+                            data: [
+                                {
+                                type: 'asset--plant',
+                                id: plantID,
+                                }
+                            ]
+                        },
+                    },
+                };
+
+                console.log('transPlantingLog:', transPlantingLog)
 
 
                 assetLink.entitySource.update(
                 (t) => [
-                t.addRecord(plant),
-                t.addRecord(seedQuantity),
-                t.addRecord(plantingLog),
+                    t.addRecord(plant),
+                    t.addRecord(seedQuantity),
+                    t.addRecord(plantingLog),
                 ],
                 {label: `Plant from seeds`});
+                if (transPlanting) {
+                    assetLink.entitySource.update(
+                        (t) => [
+                            t.addRecord(transPlantingLog),
+                        ],
+                        {label: `Create transplanting log`});
+                }
+                if (harvest) {
+                    assetLink.entitySource.update(
+                        (t) => [
+                            t.addRecord(harvestLog),
+                        ],
+                        {label: `Create transplanting log`});
+                }
             } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
             }
