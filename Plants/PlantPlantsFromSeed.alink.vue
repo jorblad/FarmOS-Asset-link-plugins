@@ -818,7 +818,7 @@ export default {
                         },
                     },
                 };
-                const transPlantingLog = {
+                const transplantingLog = {
                     type: 'log--transplanting',
                     attributes: {
                         name: `Transplanted ${seedCount} plants`,
@@ -868,7 +868,7 @@ export default {
                     },
                 };
 
-                console.log('transPlantingLog:', transPlantingLog)
+                console.log('harvestLog:', harvestLog)
 
 
                 assetLink.entitySource.update(
@@ -881,7 +881,7 @@ export default {
                 if (transPlanting) {
                     assetLink.entitySource.update(
                         (t) => [
-                            t.addRecord(transPlantingLog),
+                            t.addRecord(transplantingLog),
                         ],
                         {label: `Create transplanting log`});
                 }
@@ -890,7 +890,7 @@ export default {
                         (t) => [
                             t.addRecord(harvestLog),
                         ],
-                        {label: `Create transplanting log`});
+                        {label: `Create harvest log`});
                 }
             } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
