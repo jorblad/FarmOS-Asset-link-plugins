@@ -443,18 +443,18 @@ const additionalFilters = [
             /> 
         </div>
         <div class="q-pa-md">
-            <q-tooltip
-                anchor="bottom middle"
-                self="top middle"
-                :offset="[0, 10]"
-                >
-                <q-toggle 
+            <q-toggle 
                     v-model="planting"
                     label="Create planting log"
                     icon="mdi-sprout"
                     size="xl"
                     color="green"
                 />
+            <q-tooltip
+                anchor="bottom middle"
+                self="top middle"
+                :offset="[0, 10]"
+                >
                 <template v-slot:content>
                     Disable this toggle if you are directly transplanting.
                 </template>
