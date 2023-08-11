@@ -603,7 +603,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.118')
+        console.log('Planting plugin: V0.119')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -642,8 +642,8 @@ export default {
                 console.log('transPlanting', transPlanting)
                 const transPlantingDate = dialogResult.transPlantingDate;
                 console.log('transPlantingDate', transPlantingDate)
-                const transPlantLocation = dialogResult.transPlantLocation;
-                console.log('transPlantLocation', transPlantLocation)
+                const transplantLocation = dialogResult.transplantLocation;
+                console.log('transplantLocation', transplantLocation)
                 const harvest = dialogResult.harvest;
                 console.log('harvest', harvest)
                 const harvestDate = dialogResult.harvestDate;
@@ -838,15 +838,15 @@ export default {
                         location: {
                             data: [
                                 {
-                                type: transPlantLocation.type,
-                                id: transPlantLocation.id,
+                                type: transplantLocation.type,
+                                id: transplantLocation.id,
                                 }
                             ]
                         },
                     },
                 };
 
-                console.log('transPlantingLog:', transPlantingLog)
+                console.log('transplantingLog:', transplantingLog)
 
                 const harvestLog = {
                     type: 'log--harvest',
