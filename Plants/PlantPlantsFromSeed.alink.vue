@@ -143,7 +143,7 @@ onMounted(async () => {
   plant_types.value = await findplanttypes(assetLink.entitySource);
   seed_assets.value = await findseedassets(assetLink.entitySource);
   //location_assets.value = await findlocationassets(assetLink.entitySource);
-  plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
+  //plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
   
   
 });
@@ -636,7 +636,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.110')
+        console.log('Planting plugin: V0.111')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -660,7 +660,7 @@ export default {
                 const plantType = dialogResult.plantType;
                 console.log('plantType', plantType)
                 let plantTypeName;
-                if (typeof plantSeason === 'string') {
+                if (typeof plantType === 'string') {
                     plantTypeName = plantType
                 } else {
                     plantTypeName = plantType.label
