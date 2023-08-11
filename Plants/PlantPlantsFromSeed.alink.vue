@@ -821,7 +821,7 @@ export default {
                 const transplantingLog = {
                     type: 'log--transplant',
                     attributes: {
-                        name: `Transplanted ${seedCount} plants`,
+                        name: `Transplant ${plantName}`,
                         timestamp: formatRFC3339(new Date(transPlantingDate)),
                         status: "pending",
 
