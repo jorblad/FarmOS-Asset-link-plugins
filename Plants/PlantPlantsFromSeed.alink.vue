@@ -144,7 +144,7 @@ onMounted(async () => {
   seed_assets.value = await findseedassets(assetLink.entitySource);
   //location_assets.value = await findlocationassets(assetLink.entitySource);
   //plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
-  await plantTypesFilterFn('', (update) => { /* no-op */ }, () => {});
+  await plantTypesFilterFn('');
   
   
 });
@@ -256,15 +256,6 @@ const plantTypesFilterFn = async (val, update, abort) => {
     }
 };
 
-// const plantTypesFilterFn = (val, update, abort) => {
-//     update(async () => {
-//     const needle = val.toLowerCase();
-//     const filteredPlantTypes = await findplanttypes(assetLink.entitySource);
-//     plantTypesOptions.value = filteredPlantTypes.filter((plant_type) =>
-//       plant_type.attributes.name.toLowerCase().indexOf(needle) > -1
-//     );
-//   });
-// };
 
 const seedAssetsFilterFn = async (val, update, abort) => {
     console.log("val", val)
@@ -316,17 +307,6 @@ const seedAssetsFilterFn = async (val, update, abort) => {
         }
     }
 };
-
-// const seedAssetsFilterFn = async (val, update, abort) => {
-//   update(async () => {
-//     const needle = val.toLowerCase();
-//     const filteredSeedAssets = await findseedassets(assetLink.entitySource);
-//     seedAssetsOptions.value = filteredSeedAssets.filter((seed_asset) =>
-//       seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
-//     );
-//     console.log("SeedAssetOptions: ", seedAssetsOptions);
-//   });
-// };
 
 
 
@@ -637,7 +617,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.113')
+        console.log('Planting plugin: V0.114')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
