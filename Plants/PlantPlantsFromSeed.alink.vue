@@ -361,6 +361,12 @@ watch(plantType, (newValue) => {
   }
 });
 
+watch(planting, (newValue) => {
+    if (!newValue) {
+        transPlanting.value = true;
+    }
+});
+
 
 // Create a computed property for season options with labels
 const seasonOptionsWithLabel = computed(() => {
@@ -444,6 +450,9 @@ const additionalFilters = [
                 size="xl"
                 color="green"
             />
+            <template v-slot:hint>
+                If you start with replanting you disable this.
+            </template>
         </div>
         <div v-if="planting">
             <div class="q-pa-md">
