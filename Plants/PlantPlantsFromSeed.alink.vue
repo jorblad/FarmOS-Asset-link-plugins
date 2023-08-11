@@ -819,7 +819,7 @@ export default {
                     },
                 };
                 const transplantingLog = {
-                    type: 'log--transplanting',
+                    type: 'log--transplant',
                     attributes: {
                         name: `Transplanted ${seedCount} plants`,
                         timestamp: formatRFC3339(new Date(transPlantingDate)),
