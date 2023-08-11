@@ -425,7 +425,7 @@ const additionalFilters = [
                 v-model.number="seedCount"
                 type="number"
                 filled
-                label="How many seeds?"
+                label="How many seeds/plants are you planting?"
             />
         </div>
         <div class="q-pa-md">
@@ -509,24 +509,27 @@ const additionalFilters = [
         </div>
         <div v-if="transPlanting">
             <div class="q-pa-md">
-                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
-                    <template v-slot:append>
-                        <q-icon name="mdi-calendar" class="cursor-pointer">
-                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date
-                                v-model="transPlantingDate"
-                                today-btn
-                                subtitle="Transplanting date"
-                                first-day-of-week="1"
-                            >
-                            <div class="row items-center justify-end">
-                                <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
-                            </div>
-                            </q-date>
-                        </q-popup-proxy>
-                        </q-icon>
-                    </template>
-                </q-input>
+                <div v-if="planting">
+                    <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
+                        <template v-slot:append>
+                            <q-icon name="mdi-calendar" class="cursor-pointer">
+                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                <q-date
+                                    v-model="transPlantingDate"
+                                    today-btn
+                                    subtitle="Transplanting date"
+                                    first-day-of-week="1"
+                                >
+                                <div class="row items-center justify-end">
+                                    <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
+                                </div>
+                                </q-date>
+                            </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                    </q-input>
+                </div>
+                
             </div>
             <div class="q-pa-md">
                 <entity-select
@@ -609,6 +612,7 @@ const additionalFilters = [
           label="Record"
           @click="onSubmit"
           :disabled="
+                (transPlanting && !planting && (seedCount <= 0 || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ||
                 (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ||
                 (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
                 (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
