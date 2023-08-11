@@ -80,32 +80,6 @@ watch(photoCaptureModel, async () => {
 
 // Find functions
 
-const findseasons = async (entitySource) => {
-    
-    let page = 1;
-    let allResults = [];
-
-    // Loop through pages until no more results are returned
-    while (true) {
-        const results = await entitySource.query((q) =>
-            q.findRecords('taxonomy_term--season')
-                .page({ number: page, size: 500 })
-        );
-
-        if (results.length === 0) {
-            break;
-        }
-
-        allResults = allResults.concat(results);
-        page++;
-    }
-
-    console.log('All taxonomy_term--season records:', allResults);
-
-    // Extract the attributes.name from each element and return as a list
-    return allResults.map((season) => season.attributes.name);
-};
-
 
 
 // const findplanttypes = async (entitySource) => {
@@ -204,7 +178,7 @@ const seasonsFilterFn = async (val, update, abort) => {
 };
 
 
-const plantTypesFilterFn = async (val, update, abort) => {
+const plantTypesFilterFn = async (val, update = () => {}, abort = () => {}) => {
     console.log("val", val)
     const searchRequest = {
         id: uuidv4(),
@@ -619,7 +593,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.115')
+        console.log('Planting plugin: V0.116')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -654,6 +628,16 @@ export default {
                 console.log('seedAsset', seedAsset)
                 const photos = dialogResult.capturedPhotos;
                 console.log('Photos', photos)
+                const transPlanting = dialogResult.transPlanting;
+                console.log('transPlanting', transPlanting)
+                const transPlantingDate = dialogResult.transPlantingDate;
+                console.log('transPlantingDate', transPlantingDate)
+                const transPlantLocation = dialogResult.transPlantLocation;
+                console.log('transPlantLocation', transPlantLocation)
+                const harvest = dialogResult.harvest;
+                console.log('harvest', harvest)
+                const harvestDate = dialogResult.harvestDate;
+                console.log('harvestDate', harvestDate)
             
 
                 let seed_id;
