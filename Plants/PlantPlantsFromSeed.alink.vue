@@ -382,7 +382,8 @@ watch(plantType, (newValue) => {
 const seasonOptionsWithLabel = computed(() => {
   return seasonsOptions.value.map((season) => ({
     label: `${season.entity.attributes.name} (${season.entity.attributes.drupal_internal__tid})`,
-    value: season.entity.id
+    value: season.entity.id,
+    name: season.entity.attributes.name
   }));
 });
 
@@ -391,6 +392,7 @@ const plantTypeOptionsWithLabel = computed(() => {
   return plantTypesOptions.value.map((plant_type) => ({
     label: `${plant_type.entity.attributes.name} (${plant_type.entity.attributes.drupal_internal__tid})`,
     value: plant_type.entity.id,
+    name: plant_type.entity.attributes.name,
     transplant_days: plant_type.entity.attributes.transplant_days,
     maturity_days: plant_type.entity.attributes.maturity_days
   }));
@@ -401,6 +403,7 @@ const seedAssetOptionsWithLabel = computed(() => {
   return seedAssetsOptions.value.map((seed_asset) => ({
     label: `${seed_asset.entity.attributes.name} (${seed_asset.entity.attributes.drupal_internal__id})`,
     value: seed_asset.entity.id,
+    name: seed_asset.entity.attributes.name,
     plantTypeID: seed_asset.entity.relationships.plant_type.data[0].id
   }));
 });
@@ -617,7 +620,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.114')
+        console.log('Planting plugin: V0.115')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -635,7 +638,7 @@ export default {
                 if (typeof plantSeason === 'string') {
                     seasonName = plantSeason
                 } else {
-                    seasonName = plantSeason.label
+                    seasonName = plantSeason.name
                 }
                 console.log('seasonName', seasonName)
                 const plantType = dialogResult.plantType;
@@ -644,7 +647,7 @@ export default {
                 if (typeof plantType === 'string') {
                     plantTypeName = plantType
                 } else {
-                    plantTypeName = plantType.label
+                    plantTypeName = plantType.name
                 }
                 const notes = dialogResult.notes;
                 console.log('notes', notes)
