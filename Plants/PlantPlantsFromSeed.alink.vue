@@ -34,7 +34,7 @@ const seasonsOptions = ref([]);
 const plantTypesOptions = ref([]);
 const seedAssetsOptions = ref([]);
 
-const maxDesiredSearchEntries = 20;
+const maxDesiredSearchEntries = 200;
 
 // Photo adding
 const capturedPhotos = ref([]);
@@ -144,6 +144,7 @@ onMounted(async () => {
   seed_assets.value = await findseedassets(assetLink.entitySource);
   //location_assets.value = await findlocationassets(assetLink.entitySource);
   //plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
+  await plantTypesFilterFn('', (update) => { /* no-op */ }, () => {});
   
   
 });
@@ -636,7 +637,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.112')
+        console.log('Planting plugin: V0.113')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
