@@ -266,15 +266,66 @@ const plantTypesFilterFn = async (val, update, abort) => {
 // };
 
 const seedAssetsFilterFn = async (val, update, abort) => {
-  update(async () => {
-    const needle = val.toLowerCase();
-    const filteredSeedAssets = await findseedassets(assetLink.entitySource);
-    seedAssetsOptions.value = filteredSeedAssets.filter((seed_asset) =>
-      seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
+    console.log("val", val)
+    const searchRequest = {
+        id: uuidv4(),
+        type: "text-search",
+        entityType: "asset",
+        entityBundles: ["seed"],
+        term: val,
+    };
+    console.log("searchRequest", searchRequest)
+
+    let entitySearchResultCursor = assetLink.searchEntities(
+        searchRequest,
+        "local"
     );
-    console.log("SeedAssetOptions: ", seedAssetsOptions);
-  });
+
+    if (assetLink.connectionStatus.isOnline.value) {
+        entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+        entitySearchResultCursor,
+        assetLink.searchEntities(searchRequest, "remote")
+        );
+    }
+
+    update(() => {
+        console.log("seedAssetsOptions before update", seedAssetsOptions)
+        seedAssetsOptions.value = [];
+        console.log("seedAssetsOptions after update", seedAssetsOptions)
+    });
+
+    const alreadyFoundEntityIds = new Set();
+
+    let searchIterItem = {};
+    while (
+        seedAssetsOptions.value.length < maxDesiredSearchEntries &&
+        !searchIterItem.done
+    ) {
+        searchIterItem = await entitySearchResultCursor.next();
+
+        if (
+        searchIterItem.value &&
+        !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+        ) {
+        alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+        update(() => {
+            seedAssetsOptions.value.push(searchIterItem.value);
+        });
+        }
+    }
 };
+
+// const seedAssetsFilterFn = async (val, update, abort) => {
+//   update(async () => {
+//     const needle = val.toLowerCase();
+//     const filteredSeedAssets = await findseedassets(assetLink.entitySource);
+//     seedAssetsOptions.value = filteredSeedAssets.filter((seed_asset) =>
+//       seed_asset.attributes.name.toLowerCase().indexOf(needle) > -1
+//     );
+//     console.log("SeedAssetOptions: ", seedAssetsOptions);
+//   });
+// };
 
 
 
@@ -357,7 +408,7 @@ const seasonOptionsWithLabel = computed(() => {
 // Create a computed property for seed asset options with labels
 const plantTypeOptionsWithLabel = computed(() => {
   return plantTypesOptions.value.map((plant_type) => ({
-    label: `${plant_type.attributes.name} (${plant_type.attributes.drupal_internal__tid})`,
+    label: `${plant_type.entity.attributes.name} (${plant_type.entity.attributes.drupal_internal__tid})`,
     value: plant_type.id,
     transplant_days: plant_type.attributes.transplant_days,
     maturity_days: plant_type.attributes.maturity_days
@@ -367,7 +418,7 @@ const plantTypeOptionsWithLabel = computed(() => {
 // Create a computed property for seed asset options with labels
 const seedAssetOptionsWithLabel = computed(() => {
   return seedAssetsOptions.value.map((seed_asset) => ({
-    label: `${seed_asset.attributes.name} (${seed_asset.attributes.drupal_internal__id})`,
+    label: `${seed_asset.entity.attributes.name} (${seed_asset.entity.attributes.drupal_internal__id})`,
     value: seed_asset.id,
     plantTypeID: seed_asset.relationships.plant_type.data[0].id
   }));
@@ -585,7 +636,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.109')
+        console.log('Planting plugin: V0.110')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
