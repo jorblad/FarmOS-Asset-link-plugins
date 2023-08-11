@@ -401,7 +401,7 @@ watch(plantType, (newValue) => {
 const seasonOptionsWithLabel = computed(() => {
   return seasonsOptions.value.map((season) => ({
     label: `${season.entity.attributes.name} (${season.entity.attributes.drupal_internal__tid})`,
-    value: season.id
+    value: season.entity.id
   }));
 });
 
@@ -409,9 +409,9 @@ const seasonOptionsWithLabel = computed(() => {
 const plantTypeOptionsWithLabel = computed(() => {
   return plantTypesOptions.value.map((plant_type) => ({
     label: `${plant_type.entity.attributes.name} (${plant_type.entity.attributes.drupal_internal__tid})`,
-    value: plant_type.id,
-    transplant_days: plant_type.attributes.transplant_days,
-    maturity_days: plant_type.attributes.maturity_days
+    value: plant_type.entity.id,
+    transplant_days: plant_type.entity.attributes.transplant_days,
+    maturity_days: plant_type.entity.attributes.maturity_days
   }));
 });
 
@@ -419,8 +419,8 @@ const plantTypeOptionsWithLabel = computed(() => {
 const seedAssetOptionsWithLabel = computed(() => {
   return seedAssetsOptions.value.map((seed_asset) => ({
     label: `${seed_asset.entity.attributes.name} (${seed_asset.entity.attributes.drupal_internal__id})`,
-    value: seed_asset.id,
-    plantTypeID: seed_asset.relationships.plant_type.data[0].id
+    value: seed_asset.entity.id,
+    plantTypeID: seed_asset.entity.relationships.plant_type.data[0].id
   }));
 });
 
@@ -636,7 +636,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.111')
+        console.log('Planting plugin: V0.112')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
