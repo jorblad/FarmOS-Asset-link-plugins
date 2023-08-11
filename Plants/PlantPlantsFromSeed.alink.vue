@@ -22,6 +22,7 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
+const planting = ref(true)
 const transPlanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
@@ -294,7 +295,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 
@@ -436,19 +437,31 @@ const additionalFilters = [
             /> 
         </div>
         <div class="q-pa-md">
-            <q-select
-                filled
-                v-model="seedAsset"
-                :options="seedAssetOptionsWithLabel"
-                label="Seed asset"
-                use-input
-                clearable
-                input-debounce="300"
-                datalist
-                @filter="seedAssetsFilterFn"
-                new-value-mode="add-unique"
+            <q-toggle 
+                v-model="planting"
+                label="Create planting log"
+                icon="mdi-sprout"
+                size="xl"
+                color="green"
             />
         </div>
+        <div v-if="planting">
+            <div class="q-pa-md">
+                <q-select
+                    filled
+                    v-model="seedAsset"
+                    :options="seedAssetOptionsWithLabel"
+                    label="Seed asset"
+                    use-input
+                    clearable
+                    input-debounce="300"
+                    datalist
+                    @filter="seedAssetsFilterFn"
+                    new-value-mode="add-unique"
+                />
+            </div>
+        </div>
+        
         <div class="q-pa-md">
             <q-select
                 filled
