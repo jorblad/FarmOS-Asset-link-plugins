@@ -582,7 +582,6 @@ const additionalFilters = [
           label="Record"
           @click="onSubmit"
           :disabled="
-                (transPlanting && harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transPlantLocation)) ||
                 (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transPlantLocation)) ||
                 (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
                 (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
