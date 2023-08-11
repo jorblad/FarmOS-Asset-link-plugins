@@ -108,40 +108,39 @@ const findseasons = async (entitySource) => {
 
 
 
-const findplanttypes = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRecords('taxonomy_term--plant_type')
-  );
+// const findplanttypes = async (entitySource) => {
+//   const results = await entitySource.query((q) =>
+//     q.findRecords('taxonomy_term--plant_type')
+//   );
 
-  const plant_types = results.flatMap((l) => l);
+//   const plant_types = results.flatMap((l) => l);
 
-  console.log('All taxonomy_term--plant_type records:', plant_types);
+//   console.log('All taxonomy_term--plant_type records:', plant_types);
 
-  // Extract the attributes.name from each element and return as a list
-  return plant_types;
-};
+//   // Extract the attributes.name from each element and return as a list
+//   return plant_types;
+// };
 
-const findseedassets = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRecords('asset--seed')
-  );
+// const findseedassets = async (entitySource) => {
+//   const results = await entitySource.query((q) =>
+//     q.findRecords('asset--seed')
+//   );
 
-  const seed_assets = results.flatMap((l) => l);
+//   const seed_assets = results.flatMap((l) => l);
 
-  console.log('All asset--seed records:', seed_assets);
+//   console.log('All asset--seed records:', seed_assets);
 
-  return seed_assets;
-};
+//   return seed_assets;
+// };
 
 
-const plant_types = ref([]);
-const seed_assets = ref([]);
+//const plant_types = ref([]);
+//const seed_assets = ref([]);
 
 
 onMounted(async () => {
-  //seasons.value = await findseasons(assetLink.entitySource);
-  plant_types.value = await findplanttypes(assetLink.entitySource);
-  seed_assets.value = await findseedassets(assetLink.entitySource);
+  //plant_types.value = await findplanttypes(assetLink.entitySource);
+  //seed_assets.value = await findseedassets(assetLink.entitySource);
   //location_assets.value = await findlocationassets(assetLink.entitySource);
   //plantTypesOptions.value = await findplanttypes(assetLink.entitySource);
   await plantTypesFilterFn('');
