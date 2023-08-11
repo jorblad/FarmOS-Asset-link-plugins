@@ -133,22 +133,9 @@ const findseedassets = async (entitySource) => {
   return seed_assets;
 };
 
-// const findlocationassets = async (entitySource) => {
-//   const results = await entitySource.query((q) =>
-//     q.findRelatedRecords({ attribute: 'is_location', op: 'equal', value: true })
-//   );
 
-//   const location_assets = results.flatMap((l) => l);
-
-//   console.log('All asset--location records:', location_assets);
-
-//   return location_assets;
-// };
-
-const seasons = ref([]);
 const plant_types = ref([]);
 const seed_assets = ref([]);
-const location_assets = ref([]);
 
 
 onMounted(async () => {
@@ -164,16 +151,6 @@ onMounted(async () => {
 const plantSeason = ref(null);
 const plantType = ref(null);
 const seedAsset = ref(null);
-const locationAsset = ref(null);
-
-// const seasonsFilterFn = (val, update, abort) => {
-//   update(() => {
-//     const needle = val.toLowerCase();
-//     seasonsOptions.value = seasons.value.filter((season) =>
-//       season.toLowerCase().indexOf(needle) > -1
-//     );
-//   });
-// };
 
 const seasonsFilterFn = async (val, update, abort) => {
     console.log("val", val)
@@ -227,15 +204,66 @@ const seasonsFilterFn = async (val, update, abort) => {
 };
 
 
-const plantTypesFilterFn = (val, update, abort) => {
-    update(async () => {
-    const needle = val.toLowerCase();
-    const filteredPlantTypes = await findplanttypes(assetLink.entitySource);
-    plantTypesOptions.value = filteredPlantTypes.filter((plant_type) =>
-      plant_type.attributes.name.toLowerCase().indexOf(needle) > -1
+const plantTypesFilterFn = async (val, update, abort) => {
+    console.log("val", val)
+    const searchRequest = {
+        id: uuidv4(),
+        type: "text-search",
+        entityType: "taxonomy_term",
+        entityBundles: ["plant_type"],
+        term: val,
+    };
+    console.log("searchRequest", searchRequest)
+
+    let entitySearchResultCursor = assetLink.searchEntities(
+        searchRequest,
+        "local"
     );
-  });
+
+    if (assetLink.connectionStatus.isOnline.value) {
+        entitySearchResultCursor = new RacingLocalRemoteAsyncIterator(
+        entitySearchResultCursor,
+        assetLink.searchEntities(searchRequest, "remote")
+        );
+    }
+
+    update(() => {
+        console.log("plantTypesOptions before update", plantTypesOptions)
+        plantTypesOptions.value = [];
+        console.log("plantTypesOptions after update", plantTypesOptions)
+    });
+
+    const alreadyFoundEntityIds = new Set();
+
+    let searchIterItem = {};
+    while (
+        plantTypesOptions.value.length < maxDesiredSearchEntries &&
+        !searchIterItem.done
+    ) {
+        searchIterItem = await entitySearchResultCursor.next();
+
+        if (
+        searchIterItem.value &&
+        !alreadyFoundEntityIds.has(searchIterItem.value.entity.id)
+        ) {
+        alreadyFoundEntityIds.add(searchIterItem.value.entity.id);
+
+        update(() => {
+            plantTypesOptions.value.push(searchIterItem.value);
+        });
+        }
+    }
 };
+
+// const plantTypesFilterFn = (val, update, abort) => {
+//     update(async () => {
+//     const needle = val.toLowerCase();
+//     const filteredPlantTypes = await findplanttypes(assetLink.entitySource);
+//     plantTypesOptions.value = filteredPlantTypes.filter((plant_type) =>
+//       plant_type.attributes.name.toLowerCase().indexOf(needle) > -1
+//     );
+//   });
+// };
 
 const seedAssetsFilterFn = async (val, update, abort) => {
   update(async () => {
@@ -247,17 +275,6 @@ const seedAssetsFilterFn = async (val, update, abort) => {
     console.log("SeedAssetOptions: ", seedAssetsOptions);
   });
 };
-
-/* const locationFilterFn = async (val, update, abort) => {
-  update(async () => {
-    const needle = val.toLowerCase();
-    const filteredLocations = await findlocationassets(assetLink.entitySource);
-    seedAssetsOptions.value = filteredLocations.filter((location_asset) =>
-      location_asset.attributes.name.toLowerCase().indexOf(needle) > -1
-    );
-    console.log("locationsOptions: ", locationOptions);
-  });
-}; */
 
 
 
@@ -472,18 +489,6 @@ const additionalFilters = [
                 v-model="transplantLocation"
                 :additional-filters="additionalFilters"
                 ></entity-select>
-                <!-- <q-select
-                    filled
-                    v-model="transplantLocation"
-                    :options="locationOptions"
-                    label="Transplant location"
-                    use-input
-                    clearable
-                    input-debounce="300"
-                    datalist
-                    @filter="locationFilterFn"
-                    new-value-mode="add-unique"
-                />  -->
         </div>
             
             
