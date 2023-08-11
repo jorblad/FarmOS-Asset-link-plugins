@@ -391,33 +391,6 @@ const seedAssetOptionsWithLabel = computed(() => {
   }));
 });
 
-const isSubmitDisabled = computed(() => {
-    if (transPlanting) {
-        return (
-          seedCount <= 0 ||
-          !seedAsset ||
-          !plantSeason ||
-          !plantType ||
-          !transPlantingDate ||
-          !transplantLocation
-        );
-      } else if (harvest) {
-        return (
-          seedCount <= 0 ||
-          !seedAsset ||
-          !plantSeason ||
-          !plantType ||
-          !harvestDate
-        );
-      } else {
-        return (
-          seedCount <= 0 ||
-          !seedAsset ||
-          !plantSeason ||
-          !plantType
-        );
-      }
-})
 
 const additionalFilters = [
   // Only allow moving to locations
@@ -608,7 +581,12 @@ const additionalFilters = [
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="isSubmitDisabled"
+          :disabled="
+                (transPlanting && harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transPlantLocation)) ||
+                (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transPlantLocation)) ||
+                (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
+                (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
+          "
         />
       </div>
     </q-card>
@@ -631,7 +609,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.119')
+        console.log('Planting plugin: V0.120')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
