@@ -443,16 +443,23 @@ const additionalFilters = [
             /> 
         </div>
         <div class="q-pa-md">
-            <q-toggle 
-                v-model="planting"
-                label="Create planting log"
-                icon="mdi-sprout"
-                size="xl"
-                color="green"
-            />
-            <template v-slot:hint>
-                If you start with replanting you disable this.
-            </template>
+            <q-tooltip
+                anchor="bottom middle"
+                self="top middle"
+                :offset="[0, 10]"
+                >
+                <q-toggle 
+                    v-model="planting"
+                    label="Create planting log"
+                    icon="mdi-sprout"
+                    size="xl"
+                    color="green"
+                />
+                <template v-slot:content>
+                    Disable this toggle if you are directly transplanting.
+                </template>
+            </q-tooltip>
+
         </div>
         <div v-if="planting">
             <div class="q-pa-md">
@@ -630,7 +637,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.121')
+        console.log('Planting plugin: V0.122')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
