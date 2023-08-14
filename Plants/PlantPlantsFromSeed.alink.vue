@@ -639,7 +639,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.122')
+        console.log('Planting plugin: V0.123')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -788,36 +788,65 @@ export default {
 
                 console.log('plant:', plant)
 
-                const seedQuantity = {
-                    type: 'quantity--material',
-                    id: uuidv4(),
-                    attributes: {
-                        measure: 'count',
-                        value: {
-                            numerator: seedCount,
-                            denominator: 1,
-                            decimal: `${seedCount}`,
+                let seedQuantity;
+                
+                if (planting) {
+                    seedQuantity = {
+                        type: 'quantity--material',
+                        id: uuidv4(),
+                        attributes: {
+                            measure: 'count',
+                            value: {
+                                numerator: seedCount,
+                                denominator: 1,
+                                decimal: `${seedCount}`,
+                            },
+                            inventory_adjustment: 'decrement',
                         },
-                        inventory_adjustment: 'decrement',
-                    },
-                    relationships: {
-                        inventory_asset: {
-                        data: {
-                            type: 'asset--seed',
-                            id: seed_id,
-                            }
-                        },
-                        units: {
+                        relationships: {
+                            inventory_asset: {
                             data: {
-                                type: 'taxonomy_term--unit',
-                                id: uuidv4(),
-                                '$relateByName': {
-                                name: UNIT_NAME,
-                                },
-                            }
+                                type: 'asset--seed',
+                                id: seed_id,
+                                }
+                            },
+                            units: {
+                                data: {
+                                    type: 'taxonomy_term--unit',
+                                    id: uuidv4(),
+                                    '$relateByName': {
+                                    name: UNIT_NAME,
+                                    },
+                                }
+                            },
                         },
-                    },
-                };
+                    };
+                } else {
+                    seedQuantity = {
+                        type: 'quantity--material',
+                        id: uuidv4(),
+                        attributes: {
+                            measure: 'count',
+                            value: {
+                                numerator: seedCount,
+                                denominator: 1,
+                                decimal: `${seedCount}`,
+                            },
+                        },
+                        relationships: {
+                            units: {
+                                data: {
+                                    type: 'taxonomy_term--unit',
+                                    id: uuidv4(),
+                                    '$relateByName': {
+                                    name: UNIT_NAME,
+                                    },
+                                }
+                            },
+                        },
+                    };
+                }
+                
 
                 console.log('seedQuantity:', seedQuantity)
 
@@ -856,33 +885,73 @@ export default {
                         },
                     },
                 };
-                const transplantingLog = {
-                    type: 'log--transplant',
-                    attributes: {
-                        name: `Transplant ${plantName}`,
-                        timestamp: formatRFC3339(new Date(transPlantingDate)),
-                        status: "pending",
+                let transplantingLog;
+                if (planting) {
+                    transplantingLog = {
+                        type: 'log--transplant',
+                        attributes: {
+                            name: `Transplant ${plantName}`,
+                            timestamp: formatRFC3339(new Date(transPlantingDate)),
+                            status: "pending",
 
-                    },
-                    relationships: {
-                        asset: {
-                            data: [
-                                {
-                                type: 'asset--plant',
-                                id: plantID,
-                                }
-                            ]
                         },
-                        location: {
-                            data: [
-                                {
-                                type: transplantLocation.type,
-                                id: transplantLocation.id,
-                                }
-                            ]
+                        relationships: {
+                            asset: {
+                                data: [
+                                    {
+                                    type: 'asset--plant',
+                                    id: plantID,
+                                    }
+                                ]
+                            },
+                            location: {
+                                data: [
+                                    {
+                                    type: transplantLocation.type,
+                                    id: transplantLocation.id,
+                                    }
+                                ]
+                            },
                         },
-                    },
-                };
+                    };
+                } else {
+                    transplantingLog = {
+                        type: 'log--transplant',
+                        attributes: {
+                            name: `Transplant ${plantName}`,
+                            timestamp: formatRFC3339(new Date(transPlantingDate)),
+                            status: "pending",
+
+                        },
+                        relationships: {
+                            asset: {
+                                data: [
+                                    {
+                                    type: 'asset--plant',
+                                    id: plantID,
+                                    }
+                                ]
+                            },
+                            location: {
+                                data: [
+                                    {
+                                    type: asset.type,
+                                    id: asset.id,
+                                    }
+                                ]
+                            },
+                            quantity: {
+                                data: [
+                                    {
+                                    type: seedQuantity.type,
+                                    id: seedQuantity.id,
+                                    }
+                                ]
+                            },
+                        },
+                    };
+                }
+                
 
                 console.log('transplantingLog:', transplantingLog)
 
@@ -908,14 +977,22 @@ export default {
 
                 console.log('harvestLog:', harvestLog)
 
-
                 assetLink.entitySource.update(
-                (t) => [
-                    t.addRecord(plant),
-                    t.addRecord(seedQuantity),
-                    t.addRecord(plantingLog),
-                ],
-                {label: `Plant from seeds`});
+                    (t) => [
+                        t.addRecord(plant),
+                        t.addRecord(seedQuantity),
+                    ]
+                )
+
+                if (planting) {
+                    assetLink.entitySource.update(
+                    (t) => [
+                        t.addRecord(plantingLog),
+                    ],
+                    {label: `Plant from seeds`});
+                }
+                
+                
                 if (transPlanting) {
                     assetLink.entitySource.update(
                         (t) => [
@@ -923,6 +1000,7 @@ export default {
                         ],
                         {label: `Create transplanting log`});
                 }
+
                 if (harvest) {
                     assetLink.entitySource.update(
                         (t) => [
@@ -930,6 +1008,7 @@ export default {
                         ],
                         {label: `Create harvest log`});
                 }
+
             } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
             }
