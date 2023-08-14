@@ -615,7 +615,17 @@ const additionalFilters = [
                 (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
                 (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
           "
-        />
+        >
+            <q-tooltip>
+                {{ 
+                (transPlanting && !planting && (seedCount <= 0 || !plantSeason || !plantType )) ? 'Missing Fields for Transplanting without planting' :
+                (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ? 'Missing Fields for Transplanting' :
+                (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ? 'Missing Fields for Harvest' :
+                (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType)) ? 'Missing Fields for Planting' :
+                ''
+                }}
+        </q-tooltip>
+      </q-btn>
       </div>
     </q-card>
   </q-dialog>
@@ -637,7 +647,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.124')
+        console.log('Planting plugin: V0.125')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
