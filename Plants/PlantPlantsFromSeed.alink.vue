@@ -507,9 +507,8 @@ const additionalFilters = [
                 color="green"
             />
         </div>
-        <div v-if="transPlanting">
+        <div v-if="transPlanting && planting">
             <div class="q-pa-md">
-                <div v-if="planting">
                     <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
                         <template v-slot:append>
                             <q-icon name="mdi-calendar" class="cursor-pointer">
@@ -528,7 +527,6 @@ const additionalFilters = [
                             </q-icon>
                         </template>
                     </q-input>
-                </div>
                 
             </div>
             <div class="q-pa-md">
@@ -612,7 +610,7 @@ const additionalFilters = [
           label="Record"
           @click="onSubmit"
           :disabled="
-                (transPlanting && !planting && (seedCount <= 0 || !plantSeason || !plantType || !transplantLocation)) ||
+                (transPlanting && !planting && (seedCount <= 0 || !plantSeason || !plantType ||
                 (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ||
                 (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
                 (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
@@ -639,7 +637,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.123')
+        console.log('Planting plugin: V0.124')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -919,7 +917,7 @@ export default {
                         type: 'log--transplant',
                         attributes: {
                             name: `Transplant ${plantName}`,
-                            timestamp: formatRFC3339(new Date(transPlantingDate)),
+                            timestamp: formatRFC3339(new Date()),
                             status: "pending",
 
                         },
