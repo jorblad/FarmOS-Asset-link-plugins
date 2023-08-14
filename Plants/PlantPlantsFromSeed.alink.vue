@@ -651,6 +651,8 @@ export default {
                 console.log('Dialog result:', dialogResult);
                 const seedCount = dialogResult.seedCount;
                 console.log('seedCount', seedCount)
+                const planting = dialogResult.planting;
+                console.log('planting', planting)
                 const plantSeason = dialogResult.plantSeason;
                 console.log('plantSeason', plantSeason)
                 let seasonName;
