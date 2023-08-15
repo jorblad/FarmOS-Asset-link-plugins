@@ -406,6 +406,21 @@ const additionalFilters = [
   { attribute: 'drupal_internal__id', op: '<>', value: props.asset.attributes.drupal_internal__id },
 ];
 
+const seedAssetRule = (value) => {
+  return value !== null && typeof value !== 'string' && value.plantTypeID;
+};
+
+const isButtonDisabled = computed(() => {
+  return (
+    (transPlanting && !planting && (
+      seedCount <= 0 ||
+      !plantSeason ||
+      !plantType ||
+      !seedAssetRule(seedAsset.value)
+    ))
+  );
+});
+
 </script>
 
 <template>
@@ -426,7 +441,7 @@ const additionalFilters = [
                 type="number"
                 filled
                 label="How many seeds/plants are you planting?"
-                :rules="[val => val > 0 || 'Seed Count is required']"
+                :rules="[val => val > 0 || 'Seed Count is required to be more than 0']"
             />
         </div>
         <div class="q-pa-md">
@@ -614,28 +629,8 @@ const additionalFilters = [
           color="primary"
           label="Record"
           @click="onSubmit"
+          :disabled="isButtonDisabled"
         />
-        <!-- <q-btn
-          color="primary"
-          label="Record"
-          @click="onSubmit"
-          :disabled="
-                (transPlanting && !planting && (seedCount <= 0 || !plantSeason || !plantType )) ||
-                (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ||
-                (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
-                (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
-          "
-        >
-            <q-tooltip>
-                {{ 
-                (transPlanting && !planting && (seedCount <= 0 || !plantSeason || !plantType )) ? 'Missing Fields for Transplanting without planting' :
-                (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ? 'Missing Fields for Transplanting' :
-                (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ? 'Missing Fields for Harvest' :
-                (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType)) ? 'Missing Fields for Planting' :
-                ''
-                }}
-        </q-tooltip>
-      </q-btn> -->
       </div>
     </q-card>
   </q-dialog>
