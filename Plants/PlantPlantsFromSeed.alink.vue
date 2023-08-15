@@ -406,15 +406,11 @@ const additionalFilters = [
   { attribute: 'drupal_internal__id', op: '<>', value: props.asset.attributes.drupal_internal__id },
 ];
 
-const seedAssetRule = (value) => {
-  return value !== null && typeof value !== 'string' && value.plantTypeID;
-};
-
 // Use ref to create reactive variable for input errors
 const hasInputErrors = ref(false);
 
 // Create a watch to update hasInputErrors based on input fields
-watchEffect(() => {
+watch(() => {
   hasInputErrors.value = (
     ($refs.seedCount !== undefined && $refs.seedCount.$error !== undefined && $refs.seedCount.$error === true)
     // Add similar conditions for other input fields
