@@ -407,12 +407,12 @@ const additionalFilters = [
 ];
 
 // Use ref to create reactive variable for input errors
-const hasInputErrors = ref(false);
+const hasInputErrors = ref(true);
 
 // Create a watch to update hasInputErrors based on input fields
 watch(() => {
   hasInputErrors.value = (
-    ($refs.seedCount !== undefined && $refs.seedCount.$error !== undefined && $refs.seedCount.$error === true)
+    (seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
     // Add similar conditions for other input fields
   );
 });
@@ -648,7 +648,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.127')
+        console.log('Planting plugin: V0.128')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
