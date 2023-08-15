@@ -426,6 +426,7 @@ const additionalFilters = [
                 type="number"
                 filled
                 label="How many seeds/plants are you planting?"
+                :rules="[val => val > 0 || 'Seed Count is required']"
             />
         </div>
         <div class="q-pa-md">
@@ -440,6 +441,7 @@ const additionalFilters = [
                 datalist
                 @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
+                :rules="[val => !!val || 'Season is required']"
             /> 
         </div>
         <div class="q-pa-md">
@@ -472,6 +474,7 @@ const additionalFilters = [
                     datalist
                     @filter="seedAssetsFilterFn"
                     new-value-mode="add-unique"
+                    :rules="[val => !!val || 'Seed is required']"
                 />
             </div>
         </div>
@@ -488,6 +491,7 @@ const additionalFilters = [
                 datalist
                 @filter="plantTypesFilterFn"
                 new-value-mode="add-unique"
+                :rules="[val => !!val || 'Species is required']"
             />
         </div>
         <div class="q-pa-md">
@@ -535,6 +539,7 @@ const additionalFilters = [
                 entity-type="asset"
                 v-model="transplantLocation"
                 :additional-filters="additionalFilters"
+                :rules="[val => !!val || 'Transplant location is required']"
                 ></entity-select>
         </div>
             
@@ -609,6 +614,12 @@ const additionalFilters = [
           color="primary"
           label="Record"
           @click="onSubmit"
+        >
+      </q-btn>
+        <!-- <q-btn
+          color="primary"
+          label="Record"
+          @click="onSubmit"
           :disabled="
                 (transPlanting && !planting && (seedCount <= 0 || !plantSeason || !plantType )) ||
                 (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ||
@@ -625,7 +636,7 @@ const additionalFilters = [
                 ''
                 }}
         </q-tooltip>
-      </q-btn>
+      </q-btn> -->
       </div>
     </q-card>
   </q-dialog>
