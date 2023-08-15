@@ -410,7 +410,11 @@ const additionalFilters = [
 const hasInputErrors = ref(true);
 
 // Create a watch to update hasInputErrors based on input fields
-watch(() => {
+watch(
+    [
+        () => seedCount,
+    ],
+    () => {
     console.log("hasInputError", seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
   hasInputErrors.value = (
     (seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
