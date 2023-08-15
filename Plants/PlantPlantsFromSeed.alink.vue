@@ -614,8 +614,7 @@ const additionalFilters = [
           color="primary"
           label="Record"
           @click="onSubmit"
-        >
-      </q-btn>
+        />
         <!-- <q-btn
           color="primary"
           label="Record"
