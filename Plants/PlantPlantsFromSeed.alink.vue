@@ -411,14 +411,20 @@ const seedAssetRule = (value) => {
 };
 
 const isButtonDisabled = computed(() => {
-  return (
-    (transPlanting && !planting && (
-      seedCount <= 0 ||
-      !plantSeason ||
-      !plantType ||
-      !seedAssetRule(seedAsset.value)
-    ))
-  );
+    console.log((transPlanting && !planting && (
+        seedCount <= 0 ||
+        !plantSeason ||
+        !plantType ||
+        !seedAssetRule(seedAsset.value)
+        )))
+    return (
+        (transPlanting && !planting && (
+        seedCount <= 0 ||
+        !plantSeason ||
+        !plantType ||
+        !seedAssetRule(seedAsset.value)
+        ))
+    );
 });
 
 </script>
@@ -652,7 +658,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.125')
+        console.log('Planting plugin: V0.126')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
