@@ -410,21 +410,15 @@ const seedAssetRule = (value) => {
   return value !== null && typeof value !== 'string' && value.plantTypeID;
 };
 
-const isButtonDisabled = computed(() => {
-    console.log((transPlanting && !planting && (
-        seedCount <= 0 ||
-        !plantSeason ||
-        !plantType ||
-        !seedAssetRule(seedAsset.value)
-        )))
-    return (
-        (transPlanting && !planting && (
-        seedCount <= 0 ||
-        !plantSeason ||
-        !plantType ||
-        !seedAssetRule(seedAsset.value)
-        ))
-    );
+// Use ref to create reactive variable for input errors
+const hasInputErrors = ref(false);
+
+// Create a watch to update hasInputErrors based on input fields
+watchEffect(() => {
+  hasInputErrors.value = (
+    ($refs.seedCount !== undefined && $refs.seedCount.$error !== undefined && $refs.seedCount.$error === true)
+    // Add similar conditions for other input fields
+  );
 });
 
 </script>
@@ -635,7 +629,7 @@ const isButtonDisabled = computed(() => {
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="isButtonDisabled"
+          :disabled="hasInputErrors"
         />
       </div>
     </q-card>
@@ -658,7 +652,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.126')
+        console.log('Planting plugin: V0.127')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
