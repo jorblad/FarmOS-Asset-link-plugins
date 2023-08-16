@@ -691,9 +691,12 @@ export default {
                 console.log('harvest', harvest)
                 const harvestDate = dialogResult.harvestDate;
                 console.log('harvestDate', harvestDate)
-                let newSeedRecord;
+                
+
+                
+                let seed_id;
                 if (planting) {
-                    let seed_id;
+                    let newSeedRecord;
                     // If seed array is empty, add a new record
                     if (typeof seedAsset === 'string') {
                         console.log("Seed name for creaton of new seed", seedAsset)
