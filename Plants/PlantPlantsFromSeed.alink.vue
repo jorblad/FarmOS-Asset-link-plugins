@@ -615,7 +615,6 @@ const additionalFilters = [
             type="submit"
             color="primary"
             label="Record"
-            @click="onSubmit"
         />
       </div>
     </q-card>
@@ -638,7 +637,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.133')
+        console.log('Planting plugin: V0.134')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
