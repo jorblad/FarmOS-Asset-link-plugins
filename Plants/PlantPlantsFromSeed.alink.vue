@@ -421,11 +421,15 @@ watch(
         () => harvestDate,
     ],
     () => {
-    console.log("hasInputError", seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
-  hasInputErrors.value = (
-    (seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
-    // Add similar conditions for other input fields
-  );
+        console.log("Watch triggered");
+        console.log("seedCount:", seedCount.value);
+        console.log("plantSeason:", plantSeason.value);
+        console.log("seedAsset:", seedAsset.value);
+        console.log("hasInputError", seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
+        hasInputErrors.value = (
+            (seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
+            // Add similar conditions for other input fields
+        );
 });
 
 </script>
@@ -659,7 +663,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.131')
+        console.log('Planting plugin: V0.132')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
