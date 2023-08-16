@@ -691,49 +691,53 @@ export default {
                 console.log('harvest', harvest)
                 const harvestDate = dialogResult.harvestDate;
                 console.log('harvestDate', harvestDate)
-            
-
-                let seed_id;
-                // If seed array is empty, add a new record
-                if (typeof seedAsset === 'string') {
-                    console.log("Seed name for creaton of new seed", seedAsset)
-                    seed_id = uuidv4();
-                    const newSeedRecord = {
-                        type: 'asset--seed',
-                        id: seed_id,
-                        attributes: {
-                            name: seedAsset
-                        },
-                        relationships: {
-                            plant_type: {
-                                data: [
-                                    {
-                                        type: 'taxonomy_term--plant_type',
-                                        id: uuidv4(),
-                                        '$relateByName': {
-                                        name: plantTypeName,
-                                        },
-                                    }
-                                ]
+                let newSeedRecord;
+                if (planting) {
+                    let seed_id;
+                    // If seed array is empty, add a new record
+                    if (typeof seedAsset === 'string') {
+                        console.log("Seed name for creaton of new seed", seedAsset)
+                        seed_id = uuidv4();
+                        newSeedRecord = {
+                            type: 'asset--seed',
+                            id: seed_id,
+                            attributes: {
+                                name: seedAsset
                             },
-                        }
-                    };
+                            relationships: {
+                                plant_type: {
+                                    data: [
+                                        {
+                                            type: 'taxonomy_term--plant_type',
+                                            id: uuidv4(),
+                                            '$relateByName': {
+                                            name: plantTypeName,
+                                            },
+                                        }
+                                    ]
+                                },
+                            }
+                        };
+                
 
-                    console.log('New Seed Record', newSeedRecord);
-                    assetLink.entitySource.update(
-                        (t) => [
-                        t.addRecord(newSeedRecord),
-                        ],
-                        {label: `Add new seeds`});
+                        console.log('New Seed Record', newSeedRecord);
+                        assetLink.entitySource.update(
+                            (t) => [
+                            t.addRecord(newSeedRecord),
+                            ],
+                            {label: `Add new seeds`});
 
-                    console.log('Added Seed Record', newSeedRecord);
+                        console.log('Added Seed Record', newSeedRecord);
 
-                } else {
-                    // Extract the id from the first item (if available)
-                    seed_id = seedAsset.value;
+                    } else {
+                        // Extract the id from the first item (if available)
+                        seed_id = seedAsset.value;
+                    }
+                    console.log('Final Seed ID', seed_id);
                 }
 
-                console.log('Final Seed ID', seed_id);
+
+                
 
                 const plantName = `${seasonName} ${asset.attributes.name} ${plantTypeName}`;
 
