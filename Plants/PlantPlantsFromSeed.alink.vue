@@ -644,7 +644,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.139')
+        console.log('Planting plugin: V0.140')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -693,7 +693,7 @@ export default {
                 console.log('harvestDate', harvestDate)
                 
 
-                
+
                 let seed_id;
                 if (planting) {
                     let newSeedRecord;
@@ -897,6 +897,8 @@ export default {
                         },
                     },
                 };
+                console.log('plantingLog:', plantingLog)
+
                 let transplantingLog;
                 if (planting) {
                     transplantingLog = {
@@ -967,27 +969,33 @@ export default {
 
                 console.log('transplantingLog:', transplantingLog)
 
-                const harvestLog = {
-                    type: 'log--harvest',
-                    attributes: {
-                        name: `Harvest ${plantName}`,
-                        timestamp: formatRFC3339(new Date(harvestDate)),
-                        status: "pending",
-                        
-                    },
-                    relationships: {
-                        asset: {
-                            data: [
-                                {
-                                type: 'asset--plant',
-                                id: plantID,
-                                }
-                            ]
-                        },
-                    },
-                };
 
-                console.log('harvestLog:', harvestLog)
+                let harvestLog;
+                if (harvest) {
+                    harvestLog = {
+                        type: 'log--harvest',
+                        attributes: {
+                            name: `Harvest ${plantName}`,
+                            timestamp: formatRFC3339(new Date(harvestDate)),
+                            status: "pending",
+                            
+                        },
+                        relationships: {
+                            asset: {
+                                data: [
+                                    {
+                                    type: 'asset--plant',
+                                    id: plantID,
+                                    }
+                                ]
+                            },
+                        },
+                    };
+                    console.log('harvestLog:', harvestLog)
+                }
+                
+
+                
 
                 assetLink.entitySource.update(
                     (t) => [
