@@ -411,7 +411,10 @@ const additionalFilters = [
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-        <q-form greedy>
+        <q-form
+            @submit="onSubmit"
+            greedy
+        >
 
         
         <h4>Planting</h4>
@@ -445,7 +448,7 @@ const additionalFilters = [
                 datalist
                 @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
-                :rules="[val => !!val && !planting || 'Season is required']"
+                :rules="[val => !!val || 'Season is required']"
             /> 
         </div>
         <div class="q-pa-md">
@@ -641,7 +644,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.135')
+        console.log('Planting plugin: V0.136')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
