@@ -22,6 +22,7 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const seedCount = ref(0);
+const planting = ref(true)
 const transPlanting = ref(false)
 const harvest = ref(false)
 const notes = ref(null);
@@ -294,7 +295,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 
 
@@ -360,6 +361,12 @@ watch(plantType, (newValue) => {
   }
 });
 
+watch(planting, (newValue) => {
+    if (!newValue) {
+        transPlanting.value = true;
+    }
+});
+
 
 // Create a computed property for season options with labels
 const seasonOptionsWithLabel = computed(() => {
@@ -404,6 +411,12 @@ const additionalFilters = [
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
+        <q-form
+            @submit="onSubmit"
+            greedy
+        >
+
+        
         <h4>Planting</h4>
         <div class="q-pa-md">
             <q-slider
@@ -418,7 +431,9 @@ const additionalFilters = [
                 v-model.number="seedCount"
                 type="number"
                 filled
-                label="How many seeds?"
+                label="How many seeds/plants are you planting?"
+                autofocus
+                :rules="[val => val > 0 || 'Seed Count is required to be more than 0']"
             />
         </div>
         <div class="q-pa-md">
@@ -433,22 +448,44 @@ const additionalFilters = [
                 datalist
                 @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
+                :rules="[val => !!val || 'Season is required']"
             /> 
         </div>
         <div class="q-pa-md">
-            <q-select
-                filled
-                v-model="seedAsset"
-                :options="seedAssetOptionsWithLabel"
-                label="Seed asset"
-                use-input
-                clearable
-                input-debounce="300"
-                datalist
-                @filter="seedAssetsFilterFn"
-                new-value-mode="add-unique"
-            />
+            <q-toggle 
+                    v-model="planting"
+                    label="Create planting log"
+                    icon="mdi-sprout"
+                    size="xl"
+                    color="green"
+                />
+            <q-tooltip
+                anchor="bottom middle"
+                self="top middle"
+                :offset="[0, 10]"
+                >
+                    Disable this toggle if you are directly transplanting.
+            </q-tooltip>
+
         </div>
+        <div v-if="planting">
+            <div class="q-pa-md">
+                <q-select
+                    filled
+                    v-model="seedAsset"
+                    :options="seedAssetOptionsWithLabel"
+                    label="Seed asset"
+                    use-input
+                    clearable
+                    input-debounce="300"
+                    datalist
+                    @filter="seedAssetsFilterFn"
+                    new-value-mode="add-unique"
+                    :rules="[val => !!val || 'Seed is required']"
+                />
+            </div>
+        </div>
+        
         <div class="q-pa-md">
             <q-select
                 filled
@@ -461,6 +498,7 @@ const additionalFilters = [
                 datalist
                 @filter="plantTypesFilterFn"
                 new-value-mode="add-unique"
+                :rules="[val => !!val || 'Species is required']"
             />
         </div>
         <div class="q-pa-md">
@@ -480,26 +518,27 @@ const additionalFilters = [
                 color="green"
             />
         </div>
-        <div v-if="transPlanting">
+        <div v-if="transPlanting && planting">
             <div class="q-pa-md">
-                <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
-                    <template v-slot:append>
-                        <q-icon name="mdi-calendar" class="cursor-pointer">
-                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date
-                                v-model="transPlantingDate"
-                                today-btn
-                                subtitle="Transplanting date"
-                                first-day-of-week="1"
-                            >
-                            <div class="row items-center justify-end">
-                                <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
-                            </div>
-                            </q-date>
-                        </q-popup-proxy>
-                        </q-icon>
-                    </template>
-                </q-input>
+                    <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
+                        <template v-slot:append>
+                            <q-icon name="mdi-calendar" class="cursor-pointer">
+                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                <q-date
+                                    v-model="transPlantingDate"
+                                    today-btn
+                                    subtitle="Transplanting date"
+                                    first-day-of-week="1"
+                                >
+                                <div class="row items-center justify-end">
+                                    <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
+                                </div>
+                                </q-date>
+                            </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                    </q-input>
+                
             </div>
             <div class="q-pa-md">
                 <entity-select
@@ -507,6 +546,7 @@ const additionalFilters = [
                 entity-type="asset"
                 v-model="transplantLocation"
                 :additional-filters="additionalFilters"
+                :rules="[val => !!val || 'Transplant location is required']"
                 ></entity-select>
         </div>
             
@@ -578,16 +618,12 @@ const additionalFilters = [
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
         <q-btn
-          color="primary"
-          label="Record"
-          @click="onSubmit"
-          :disabled="
-                (transPlanting && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !transPlantingDate || !transplantLocation)) ||
-                (harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType || !harvestDate)) ||
-                (!transPlanting && !harvest && (seedCount <= 0 || !seedAsset || !plantSeason || !plantType))
-          "
+            type="submit"
+            color="primary"
+            label="Record"
         />
       </div>
+    </q-form>
     </q-card>
   </q-dialog>
 </template>
@@ -608,7 +644,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.121')
+        //console.log('Planting plugin: V0.141')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -620,6 +656,8 @@ export default {
                 console.log('Dialog result:', dialogResult);
                 const seedCount = dialogResult.seedCount;
                 console.log('seedCount', seedCount)
+                const planting = dialogResult.planting;
+                console.log('planting', planting)
                 const plantSeason = dialogResult.plantSeason;
                 console.log('plantSeason', plantSeason)
                 let seasonName;
@@ -653,49 +691,56 @@ export default {
                 console.log('harvest', harvest)
                 const harvestDate = dialogResult.harvestDate;
                 console.log('harvestDate', harvestDate)
-            
+                
+
 
                 let seed_id;
-                // If seed array is empty, add a new record
-                if (typeof seedAsset === 'string') {
-                    console.log("Seed name for creaton of new seed", seedAsset)
-                    seed_id = uuidv4();
-                    const newSeedRecord = {
-                        type: 'asset--seed',
-                        id: seed_id,
-                        attributes: {
-                            name: seedAsset
-                        },
-                        relationships: {
-                            plant_type: {
-                                data: [
-                                    {
-                                        type: 'taxonomy_term--plant_type',
-                                        id: uuidv4(),
-                                        '$relateByName': {
-                                        name: plantTypeName,
-                                        },
-                                    }
-                                ]
+                if (planting) {
+                    let newSeedRecord;
+                    // If seed array is empty, add a new record
+                    if (typeof seedAsset === 'string') {
+                        console.log("Seed name for creaton of new seed", seedAsset)
+                        seed_id = uuidv4();
+                        newSeedRecord = {
+                            type: 'asset--seed',
+                            id: seed_id,
+                            attributes: {
+                                name: seedAsset
                             },
-                        }
-                    };
+                            relationships: {
+                                plant_type: {
+                                    data: [
+                                        {
+                                            type: 'taxonomy_term--plant_type',
+                                            id: uuidv4(),
+                                            '$relateByName': {
+                                            name: plantTypeName,
+                                            },
+                                        }
+                                    ]
+                                },
+                            }
+                        };
+                
 
-                    console.log('New Seed Record', newSeedRecord);
-                    assetLink.entitySource.update(
-                        (t) => [
-                        t.addRecord(newSeedRecord),
-                        ],
-                        {label: `Add new seeds`});
+                        console.log('New Seed Record', newSeedRecord);
+                        assetLink.entitySource.update(
+                            (t) => [
+                            t.addRecord(newSeedRecord),
+                            ],
+                            {label: `Add new seeds`});
 
-                    console.log('Added Seed Record', newSeedRecord);
+                        console.log('Added Seed Record', newSeedRecord);
 
-                } else {
-                    // Extract the id from the first item (if available)
-                    seed_id = seedAsset.value;
+                    } else {
+                        // Extract the id from the first item (if available)
+                        seed_id = seedAsset.value;
+                    }
+                    console.log('Final Seed ID', seed_id);
                 }
 
-                console.log('Final Seed ID', seed_id);
+
+                
 
                 const plantName = `${seasonName} ${asset.attributes.name} ${plantTypeName}`;
 
@@ -755,36 +800,65 @@ export default {
 
                 console.log('plant:', plant)
 
-                const seedQuantity = {
-                    type: 'quantity--material',
-                    id: uuidv4(),
-                    attributes: {
-                        measure: 'count',
-                        value: {
-                            numerator: seedCount,
-                            denominator: 1,
-                            decimal: `${seedCount}`,
+                let seedQuantity;
+                
+                if (planting) {
+                    seedQuantity = {
+                        type: 'quantity--material',
+                        id: uuidv4(),
+                        attributes: {
+                            measure: 'count',
+                            value: {
+                                numerator: seedCount,
+                                denominator: 1,
+                                decimal: `${seedCount}`,
+                            },
+                            inventory_adjustment: 'decrement',
                         },
-                        inventory_adjustment: 'decrement',
-                    },
-                    relationships: {
-                        inventory_asset: {
-                        data: {
-                            type: 'asset--seed',
-                            id: seed_id,
-                            }
-                        },
-                        units: {
+                        relationships: {
+                            inventory_asset: {
                             data: {
-                                type: 'taxonomy_term--unit',
-                                id: uuidv4(),
-                                '$relateByName': {
-                                name: UNIT_NAME,
-                                },
-                            }
+                                type: 'asset--seed',
+                                id: seed_id,
+                                }
+                            },
+                            units: {
+                                data: {
+                                    type: 'taxonomy_term--unit',
+                                    id: uuidv4(),
+                                    '$relateByName': {
+                                    name: UNIT_NAME,
+                                    },
+                                }
+                            },
                         },
-                    },
-                };
+                    };
+                } else {
+                    seedQuantity = {
+                        type: 'quantity--material',
+                        id: uuidv4(),
+                        attributes: {
+                            measure: 'count',
+                            value: {
+                                numerator: seedCount,
+                                denominator: 1,
+                                decimal: `${seedCount}`,
+                            },
+                        },
+                        relationships: {
+                            units: {
+                                data: {
+                                    type: 'taxonomy_term--unit',
+                                    id: uuidv4(),
+                                    '$relateByName': {
+                                    name: UNIT_NAME,
+                                    },
+                                }
+                            },
+                        },
+                    };
+                }
+                
 
                 console.log('seedQuantity:', seedQuantity)
 
@@ -823,66 +897,122 @@ export default {
                         },
                     },
                 };
-                const transplantingLog = {
-                    type: 'log--transplant',
-                    attributes: {
-                        name: `Transplant ${plantName}`,
-                        timestamp: formatRFC3339(new Date(transPlantingDate)),
-                        status: "pending",
+                console.log('plantingLog:', plantingLog)
 
-                    },
-                    relationships: {
-                        asset: {
-                            data: [
-                                {
-                                type: 'asset--plant',
-                                id: plantID,
-                                }
-                            ]
+                let transplantingLog;
+                if (planting) {
+                    transplantingLog = {
+                        type: 'log--transplanting',
+                        attributes: {
+                            name: `Transplant ${plantName}`,
+                            timestamp: formatRFC3339(new Date(transPlantingDate)),
+                            status: "pending",
+
                         },
-                        location: {
-                            data: [
-                                {
-                                type: transplantLocation.type,
-                                id: transplantLocation.id,
-                                }
-                            ]
+                        relationships: {
+                            asset: {
+                                data: [
+                                    {
+                                    type: 'asset--plant',
+                                    id: plantID,
+                                    }
+                                ]
+                            },
+                            location: {
+                                data: [
+                                    {
+                                    type: transplantLocation.type,
+                                    id: transplantLocation.id,
+                                    }
+                                ]
+                            },
                         },
-                    },
-                };
+                    };
+                } else {
+                    transplantingLog = {
+                        type: 'log--transplanting',
+                        attributes: {
+                            name: `Transplant ${plantName}`,
+                            timestamp: formatRFC3339(new Date()),
+                            status: "done",
+
+                        },
+                        relationships: {
+                            asset: {
+                                data: [
+                                    {
+                                    type: 'asset--plant',
+                                    id: plantID,
+                                    }
+                                ]
+                            },
+                            location: {
+                                data: [
+                                    {
+                                    type: asset.type,
+                                    id: asset.id,
+                                    }
+                                ]
+                            },
+                            quantity: {
+                                data: [
+                                    {
+                                    type: seedQuantity.type,
+                                    id: seedQuantity.id,
+                                    }
+                                ]
+                            },
+                        },
+                    };
+                }
+                
 
                 console.log('transplantingLog:', transplantingLog)
 
-                const harvestLog = {
-                    type: 'log--harvest',
-                    attributes: {
-                        name: `Harvest ${plantName}`,
-                        timestamp: formatRFC3339(new Date(harvestDate)),
-                        status: "pending",
-                        
-                    },
-                    relationships: {
-                        asset: {
-                            data: [
-                                {
-                                type: 'asset--plant',
-                                id: plantID,
-                                }
-                            ]
+
+                let harvestLog;
+                if (harvest) {
+                    harvestLog = {
+                        type: 'log--harvest',
+                        attributes: {
+                            name: `Harvest ${plantName}`,
+                            timestamp: formatRFC3339(new Date(harvestDate)),
+                            status: "pending",
+                            
                         },
-                    },
-                };
+                        relationships: {
+                            asset: {
+                                data: [
+                                    {
+                                    type: 'asset--plant',
+                                    id: plantID,
+                                    }
+                                ]
+                            },
+                        },
+                    };
+                    console.log('harvestLog:', harvestLog)
+                }
+                
 
-                console.log('harvestLog:', harvestLog)
-
+                
 
                 assetLink.entitySource.update(
-                (t) => [
-                    t.addRecord(plant),
-                    t.addRecord(seedQuantity),
-                    t.addRecord(plantingLog),
-                ],
-                {label: `Plant from seeds`});
+                    (t) => [
+                        t.addRecord(plant),
+                        t.addRecord(seedQuantity),
+                    ]
+                )
+
+                if (planting) {
+                    assetLink.entitySource.update(
+                    (t) => [
+                        t.addRecord(plantingLog),
+                    ],
+                    {label: `Plant from seeds`});
+                }
+                
+                
                 if (transPlanting) {
                     assetLink.entitySource.update(
                         (t) => [
@@ -890,6 +1020,7 @@ export default {
                         ],
                         {label: `Create transplanting log`});
                 }
+
                 if (harvest) {
                     assetLink.entitySource.update(
                         (t) => [
@@ -897,6 +1028,7 @@ export default {
                         ],
                         {label: `Create harvest log`});
                 }
+
             } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
             }
@@ -904,7 +1036,7 @@ export default {
         };
         try {
             action.component(({ asset }) =>
-                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant from seeds" ));
+                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant plants" ));
         } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
         }
