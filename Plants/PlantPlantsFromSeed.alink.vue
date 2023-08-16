@@ -1025,7 +1025,7 @@ export default {
         };
         try {
             action.component(({ asset }) =>
-                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant from seeds" ));
+                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant plants" ));
         } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
         }
