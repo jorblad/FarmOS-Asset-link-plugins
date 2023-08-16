@@ -406,32 +406,6 @@ const additionalFilters = [
   { attribute: 'drupal_internal__id', op: '<>', value: props.asset.attributes.drupal_internal__id },
 ];
 
-// Use ref to create reactive variable for input errors
-const hasInputErrors = ref(true);
-
-// Create a watch to update hasInputErrors based on input fields
-watch(
-    [
-        () => seedCount,
-        () => plantSeason,
-        () => seedAsset,
-        () => plantType,
-        () => transPlantingDate,
-        () => transplantLocation,
-        () => harvestDate,
-    ],
-    () => {
-        console.log("Watch triggered");
-        console.log("seedCount:", seedCount.value);
-        console.log("plantSeason:", plantSeason.value);
-        console.log("seedAsset:", seedAsset.value);
-        console.log("hasInputError", seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
-        hasInputErrors.value = (
-            (seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
-            // Add similar conditions for other input fields
-        );
-});
-
 </script>
 
 <template>
@@ -452,6 +426,7 @@ watch(
                 type="number"
                 filled
                 label="How many seeds/plants are you planting?"
+                autofocus
                 :rules="[val => val > 0 || 'Seed Count is required to be more than 0']"
             />
         </div>
@@ -637,10 +612,10 @@ watch(
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
         <q-btn
-          color="primary"
-          label="Record"
-          @click="onSubmit"
-          :disabled="hasInputErrors"
+            type="submit"
+            color="primary"
+            label="Record"
+            @click="onSubmit"
         />
       </div>
     </q-card>
