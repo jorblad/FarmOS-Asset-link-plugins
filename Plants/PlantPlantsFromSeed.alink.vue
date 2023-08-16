@@ -412,7 +412,13 @@ const hasInputErrors = ref(true);
 // Create a watch to update hasInputErrors based on input fields
 watch(
     [
-        () => seedCount.value,
+        () => seedCount,
+        () => plantSeason,
+        () => seedAsset,
+        () => plantType,
+        () => transPlantingDate,
+        () => transplantLocation,
+        () => harvestDate,
     ],
     () => {
     console.log("hasInputError", seedCount.value !== undefined && seedCount.value.$error !== undefined && seedCount.value.$error === true)
@@ -653,7 +659,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.130')
+        console.log('Planting plugin: V0.131')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
