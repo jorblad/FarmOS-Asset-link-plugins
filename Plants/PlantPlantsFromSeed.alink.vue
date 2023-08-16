@@ -900,7 +900,7 @@ export default {
                         type: 'log--transplant',
                         attributes: {
                             name: `Transplant ${plantName}`,
-                            timestamp: formatRFC3339(new Date()),
+                            timestamp: formatRFC3339(new Date(transPlantingDate)),
                             status: "pending",
 
                         },
@@ -928,7 +928,7 @@ export default {
                         type: 'log--transplant',
                         attributes: {
                             name: `Transplant ${plantName}`,
-                            timestamp: formatRFC3339(new Date(transPlantingDate)),
+                            timestamp: formatRFC3339(new Date()),
                             status: "pending",
 
                         },
