@@ -644,7 +644,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.140')
+        console.log('Planting plugin: V0.141')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -902,7 +902,7 @@ export default {
                 let transplantingLog;
                 if (planting) {
                     transplantingLog = {
-                        type: 'log--transplant',
+                        type: 'log--transplanting',
                         attributes: {
                             name: `Transplant ${plantName}`,
                             timestamp: formatRFC3339(new Date(transPlantingDate)),
@@ -930,7 +930,7 @@ export default {
                     };
                 } else {
                     transplantingLog = {
-                        type: 'log--transplant',
+                        type: 'log--transplanting',
                         attributes: {
                             name: `Transplant ${plantName}`,
                             timestamp: formatRFC3339(new Date()),
