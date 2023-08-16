@@ -644,7 +644,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.138')
+        console.log('Planting plugin: V0.139')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -929,7 +929,7 @@ export default {
                         attributes: {
                             name: `Transplant ${plantName}`,
                             timestamp: formatRFC3339(new Date()),
-                            status: "pending",
+                            status: "done",
 
                         },
                         relationships: {
