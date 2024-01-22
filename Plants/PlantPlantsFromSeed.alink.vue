@@ -691,6 +691,7 @@ export default {
                 console.log('harvest', harvest)
                 const harvestDate = dialogResult.harvestDate;
                 console.log('harvestDate', harvestDate)
+                console.log('V110')
                 
 
 
