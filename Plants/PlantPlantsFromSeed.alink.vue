@@ -900,7 +900,7 @@ export default {
                 console.log('plantingLog:', plantingLog)
 
                 let transplantingLog;
-                if (planting) {
+                if (planting && transPlanting) {
                     transplantingLog = {
                         type: 'log--transplanting',
                         attributes: {
@@ -1031,6 +1031,7 @@ export default {
 
             } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
+                console.error('Stack trace:', error.stack);
             }
             
         };
