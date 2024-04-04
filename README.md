@@ -23,4 +23,3 @@ Depends on the farm_ledger module to register the price and creating a purchase 
 ## Weather
 ### Observe rainfall
 Lets you record rainfall in mm.
-
