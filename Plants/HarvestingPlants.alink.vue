@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted } from 'vue';
+import { inject, ref,watch, onMounted } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 const props = defineProps({
@@ -17,6 +17,46 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const harvestCount = ref(0);
 
+// Photo adding
+const capturedPhotos = ref([]);
+
+const photoCaptureModel = ref(null);
+const carouselPosition = ref("capture-photo");
+
+watch(photoCaptureModel, async () => {
+  const file = photoCaptureModel.value;
+
+  if (!file) {
+    return;
+  }
+
+  const fileToArrayBuffer = data => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsArrayBuffer(data);
+  });
+
+  const fileName = file.name;
+  const fileType = file.type;
+  const fileData = await fileToArrayBuffer(file);
+
+  const fileStringData = new Uint8Array(fileData).reduce((data, byte) => {
+    return data + String.fromCharCode(byte);
+  }, '');
+
+  const fileDataUrl = `data:${fileType};base64, ` + btoa(fileStringData);
+
+  const photoId = uuidv4()
+
+  capturedPhotos.value.push({
+    id: photoId,
+    fileName,
+    fileDataUrl,
+  });
+
+  carouselPosition.value = photoId;
+});
 
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
@@ -43,7 +83,7 @@ const quantityType = ref(null);
 const unitLabelFn = unitTerm => unitTerm.attributes.name;
 
 const onSubmit = () => {
-  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value });
+  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
 };
 </script>
 
@@ -76,6 +116,36 @@ const onSubmit = () => {
       />
       
       </div>
+
+      <div class="q-pa-md">
+          <q-carousel
+            swipeable
+            animated
+            navigation
+            navigation-icon="mdi-radiobox-marked"
+            control-type="flat"
+            control-color="orange"
+            :arrows="false"
+            height="200px"
+            v-model="carouselPosition"
+          >
+            <q-carousel-slide
+				v-for="(capturedPhoto, capturedPhotoIdx) in capturedPhotos"
+            	:key="capturedPhoto.id"
+            	:name="capturedPhoto.id">
+              <q-img
+                :src="capturedPhoto.fileDataUrl"
+                class="rounded-borders full-height"
+                fit="contain"
+              ></q-img>
+            </q-carousel-slide>
+
+            <q-carousel-slide name="capture-photo">
+              <photo-input class="q-pb-xl" v-model="photoCaptureModel"></photo-input>
+            </q-carousel-slide>
+          </q-carousel>
+        </div>
+
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
         <q-btn
@@ -146,6 +216,10 @@ export default {
         const harvestUnitTerm = dialogResult.quantityType;
         console.log('QuantityType:', harvestUnitTerm);
 
+        //Photos
+        const photos = dialogResult.capturedPhotos;
+        console.log('Photos', photos)
+
         if (!harvestUnitTerm) {
           return;
         }
@@ -212,6 +286,18 @@ export default {
                 }
               ]
             },
+            image: {
+              data: photos.map(({ id, fileName, fileDataUrl }) =>
+                  ({
+                      type: 'file--file',
+                      id,
+                      '$upload': {
+                          fileName,
+                          fileDataUrl,
+                      }
+                  })
+                  ),
+              },
           },
         };
 
