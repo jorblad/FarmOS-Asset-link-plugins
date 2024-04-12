@@ -61,9 +61,9 @@ watch(photoCaptureModel, async () => {
 const childrenFilter = [{
     attribute: 'parent.id',
     value: asset.id
-}];
+  }];
 
-  console.log('childrenFilter records:', childrenFilter);
+  console.log('All taxonomy_term--unit records:', unitTerms);
 
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
