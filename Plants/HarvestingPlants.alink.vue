@@ -58,6 +58,7 @@ watch(photoCaptureModel, async () => {
   carouselPosition.value = photoId;
 });
 
+
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
     q.findRecords('taxonomy_term--unit')
