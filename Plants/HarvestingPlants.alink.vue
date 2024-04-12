@@ -59,7 +59,6 @@ watch(photoCaptureModel, async () => {
 });
 
 
-
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
     q.findRecords('taxonomy_term--unit')
@@ -73,13 +72,6 @@ const findUnitTerms = async (entitySource) => {
   return unitTerms;
 };
 
-const childrenFilter = [{
-    attribute: 'parent.id',
-    value: asset.id
-}];
-
-console.log('childrenFilter records:', childrenFilter);
-
 const unitTerms = ref([]);
 
 onMounted(async () => {
@@ -87,7 +79,12 @@ onMounted(async () => {
   
 });
 
+const childrenFilter = [{
+    attribute: 'parent.id',
+    value: asset.id
+}];
 
+console.log('childrenFilter records:', childrenFilter);
 const quantityType = ref(null);
 const unitLabelFn = unitTerm => unitTerm.attributes.name;
 
