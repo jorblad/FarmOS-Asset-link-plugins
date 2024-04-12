@@ -58,13 +58,6 @@ watch(photoCaptureModel, async () => {
   carouselPosition.value = photoId;
 });
 
-const childrenFilter = [{
-    attribute: 'parent.id',
-    value: asset.id
-  }];
-
-  console.log('All taxonomy_term--unit records:', unitTerms);
-
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
     q.findRecords('taxonomy_term--unit')
