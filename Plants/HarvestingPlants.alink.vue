@@ -78,14 +78,11 @@ onMounted(async () => {
   
 });
 
-console.log('props:', props.asset.id);
-
 const childrenFilter = [{
     attribute: 'parent.id',
     value: props.asset.id
 }];
 
-console.log('childrenFilter records:', childrenFilter);
 
 const quantityType = ref(null);
 const unitLabelFn = unitTerm => unitTerm.attributes.name;
