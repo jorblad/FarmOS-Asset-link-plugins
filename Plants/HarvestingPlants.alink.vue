@@ -78,12 +78,19 @@ onMounted(async () => {
   
 });
 
+const childrenFilter = [{
+    attribute: 'parent.id',
+    value: props.asset.id
+}];
+
 
 const quantityType = ref(null);
 const unitLabelFn = unitTerm => unitTerm.attributes.name;
 
+const selectProduct = ref(null);
+
 const onSubmit = () => {
-  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
+  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, selectProduct: selectProduct.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
 };
 </script>
 
@@ -104,6 +111,7 @@ const onSubmit = () => {
         v-model.number="harvestCount"
         type="number"
         filled
+        label="Measurment"
       />
       </div>
       <div class="q-pa-md">
@@ -112,9 +120,17 @@ const onSubmit = () => {
         filled v-model="quantityType"
         :options="unitTerms"
         :option-label="unitLabelFn"
-        label="Standard"
+        label="Unit"
       />
       
+      </div>
+      <div class="q-pa-md">
+        <entity-select
+          label="Product"
+          entity-type="asset"
+          v-model="selectProduct"
+          :additional-filters="childrenFilter"
+        ></entity-select>
       </div>
 
       <div class="q-pa-md">
@@ -215,6 +231,8 @@ export default {
         console.log('Harvest Count:', harvestCount);
         const harvestUnitTerm = dialogResult.quantityType;
         console.log('QuantityType:', harvestUnitTerm);
+        const harvestInventoryProduct = dialogResult.selectProduct;
+        console.log('harvestInventoryProduct:', harvestInventoryProduct);
 
         //Photos
         const photos = dialogResult.capturedPhotos;
@@ -248,8 +266,15 @@ export default {
               denominator: 1,
               decimal: `${harvestCount}`,
             },
+            inventory_adjustment: 'increment',
           },
           relationships: {
+            inventory_asset: {
+              data: {
+                  type: harvestInventoryProduct.type,
+                  id: harvestInventoryProduct.id,
+                }
+            },
             units: {
               data: {
                 type: 'taxonomy_term--unit',
