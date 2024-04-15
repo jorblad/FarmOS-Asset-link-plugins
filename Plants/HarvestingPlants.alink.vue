@@ -124,6 +124,14 @@ const onSubmit = () => {
       />
       
       </div>
+      <div class="q-pa-md">
+        <entity-select
+          label="Product"
+          entity-type="asset"
+          v-model="selectProduct"
+          :additional-filters="childrenFilter"
+        ></entity-select>
+      </div>
 
       <div class="q-pa-md">
           <q-carousel
