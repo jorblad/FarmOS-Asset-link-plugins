@@ -90,6 +90,8 @@ console.log('childrenFilter records:', childrenFilter);
 const quantityType = ref(null);
 const unitLabelFn = unitTerm => unitTerm.attributes.name;
 
+const selectProduct = ref(null);
+
 const onSubmit = () => {
   onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, selectProduct: selectProduct.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
 };
