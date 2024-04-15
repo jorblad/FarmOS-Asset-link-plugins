@@ -91,7 +91,7 @@ const quantityType = ref(null);
 const unitLabelFn = unitTerm => unitTerm.attributes.name;
 
 const onSubmit = () => {
-  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
+  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, selectProduct: selectProduct.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
 };
 </script>
 
