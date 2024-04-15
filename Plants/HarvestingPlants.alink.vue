@@ -78,6 +78,8 @@ onMounted(async () => {
   
 });
 
+console.log('props:', props);
+
 const childrenFilter = [{
     attribute: 'parent.id',
     value: asset.id
