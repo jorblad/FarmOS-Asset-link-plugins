@@ -120,7 +120,7 @@ const onSubmit = () => {
         filled v-model="quantityType"
         :options="unitTerms"
         :option-label="unitLabelFn"
-        label="Standard"
+        label="Unit"
       />
       
       </div>
