@@ -256,7 +256,7 @@ export default {
 
 
 
-        const harvestQuantity = {
+        let harvestQuantity = {
           type: 'quantity--standard',
           id: uuidv4(),
           attributes: {
@@ -286,6 +286,32 @@ export default {
             },
           },
         };
+
+        if (!harvestInventoryProduct) {
+            harvestQuantity = {
+            type: 'quantity--standard',
+            id: uuidv4(),
+            attributes: {
+              measure: harvestQuantityMeasure,
+              value: {
+                numerator: harvestCount,
+                denominator: 1,
+                decimal: `${harvestCount}`,
+              },
+            },
+            relationships: {
+              units: {
+                data: {
+                  type: 'taxonomy_term--unit',
+                  id: uuidv4(),
+                  '$relateByName': {
+                    name: harvestUnitTerm.attributes.name,
+                  },
+                }
+              },
+            },
+          };
+        }
 
         const harvestLog = {
           type: 'log--harvest',
