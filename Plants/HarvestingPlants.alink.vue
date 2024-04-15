@@ -256,36 +256,88 @@ export default {
 
 
 
-        const harvestQuantity = {
-          type: 'quantity--standard',
-          id: uuidv4(),
-          attributes: {
-            measure: harvestQuantityMeasure,
-            value: {
-              numerator: harvestCount,
-              denominator: 1,
-              decimal: `${harvestCount}`,
+        let harvestQuantity = {
+            type: 'quantity--standard',
+            id: uuidv4(),
+            attributes: {
+              measure: harvestQuantityMeasure,
+              value: {
+                numerator: harvestCount,
+                denominator: 1,
+                decimal: `${harvestCount}`,
+              },
             },
-            inventory_adjustment: 'increment',
-          },
-          relationships: {
-            inventory_asset: {
-              data: {
-                  type: harvestInventoryProduct.type,
-                  id: harvestInventoryProduct.id,
+            relationships: {
+              units: {
+                data: {
+                  type: 'taxonomy_term--unit',
+                  id: uuidv4(),
+                  '$relateByName': {
+                    name: harvestUnitTerm.attributes.name,
+                  },
                 }
+              },
             },
-            units: {
-              data: {
-                type: 'taxonomy_term--unit',
-                id: uuidv4(),
-                '$relateByName': {
-                  name: harvestUnitTerm.attributes.name,
+          };
+        
+        
+
+        if (harvestInventoryProduct) {
+            harvestQuantity = {
+              type: 'quantity--standard',
+              id: uuidv4(),
+              attributes: {
+                measure: harvestQuantityMeasure,
+                value: {
+                  numerator: harvestCount,
+                  denominator: 1,
+                  decimal: `${harvestCount}`,
                 },
-              }
+                inventory_adjustment: 'increment',
+              },
+              relationships: {
+                inventory_asset: {
+                  data: {
+                      type: harvestInventoryProduct.type,
+                      id: harvestInventoryProduct.id,
+                    }
+                },
+                units: {
+                  data: {
+                    type: 'taxonomy_term--unit',
+                    id: uuidv4(),
+                    '$relateByName': {
+                      name: harvestUnitTerm.attributes.name,
+                    },
+                  }
+                },
+              },
+            };
+        } else {
+          harvestQuantity = {
+            type: 'quantity--standard',
+            id: uuidv4(),
+            attributes: {
+              measure: harvestQuantityMeasure,
+              value: {
+                numerator: harvestCount,
+                denominator: 1,
+                decimal: `${harvestCount}`,
+              },
             },
-          },
-        };
+            relationships: {
+              units: {
+                data: {
+                  type: 'taxonomy_term--unit',
+                  id: uuidv4(),
+                  '$relateByName': {
+                    name: harvestUnitTerm.attributes.name,
+                  },
+                }
+              },
+            },
+          };
+        }
 
         const harvestLog = {
           type: 'log--harvest',
