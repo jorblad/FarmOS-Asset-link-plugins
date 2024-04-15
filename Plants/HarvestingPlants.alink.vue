@@ -112,6 +112,7 @@ const onSubmit = () => {
         v-model.number="harvestCount"
         type="number"
         filled
+        label="Measurment"
       />
       </div>
       <div class="q-pa-md">
@@ -231,6 +232,8 @@ export default {
         console.log('Harvest Count:', harvestCount);
         const harvestUnitTerm = dialogResult.quantityType;
         console.log('QuantityType:', harvestUnitTerm);
+        const harvestInventoryProduct = dialogResult.selectProduct;
+        console.log('harvestInventoryProduct:', harvestInventoryProduct);
 
         //Photos
         const photos = dialogResult.capturedPhotos;
@@ -264,8 +267,15 @@ export default {
               denominator: 1,
               decimal: `${harvestCount}`,
             },
+            inventory_adjustment: 'increment',
           },
           relationships: {
+            inventory_asset: {
+              data: {
+                  type: harvestInventoryProduct.type,
+                  id: harvestInventoryProduct.id,
+                }
+            },
             units: {
               data: {
                 type: 'taxonomy_term--unit',
