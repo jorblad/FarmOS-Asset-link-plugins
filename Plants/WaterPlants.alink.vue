@@ -191,6 +191,9 @@ export default {
 
       action.type('asset-action');
 
+      console.log('Water log: V0.1')
+      console.log('Asset', asset)
+
       action.showIf(({ asset }) => asset.attributes.status === 'archived'
         && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) ||  asset.type === 'asset--plant');
 
