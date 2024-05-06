@@ -31,7 +31,7 @@ const pendingAssetLogNodes = computed(() => {
 const resolvePendingAssetLogs = async () => {
   console.log("Resolving pending asset logs...");
   
-  console.log("Pending asset logTypes:", doneAssetLogNodes.value);
+  console.log("Pending asset logTypesNodes:", pendingAssetLogNodes.value);
 
   const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
@@ -50,7 +50,7 @@ const resolvePendingAssetLogs = async () => {
 
   pendingAssetLogs.value = results.flatMap(l => l)
     .sort((logA, logB) => parseJSONDate(logA.attributes.timestamp) - parseJSONDate(logB.attributes.timestamp));
-  console.log("Pending asset logs:", doneAssetLogs.value);
+  console.log("Pending asset logs:", pendingAssetLogs.value);
 };
 
 const onAssetLogsChanged = ({ assetType, assetId }) => {
