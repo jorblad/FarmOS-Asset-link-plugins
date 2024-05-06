@@ -191,38 +191,8 @@ export default {
 
       action.type('asset-action');
 
-      action.showIf(({ asset }) => {
-        if (asset.attributes.status === 'archived') {
-          return false;
-        }
-
-        // Here we're querying `assetLink.entitySource.cache` which is
-        // synchronous and never results in a request to farmOS. That
-        // is possible because these relationships will almost always
-        // already be loaded on the asset page. It is also necessary
-        // since slots cannot have asynchronous `showIf` methods.
-        const plantTypes = asset.type === 'asset--land' ?
-          assetLink.entitySource.cache.query((q) =>
-          q.findRelatedRecords(
-            { type: asset.type, id: asset.id },
-            'plant_type')
-          ) : [];
-
-          if (!plantTypes) {
-            return false;
-          }
-
-        //console.log("plantTypes=", plantTypes);
-        
-        // Obviously, since `plant_type` is a required (N >= 1)
-        // attribute, we didn't actually need to load them it would have
-        // been sufficient to just check `asset.type === 'asset--plant'`
-        if (plantTypes.length) {
-          return true;
-        }
-
-      });
-
+      action.showIf(({ asset }) => asset.attributes.status === 'archived'
+        && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) ||  asset.type === 'asset--plant');
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
