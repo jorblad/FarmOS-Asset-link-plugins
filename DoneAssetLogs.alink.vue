@@ -46,7 +46,6 @@ const resolveDoneAssetLogs = async () => {
         op: 'all',
         records: [{ type: props.asset.type, id: props.asset.id }]
       })
-      .sort('timestamp');
   }));
 
   doneAssetLogs.value = results.flatMap(l => l)
