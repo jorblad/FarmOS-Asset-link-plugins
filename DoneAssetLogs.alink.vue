@@ -43,7 +43,7 @@ const resolveDoneAssetLogs = async () => {
       .filter({ attribute: 'status', op: 'equal', value: 'done' })
       .filter({
         relation: 'asset.id',
-        op: 'some',
+        op: 'all',
         records: [{ type: props.asset.type, id: props.asset.id }]
       })
       .sort('timestamp');
