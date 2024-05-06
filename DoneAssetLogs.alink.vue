@@ -29,6 +29,11 @@ const doneAssetLogNodes = computed(() => {
 });
 
 const resolveDoneAssetLogs = async () => {
+  console.log("Resolving done asset logs...");
+  
+  // Your existing code
+  
+  
   const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
   const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
@@ -44,6 +49,7 @@ const resolveDoneAssetLogs = async () => {
 
   doneAssetLogs.value = results.flatMap(l => l)
     .sort((logA, logB) => parseJSONDate(logA.attributes.timestamp) - parseJSONDate(logB.attributes.timestamp));
+  console.log("Done asset logs:", doneAssetLogs.value);
 };
 
 const onAssetLogsChanged = ({ assetType, assetId }) => {
