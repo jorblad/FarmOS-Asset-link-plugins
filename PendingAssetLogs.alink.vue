@@ -31,11 +31,11 @@ const pendingAssetLogNodes = computed(() => {
 const resolvePendingAssetLogs = async () => {
   console.log("Resolving done asset logs...");
   
-  console.log("Done asset logTypes:", doneAssetLogNodes.value);
+  console.log("Pending asset logTypes:", doneAssetLogNodes.value);
 
   const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
-  console.log("Done asset logTypes:", logTypes);
+  console.log("Pending asset logTypes:", logTypes);
 
   const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
     return q.findRecords(`log--${logType}`)
@@ -50,7 +50,7 @@ const resolvePendingAssetLogs = async () => {
 
   pendingAssetLogs.value = results.flatMap(l => l)
     .sort((logA, logB) => parseJSONDate(logA.attributes.timestamp) - parseJSONDate(logB.attributes.timestamp));
-  console.log("Done asset logs:", doneAssetLogs.value);
+  console.log("Pending asset logs:", doneAssetLogs.value);
 };
 
 const onAssetLogsChanged = ({ assetType, assetId }) => {
