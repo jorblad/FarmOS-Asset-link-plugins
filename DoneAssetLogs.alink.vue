@@ -40,7 +40,7 @@ const resolveDoneAssetLogs = async () => {
 
   const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
     return q.findRecords(`log--${logType}`)
-      .filter({ attribute: 'status', op: '=', value: 'done' })
+      .filter({ attribute: 'status', op: 'equal', value: 'done' })
       .filter({
         relation: 'asset.id',
         op: 'some',
