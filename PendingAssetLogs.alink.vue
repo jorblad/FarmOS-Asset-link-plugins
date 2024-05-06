@@ -29,7 +29,7 @@ const pendingAssetLogNodes = computed(() => {
 });
 
 const resolvePendingAssetLogs = async () => {
-  console.log("Resolving done asset logs...");
+  console.log("Resolving pending asset logs...");
   
   console.log("Pending asset logTypes:", doneAssetLogNodes.value);
 
