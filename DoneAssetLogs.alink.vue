@@ -35,6 +35,9 @@ const resolveDoneAssetLogs = async () => {
   
   const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
+  console.log("Done asset logTypes:", logTypes);
+
+
   const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
     return q.findRecords(`log--${logType}`)
       .filter({ attribute: 'status', op: '=', value: 'done' })
