@@ -31,8 +31,7 @@ const doneAssetLogNodes = computed(() => {
 const resolveDoneAssetLogs = async () => {
   console.log("Resolving done asset logs...");
   
-  // Your existing code
-  
+  console.log("Done asset logTypes:", doneAssetLogNodes.value);
   
   const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
