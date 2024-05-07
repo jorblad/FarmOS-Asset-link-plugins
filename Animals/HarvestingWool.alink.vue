@@ -222,7 +222,7 @@ export default {
               t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
-            {label: `Record harvest harvest for ${asset.attributes.name}`});
+            {label: `Record wool harvest for ${asset.attributes.name}`});
       };
 
       action.component(({ asset }) =>
