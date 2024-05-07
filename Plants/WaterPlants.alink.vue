@@ -15,8 +15,6 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-const harvestCount = ref(0);
-
 // Photo adding
 const capturedPhotos = ref([]);
 
@@ -58,80 +56,19 @@ watch(photoCaptureModel, async () => {
   carouselPosition.value = photoId;
 });
 
-const findUnitTerms = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRecords('taxonomy_term--unit')
-  );
-
-
-  const unitTerms = results.flatMap((l) => l);
-
-  console.log('All taxonomy_term--unit records:', unitTerms);
-
-  return unitTerms;
-};
-
-const unitTerms = ref([]);
-
-onMounted(async () => {
-  unitTerms.value = await findUnitTerms(assetLink.entitySource);
-  
-});
-
 const childrenFilter = [{
     attribute: 'parent.id',
     value: props.asset.id
 }];
 
-
-const quantityType = ref(null);
-const unitLabelFn = unitTerm => unitTerm.attributes.name;
-
-const selectProduct = ref(null);
-
 const onSubmit = () => {
-  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, selectProduct: selectProduct.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
+  onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
 };
 </script>
 
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How much did you harvest from {{ props.asset.attributes.name }}?</h4>
-      <div class="q-pa-md">
-      <q-slider
-        v-model="harvestCount"
-        :min="0"
-        :max="20"
-        :step="1"
-        snap
-        label
-      />
-      <q-input
-        v-model.number="harvestCount"
-        type="number"
-        filled
-        label="Measurment"
-      />
-      </div>
-      <div class="q-pa-md">
-
-      <q-select
-        filled v-model="quantityType"
-        :options="unitTerms"
-        :option-label="unitLabelFn"
-        label="Unit"
-      />
-      
-      </div>
-      <div class="q-pa-md">
-        <entity-select
-          label="Product"
-          entity-type="asset"
-          v-model="selectProduct"
-          :additional-filters="childrenFilter"
-        ></entity-select>
-      </div>
 
       <div class="q-pa-md">
           <q-carousel
@@ -168,7 +105,6 @@ const onSubmit = () => {
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="harvestCount <= 0"
         />
       </div>
     </q-card>
@@ -191,132 +127,25 @@ export default {
 
       action.type('asset-action');
 
-      console.log('Water log: V0.1');
+      console.log('Water log: V0.2');
       // console.log('Asset', asset);
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
-            && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) );
+            && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) || asset.type === 'asset--plant' );
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         console.log('Dialog result:', dialogResult);
-        const harvestCount = dialogResult.harvestCount;
-        console.log('Harvest Count:', harvestCount);
-        const harvestUnitTerm = dialogResult.quantityType;
-        console.log('QuantityType:', harvestUnitTerm);
-        const harvestInventoryProduct = dialogResult.selectProduct;
-        console.log('harvestInventoryProduct:', harvestInventoryProduct);
 
         //Photos
         const photos = dialogResult.capturedPhotos;
         console.log('Photos', photos)
 
-        if (!harvestUnitTerm) {
-          return;
-        }
-
-
-        if (!harvestCount || harvestCount <= 0) {
-          return;
-        }
-
-        let harvestQuantityMeasure = "count";
-        if (harvestUnitTerm.attributes.name === "gram" ) {
-          harvestQuantityMeasure = "weight";
-        } else {
-          harvestQuantityMeasure = "count";
-        }
-
-
-
-        let harvestQuantity = {
-            type: 'quantity--standard',
-            id: uuidv4(),
-            attributes: {
-              measure: harvestQuantityMeasure,
-              value: {
-                numerator: harvestCount,
-                denominator: 1,
-                decimal: `${harvestCount}`,
-              },
-            },
-            relationships: {
-              units: {
-                data: {
-                  type: 'taxonomy_term--unit',
-                  id: uuidv4(),
-                  '$relateByName': {
-                    name: harvestUnitTerm.attributes.name,
-                  },
-                }
-              },
-            },
-          };
-        
-        
-
-        if (harvestInventoryProduct) {
-            harvestQuantity = {
-              type: 'quantity--standard',
-              id: uuidv4(),
-              attributes: {
-                measure: harvestQuantityMeasure,
-                value: {
-                  numerator: harvestCount,
-                  denominator: 1,
-                  decimal: `${harvestCount}`,
-                },
-                inventory_adjustment: 'increment',
-              },
-              relationships: {
-                inventory_asset: {
-                  data: {
-                      type: harvestInventoryProduct.type,
-                      id: harvestInventoryProduct.id,
-                    }
-                },
-                units: {
-                  data: {
-                    type: 'taxonomy_term--unit',
-                    id: uuidv4(),
-                    '$relateByName': {
-                      name: harvestUnitTerm.attributes.name,
-                    },
-                  }
-                },
-              },
-            };
-        } else {
-          harvestQuantity = {
-            type: 'quantity--standard',
-            id: uuidv4(),
-            attributes: {
-              measure: harvestQuantityMeasure,
-              value: {
-                numerator: harvestCount,
-                denominator: 1,
-                decimal: `${harvestCount}`,
-              },
-            },
-            relationships: {
-              units: {
-                data: {
-                  type: 'taxonomy_term--unit',
-                  id: uuidv4(),
-                  '$relateByName': {
-                    name: harvestUnitTerm.attributes.name,
-                  },
-                }
-              },
-            },
-          };
-        }
-
         const harvestLog = {
-          type: 'log--harvest',
+          type: 'log--activity',
           attributes: {
-            name: `Harvested ${harvestCount} from ${asset.attributes.name}`,
+            name: `Water ${asset.attributes.name}`,
             timestamp: formatRFC3339(new Date()),
             status: "done",
           },
@@ -326,14 +155,6 @@ export default {
                 {
                   type: asset.type,
                   id: asset.id,
-                }
-              ]
-            },
-            quantity: {
-              data: [
-                {
-                  type: harvestQuantity.type,
-                  id: harvestQuantity.id,
                 }
               ]
             },
@@ -354,10 +175,9 @@ export default {
 
         assetLink.entitySource.update(
             (t) => [
-              t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
-            {label: `Record harvest for ${asset.attributes.name}`});
+            {label: `Record water for ${asset.attributes.name}`});
       };
 
       action.component(({ asset }) =>
