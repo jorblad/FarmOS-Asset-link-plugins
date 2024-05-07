@@ -122,7 +122,7 @@ export default {
 
       action.type('asset-action');
 
-      console.log('Water log: V0.3')
+      console.log('Water log: V0.4')
       //console.log('Asset', props.asset )
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
