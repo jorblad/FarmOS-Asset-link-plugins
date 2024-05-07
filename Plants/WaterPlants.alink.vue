@@ -132,8 +132,6 @@ export default {
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         console.log('Dialog result:', dialogResult);
-        console.log('Asset:', asset);
-        
 
         //Photos
         const photos = dialogResult.capturedPhotos;
