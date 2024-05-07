@@ -56,11 +56,6 @@ watch(photoCaptureModel, async () => {
   carouselPosition.value = photoId;
 });
 
-const childrenFilter = [{
-    attribute: 'parent.id',
-    value: props.asset.id
-}];
-
 const onSubmit = () => {
   onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
 };
@@ -127,8 +122,8 @@ export default {
 
       action.type('asset-action');
 
-      console.log('Water log: V0.2');
-      // console.log('Asset',{ asset } );
+      console.log('Water log: V0.3');
+      console.log('Asset', props.asset );
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -137,12 +132,13 @@ export default {
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         console.log('Dialog result:', dialogResult);
+        
 
         //Photos
         const photos = dialogResult.capturedPhotos;
         console.log('Photos', photos)
 
-        const harvestLog = {
+        const waterLog = {
           type: 'log--activity',
           attributes: {
             name: `Water ${asset.attributes.name}`,
@@ -175,7 +171,7 @@ export default {
 
         assetLink.entitySource.update(
             (t) => [
-              t.addRecord(harvestLog),
+              t.addRecord(waterLog),
             ],
             {label: `Record water for ${asset.attributes.name}`});
       };
