@@ -122,7 +122,7 @@ export default {
 
       action.type('asset-action');
 
-      console.log('Water log: V0.4')
+      console.log('Water log: V0.5')
       //console.log('Asset', props.asset )
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
@@ -132,6 +132,7 @@ export default {
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         console.log('Dialog result:', dialogResult);
+        console.log('Asset:', asset);
         
 
         //Photos
