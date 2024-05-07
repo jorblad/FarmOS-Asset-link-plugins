@@ -122,8 +122,8 @@ export default {
 
       action.type('asset-action');
 
-      console.log('Water log: V0.3');
-      console.log('Asset', props.asset );
+      console.log('Water log: V0.3')
+      console.log('Asset', props.asset )
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
