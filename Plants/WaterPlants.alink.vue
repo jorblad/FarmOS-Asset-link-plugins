@@ -132,7 +132,7 @@ export default {
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
-            && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse')) || asset.type === 'asset--plant' );
+            && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse') || asset.type === 'asset--plant' ));
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
