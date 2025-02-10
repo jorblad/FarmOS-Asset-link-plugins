@@ -131,6 +131,8 @@ export default {
 
       action.type('asset-action');
 
+      console.log('Reset trap: V0.1')
+
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             && (asset.type === 'asset--equipment' ));
 
