@@ -107,7 +107,6 @@ const onSubmit = () => {
           color="primary"
           label="Record"
           @click="onSubmit"
-          :disabled="harvestCount <= 0"
         />
       </div>
     </q-card>
