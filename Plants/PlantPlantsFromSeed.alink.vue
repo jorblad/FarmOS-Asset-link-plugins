@@ -900,7 +900,7 @@ export default {
                 console.log('plantingLog:', plantingLog)
 
                 let transplantingLog;
-                if (planting) {
+                if (planting && transPlanting) {
                     transplantingLog = {
                         type: 'log--transplanting',
                         attributes: {
