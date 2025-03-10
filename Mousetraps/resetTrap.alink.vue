@@ -151,8 +151,7 @@ export default {
         const selectedAction = dialogResult.selectedAction;
         console.log('Selected action:', selectedAction);
 
-        // const actionName = selectedAction.attributes.label;
-
+        const actionName = selectedAction.label;
 
         const resetTrapLog = {
           type: 'log--activity',
