@@ -64,7 +64,7 @@ watch(photoCaptureModel, async () => {
 });
 
 const onSubmit = () => {
-  onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, selectedAction: selectedAction.value });
 };
 </script>
 
