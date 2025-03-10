@@ -64,7 +64,7 @@ watch(photoCaptureModel, async () => {
 });
 
 const onSubmit = () => {
-  onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, selectedAction: selectedAction });
+  onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, selectedAction: selectedAction.value });
 };
 </script>
 
@@ -151,8 +151,8 @@ export default {
         const selectedAction = dialogResult.selectedAction;
         console.log('Selected action:', selectedAction);
 
-        const actionName = selectedAction.label;
-
+        const actionName = selectedAction === 'reset' ? 'Reset' : selectedAction === 'empty' ? 'Empty' : 'Put together and empty';
+        console.log('Action name:', actionName);
         const resetTrapLog = {
           type: 'log--activity',
           attributes: {
