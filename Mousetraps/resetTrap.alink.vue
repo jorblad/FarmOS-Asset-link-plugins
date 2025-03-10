@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted } from 'vue';
+import { inject, ref, onMounted, watch } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 const props = defineProps({
@@ -172,7 +172,7 @@ export default {
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Reset" ));
     });
 
   }
