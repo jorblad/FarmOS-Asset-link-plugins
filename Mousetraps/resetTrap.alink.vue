@@ -15,7 +15,12 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-const selectedAction = ref({});
+const selectedAction = ref(null);
+const actionOptions = [
+  { label: 'Reset trap', value: 'reset' },
+  { label: 'Empty trap', value: 'empty' },
+  { label: 'Put together and empty trap', value: 'putTogetherAndEmpty' }
+];
 
 // Photo adding
 const capturedPhotos = ref([]);
@@ -68,10 +73,14 @@ const onSubmit = () => {
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
       <h4>Reset trap {{ props.asset.attributes.name }}?</h4>
       <div class="q-gutter-sm">
-        <q-radio v-model="selectedAction" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="reset" label="Reset trap" />
-        <q-radio v-model="selectedAction" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="empty" label="Emty trap" />
-        <q-radio v-model="selectedAction" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="putToghetherAndEmpty" label="Put together and empty trap" />
-        </div>
+        <q-select
+          v-model="selectedAction"
+          :options="actionOptions"
+          label="Select Action"
+          emit-value
+          map-options
+        />
+      </div>
       <div class="q-pa-md">
           <q-carousel
             swipeable
