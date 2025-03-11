@@ -761,7 +761,6 @@ export default {
                 return;
                 }
 
-
                 const plants = [];
                 const plantIDs = [];
 
