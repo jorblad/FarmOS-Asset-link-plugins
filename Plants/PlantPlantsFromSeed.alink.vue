@@ -775,7 +775,7 @@ export default {
                     type: 'asset--plant',
                     id: plantID,
                     attributes: {
-                    name: `${plantName} ${multipleAssets ? `#${i + 1}` : ''}`,
+                    name: `${plantName} ${multipleAssets ? `${i + 1}` : ''}`,
                     status: 'active',
                     },
                     relationships: {
