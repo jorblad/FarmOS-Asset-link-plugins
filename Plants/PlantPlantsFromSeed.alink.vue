@@ -756,8 +756,6 @@ export default {
 
                 const plantName = `${seasonName} ${asset.attributes.name} ${plantTypeName}`;
 
-                const plantID = uuidv4();
-
 
                 if (!seedCount || seedCount <= 0) {
                 return;
