@@ -764,53 +764,61 @@ export default {
                 }
 
 
+                const plants = [];
+                const plantIDs = [];
+
+                for (let i = 0; i < (multipleAssets ? seedCount : 1); i++) {
+                const plantID = uuidv4();
+                plantIDs.push(plantID);
+
                 const plant = {
                     type: 'asset--plant',
                     id: plantID,
                     attributes: {
-                        name: `${plantName}`,
-                        status: 'active',
+                    name: `${plantName} ${multipleAssets ? `#${i + 1}` : ''}`,
+                    status: 'active',
                     },
                     relationships: {
-                        plant_type: {
-                            data: [
-                                {
-                                    type: 'taxonomy_term--plant_type',
-                                    id: uuidv4(),
-                                    '$relateByName': {
-                                    name: plantTypeName,
-                                    },
-                                }
-                            ]
-                        },
-                        season: {
-                            data: [
-                                {
-                                    type: 'taxonomy_term--season',
-                                    id: uuidv4(),
-                                    '$relateByName': {
-                                    name: seasonName,
-                                    },
-                                }
-                            ]
-                        },
-                        image: {
-                            data: photos.map(({ id, fileName, fileDataUrl }) =>
-                                ({
-                                    type: 'file--file',
-                                    id,
-                                    '$upload': {
-                                        fileName,
-                                        fileDataUrl,
-                                    }
-                                })
-                                ),
+                    plant_type: {
+                        data: [
+                        {
+                            type: 'taxonomy_term--plant_type',
+                            id: uuidv4(),
+                            '$relateByName': {
+                            name: plantTypeName,
                             },
                         },
-                    }
+                        ],
+                    },
+                    season: {
+                        data: [
+                        {
+                            type: 'taxonomy_term--season',
+                            id: uuidv4(),
+                            '$relateByName': {
+                            name: seasonName,
+                            },
+                        },
+                        ],
+                    },
+                    image: {
+                        data: photos.map(({ id, fileName, fileDataUrl }) => ({
+                        type: 'file--file',
+                        id,
+                        '$upload': {
+                            fileName,
+                            fileDataUrl,
+                        },
+                        })),
+                    },
+                    },
+                };
+
+                plants.push(plant);
+                }
                 
 
-                console.log('plant:', plant)
+                console.log('plants:', plants);
 
                 let seedQuantity;
                 
@@ -884,12 +892,10 @@ export default {
                     },
                     relationships: {
                         asset: {
-                            data: [
-                                {
+                            data: plantIDs.map(id => ({
                                 type: 'asset--plant',
-                                id: plantID,
-                                }
-                            ]
+                                id,
+                            })),
                         },
                         location: {
                             data: [
@@ -923,12 +929,10 @@ export default {
                         },
                         relationships: {
                             asset: {
-                                data: [
-                                    {
+                                data: plantIDs.map(id => ({
                                     type: 'asset--plant',
-                                    id: plantID,
-                                    }
-                                ]
+                                    id,
+                                })),
                             },
                             location: {
                                 data: [
@@ -951,12 +955,10 @@ export default {
                         },
                         relationships: {
                             asset: {
-                                data: [
-                                    {
+                                data: plantIDs.map(id => ({
                                     type: 'asset--plant',
-                                    id: plantID,
-                                    }
-                                ]
+                                    id,
+                                })),
                             },
                             location: {
                                 data: [
@@ -984,26 +986,23 @@ export default {
 
                 let harvestLog;
                 if (harvest) {
-                    harvestLog = {
-                        type: 'log--harvest',
-                        attributes: {
-                            name: `Harvest ${plantName}`,
-                            timestamp: formatRFC3339(new Date(harvestDate)),
-                            status: "pending",
-                            
-                        },
-                        relationships: {
-                            asset: {
-                                data: [
-                                    {
-                                    type: 'asset--plant',
-                                    id: plantID,
-                                    }
-                                ]
-                            },
-                        },
-                    };
-                    console.log('harvestLog:', harvestLog)
+                harvestLog = {
+                    type: 'log--harvest',
+                    attributes: {
+                    name: `Harvest ${plantName}`,
+                    timestamp: formatRFC3339(new Date(harvestDate)),
+                    status: "pending",
+                    },
+                    relationships: {
+                    asset: {
+                        data: plantIDs.map(id => ({
+                        type: 'asset--plant',
+                        id,
+                        })),
+                    },
+                    },
+                };
+                console.log('harvestLog:', harvestLog);
                 }
                 
 
@@ -1011,10 +1010,10 @@ export default {
 
                 assetLink.entitySource.update(
                     (t) => [
-                        t.addRecord(plant),
+                        ...plants.map(plant => t.addRecord(plant)),
                         t.addRecord(seedQuantity),
                     ]
-                )
+                );
 
                 if (planting) {
                     assetLink.entitySource.update(
