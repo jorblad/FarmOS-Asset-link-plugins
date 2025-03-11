@@ -29,6 +29,7 @@ const notes = ref(null);
 const transPlantingDate = ref(null)
 const transplantLocation = ref(null)
 const harvestDate = ref(null)
+const multipleAssets = ref(false)
 
 
 const seasonsOptions = ref([]);
@@ -295,7 +296,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, multipleAssets: multipleAssets.value });
 };
 
 
@@ -450,6 +451,15 @@ const additionalFilters = [
                 new-value-mode="add-unique"
                 :rules="[val => !!val || 'Season is required']"
             /> 
+        </div>
+        <div class="q-pa-md">
+            <q-toggle 
+                v-model="multipleAssets"
+                label="Create multiple assets"
+                icon="mdi-sprout"
+                size="xl"
+                color="green"
+            />
         </div>
         <div class="q-pa-md">
             <q-toggle 
@@ -691,6 +701,8 @@ export default {
                 console.log('harvest', harvest)
                 const harvestDate = dialogResult.harvestDate;
                 console.log('harvestDate', harvestDate)
+                const multipleAssets = dialogResult.multipleAssets;
+                console.log('multipleAssets', multipleAssets)
                 
 
 
