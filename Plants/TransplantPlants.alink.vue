@@ -60,7 +60,12 @@ watch(photoCaptureModel, async () => {
 
 const transplantLocation = ref(null)
 
-
+const additionalFilters = [
+  // Only allow moving to locations
+  { attribute: 'is_location', op: 'equal', value: true },
+  // Do not allow moving to self
+  { attribute: 'drupal_internal__id', op: '<>', value: props.asset.attributes.drupal_internal__id },
+];
 
 
 
