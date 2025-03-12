@@ -194,7 +194,7 @@ export default {
         transplantingLog = {
             type: 'log--transplanting',
             attributes: {
-                name: `Transplant ${plantName}`,
+                name: `Transplant ${asset.attributes.name}`,
                 timestamp: formatRFC3339(new Date()),
                 status: "done",
 
