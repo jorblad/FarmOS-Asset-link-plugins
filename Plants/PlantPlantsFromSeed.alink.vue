@@ -720,8 +720,16 @@ export default {
                 console.log('harvestDate', harvestDate)
                 const multipleAssets = dialogResult.multipleAssets;
                 console.log('multipleAssets', multipleAssets)
+                const transplantLocations = dialogResult.transplantLocations;
+                console.log('transplantLocations', transplantLocations)
                 
 
+                if (transplantLocations && transplantLocations.length > 0) {
+                    transplantLocations.forEach(location => {
+                        console.log('Transplant Location:', location);
+
+                    });
+                }
 
                 let seed_id;
                 if (planting) {
