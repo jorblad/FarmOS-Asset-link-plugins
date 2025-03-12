@@ -147,6 +147,8 @@ export default {
 
       action.type('asset-action');
 
+       console.log('Transplanting plugin: V0.1')
+
       action.showIf(({ asset }) => {
         if (asset.attributes.status === 'archived') {
           return false;
