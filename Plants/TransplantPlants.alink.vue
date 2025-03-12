@@ -211,16 +211,8 @@ export default {
                 location: {
                     data: [
                         {
-                        type: asset.type,
-                        id: asset.id,
-                        }
-                    ]
-                },
-                quantity: {
-                    data: [
-                        {
-                        type: seedQuantity.type,
-                        id: seedQuantity.id,
+                        type: transplantLocation.type,
+                        id: transplantLocation.id,
                         }
                     ]
                 },
