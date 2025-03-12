@@ -15,7 +15,6 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
-const harvestCount = ref(0);
 
 // Photo adding
 const capturedPhotos = ref([]);
@@ -58,66 +57,22 @@ watch(photoCaptureModel, async () => {
   carouselPosition.value = photoId;
 });
 
-const findUnitTerms = async (entitySource) => {
-  const results = await entitySource.query((q) =>
-    q.findRecords('taxonomy_term--unit')
-  );
+
+const transplantLocation = ref(null)
 
 
-  const unitTerms = results.flatMap((l) => l);
-
-  console.log('All taxonomy_term--unit records:', unitTerms);
-
-  return unitTerms;
-};
-
-const unitTerms = ref([]);
-
-onMounted(async () => {
-  unitTerms.value = await findUnitTerms(assetLink.entitySource);
-  
-});
-
-const childrenFilter = [{
-    attribute: 'parent.id',
-    value: props.asset.id
-}];
 
 
-const quantityType = ref(null);
-const unitLabelFn = unitTerm => unitTerm.attributes.name;
-
-const selectProduct = ref(null);
 
 const onSubmit = () => {
-  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, selectProduct: selectProduct.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value  });
+  onDialogOK({ transplantLocation: transplantLocation.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
 };
 </script>
 
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-        <div class="q-pa-md">
-            <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
-                <template v-slot:append>
-                    <q-icon name="mdi-calendar" class="cursor-pointer">
-                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                        <q-date
-                            v-model="transPlantingDate"
-                            today-btn
-                            subtitle="Transplanting date"
-                            first-day-of-week="1"
-                        >
-                        <div class="row items-center justify-end">
-                            <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
-                        </div>
-                        </q-date>
-                    </q-popup-proxy>
-                    </q-icon>
-                </template>
-            </q-input>
-            
-        </div>
+
         <div class="q-pa-md">
             <entity-select
             label="Transplant location"
@@ -129,34 +84,34 @@ const onSubmit = () => {
 
         </div>
 
-      <div class="q-pa-md">
-          <q-carousel
-            swipeable
-            animated
-            navigation
-            navigation-icon="mdi-radiobox-marked"
-            control-type="flat"
-            control-color="orange"
-            :arrows="false"
-            height="200px"
-            v-model="carouselPosition"
-          >
-            <q-carousel-slide
-				v-for="(capturedPhoto, capturedPhotoIdx) in capturedPhotos"
-            	:key="capturedPhoto.id"
-            	:name="capturedPhoto.id">
-              <q-img
-                :src="capturedPhoto.fileDataUrl"
-                class="rounded-borders full-height"
-                fit="contain"
-              ></q-img>
-            </q-carousel-slide>
+        <div class="q-pa-md">
+            <q-carousel
+                swipeable
+                animated
+                navigation
+                navigation-icon="mdi-radiobox-marked"
+                control-type="flat"
+                control-color="orange"
+                :arrows="false"
+                height="200px"
+                v-model="carouselPosition"
+            >
+                <q-carousel-slide
+                    v-for="(capturedPhoto, capturedPhotoIdx) in capturedPhotos"
+                    :key="capturedPhoto.id"
+                    :name="capturedPhoto.id">
+                <q-img
+                    :src="capturedPhoto.fileDataUrl"
+                    class="rounded-borders full-height"
+                    fit="contain"
+                ></q-img>
+                </q-carousel-slide>
 
-            <q-carousel-slide name="capture-photo">
-              <photo-input class="q-pb-xl" v-model="photoCaptureModel"></photo-input>
-            </q-carousel-slide>
-          </q-carousel>
-        </div>
+                <q-carousel-slide name="capture-photo">
+                <photo-input class="q-pb-xl" v-model="photoCaptureModel"></photo-input>
+                </q-carousel-slide>
+            </q-carousel>
+            </div>
 
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
@@ -223,161 +178,51 @@ export default {
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         console.log('Dialog result:', dialogResult);
-        const harvestCount = dialogResult.harvestCount;
-        console.log('Harvest Count:', harvestCount);
-        const harvestUnitTerm = dialogResult.quantityType;
-        console.log('QuantityType:', harvestUnitTerm);
-        const harvestInventoryProduct = dialogResult.selectProduct;
-        console.log('harvestInventoryProduct:', harvestInventoryProduct);
+        const transplantLocation = dialogResult.transplantLocation;
+        console.log('transplantLocation:', transplantLocation);
 
         //Photos
         const photos = dialogResult.capturedPhotos;
         console.log('Photos', photos)
 
-        if (!harvestUnitTerm) {
-          return;
-        }
-
-
-        if (!harvestCount || harvestCount <= 0) {
-          return;
-        }
-
-        let harvestQuantityMeasure = "count";
-        if (harvestUnitTerm.attributes.name === "gram" ) {
-          harvestQuantityMeasure = "weight";
-        } else {
-          harvestQuantityMeasure = "count";
-        }
-
-
-
-        let harvestQuantity = {
-            type: 'quantity--standard',
-            id: uuidv4(),
+        let transplantingLog;
+        transplantingLog = {
+            type: 'log--transplanting',
             attributes: {
-              measure: harvestQuantityMeasure,
-              value: {
-                numerator: harvestCount,
-                denominator: 1,
-                decimal: `${harvestCount}`,
-              },
+                name: `Transplant ${plantName}`,
+                timestamp: formatRFC3339(new Date()),
+                status: "done",
+
             },
             relationships: {
-              units: {
-                data: {
-                  type: 'taxonomy_term--unit',
-                  id: uuidv4(),
-                  '$relateByName': {
-                    name: harvestUnitTerm.attributes.name,
-                  },
-                }
-              },
-            },
-          };
-        
-        
-
-        if (harvestInventoryProduct) {
-            harvestQuantity = {
-              type: 'quantity--standard',
-              id: uuidv4(),
-              attributes: {
-                measure: harvestQuantityMeasure,
-                value: {
-                  numerator: harvestCount,
-                  denominator: 1,
-                  decimal: `${harvestCount}`,
+                asset: {
+                    data: plantIDs.map(id => ({
+                        type: 'asset--plant',
+                        id,
+                    })),
                 },
-                inventory_adjustment: 'increment',
-              },
-              relationships: {
-                inventory_asset: {
-                  data: {
-                      type: harvestInventoryProduct.type,
-                      id: harvestInventoryProduct.id,
-                    }
+                location: {
+                    data: [
+                        {
+                        type: asset.type,
+                        id: asset.id,
+                        }
+                    ]
                 },
-                units: {
-                  data: {
-                    type: 'taxonomy_term--unit',
-                    id: uuidv4(),
-                    '$relateByName': {
-                      name: harvestUnitTerm.attributes.name,
-                    },
-                  }
+                quantity: {
+                    data: [
+                        {
+                        type: seedQuantity.type,
+                        id: seedQuantity.id,
+                        }
+                    ]
                 },
-              },
-            };
-        } else {
-          harvestQuantity = {
-            type: 'quantity--standard',
-            id: uuidv4(),
-            attributes: {
-              measure: harvestQuantityMeasure,
-              value: {
-                numerator: harvestCount,
-                denominator: 1,
-                decimal: `${harvestCount}`,
-              },
             },
-            relationships: {
-              units: {
-                data: {
-                  type: 'taxonomy_term--unit',
-                  id: uuidv4(),
-                  '$relateByName': {
-                    name: harvestUnitTerm.attributes.name,
-                  },
-                }
-              },
-            },
-          };
-        }
-
-        const harvestLog = {
-          type: 'log--harvest',
-          attributes: {
-            name: `Harvested ${harvestCount} from ${asset.attributes.name}`,
-            timestamp: formatRFC3339(new Date()),
-            status: "done",
-          },
-          relationships: {
-            asset: {
-              data: [
-                {
-                  type: asset.type,
-                  id: asset.id,
-                }
-              ]
-            },
-            quantity: {
-              data: [
-                {
-                  type: harvestQuantity.type,
-                  id: harvestQuantity.id,
-                }
-              ]
-            },
-            image: {
-              data: photos.map(({ id, fileName, fileDataUrl }) =>
-                  ({
-                      type: 'file--file',
-                      id,
-                      '$upload': {
-                          fileName,
-                          fileDataUrl,
-                      }
-                  })
-                  ),
-              },
-          },
         };
 
         assetLink.entitySource.update(
             (t) => [
-              t.addRecord(harvestQuantity),
-              t.addRecord(harvestLog),
+              t.addRecord(transplantingLog)
             ],
             {label: `Transplant ${asset.attributes.name}`});
       };
