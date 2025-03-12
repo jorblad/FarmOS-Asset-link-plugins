@@ -201,10 +201,12 @@ export default {
             },
             relationships: {
                 asset: {
-                    data: plantIDs.map(id => ({
-                        type: 'asset--plant',
-                        id,
-                    })),
+                    data: [
+                        {
+                        type: asset.type,
+                        id: asset.id,
+                        }
+                    ]
                 },
                 location: {
                     data: [
