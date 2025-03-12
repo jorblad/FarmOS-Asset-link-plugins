@@ -297,7 +297,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, multipleAssets: multipleAssets.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, multipleAssets: multipleAssets.value, transplantLocations: transplantLocations.value });
 };
 
 
