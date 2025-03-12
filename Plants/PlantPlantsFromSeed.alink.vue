@@ -556,15 +556,28 @@ const additionalFilters = [
               </template>
             </q-input>
           </div>
-          <div v-for="i in seedCount" :key="i" class="q-pa-md">
-            <entity-select
-              label="Transplant location for asset {{ i }}"
-              entity-type="asset"
-              v-model="transplantLocations[i - 1]"
-              :additional-filters="additionalFilters"
-              :rules="[val => !!val || 'Transplant location is required']"
-            />
-          </div>
+          <div v-if="multipleAssets">
+            <div v-for="i in seedCount" :key="i" class="q-pa-md">
+              <entity-select
+                :label="`Transplant location for asset ${plantType} ${i}`"
+                entity-type="asset"
+                v-model="transplantLocations[i - 1]"
+                :additional-filters="additionalFilters"
+                :rules="[val => !!val || 'Transplant location is required']"
+              />
+            </div>
+        </div>
+        <div v-else>
+            <div class="q-pa-md">
+                <entity-select
+                label="Transplant location"
+                entity-type="asset"
+                v-model="transplantLocation"
+                :additional-filters="additionalFilters"
+                :rules="[val => !!val || 'Transplant location is required']"
+                />
+            </div>
+        </div>
         </div>
         <div class="q-pa-md">
             <q-toggle 
@@ -658,7 +671,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        console.log('Planting plugin: V0.142')
+        console.log('Planting plugin: V0.143')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
