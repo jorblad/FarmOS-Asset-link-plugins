@@ -559,7 +559,7 @@ const additionalFilters = [
           <div v-if="multipleAssets">
             <div v-for="i in seedCount" :key="i" class="q-pa-md">
               <entity-select
-                :label="`Transplant location for asset ${plantType} ${i}`"
+                :label="`Transplant location for asset ${plantType.name} ${i}`"
                 entity-type="asset"
                 v-model="transplantLocations[i - 1]"
                 :additional-filters="additionalFilters"
