@@ -28,6 +28,7 @@ const harvest = ref(false)
 const notes = ref(null);
 const transPlantingDate = ref(null)
 const transplantLocation = ref(null)
+const transplantLocations = ref([]);
 const harvestDate = ref(null)
 const multipleAssets = ref(false)
 
@@ -529,38 +530,41 @@ const additionalFilters = [
             />
         </div>
         <div v-if="transPlanting && planting">
-            <div class="q-pa-md">
-                    <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
-                        <template v-slot:append>
-                            <q-icon name="mdi-calendar" class="cursor-pointer">
-                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                <q-date
-                                    v-model="transPlantingDate"
-                                    today-btn
-                                    subtitle="Transplanting date"
-                                    first-day-of-week="1"
-                                >
-                                <div class="row items-center justify-end">
-                                    <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
-                                </div>
-                                </q-date>
-                            </q-popup-proxy>
-                            </q-icon>
-                        </template>
-                    </q-input>
-                
-            </div>
-            <div class="q-pa-md">
-                <entity-select
-                label="Transplant location"
-                entity-type="asset"
-                v-model="transplantLocation"
-                :additional-filters="additionalFilters"
-                :rules="[val => !!val || 'Transplant location is required']"
-                ></entity-select>
-        </div>
-            
-            
+          <div class="q-pa-md">
+            <q-input
+              filled
+              v-model="transPlantingDate"
+              mask="date"
+              :rules="['date']"
+              label="Transplanting date"
+            >
+              <template v-slot:append>
+                <q-icon name="mdi-calendar" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date
+                      v-model="transPlantingDate"
+                      today-btn
+                      subtitle="Transplanting date"
+                      first-day-of-week="1"
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div v-for="i in seedCount" :key="i" class="q-pa-md">
+            <entity-select
+              label="Transplant location for asset {{ i }}"
+              entity-type="asset"
+              v-model="transplantLocations[i - 1]"
+              :additional-filters="additionalFilters"
+              :rules="[val => !!val || 'Transplant location is required']"
+            />
+          </div>
         </div>
         <div class="q-pa-md">
             <q-toggle 
@@ -654,7 +658,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        //console.log('Planting plugin: V0.141')
+        console.log('Planting plugin: V0.142')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
