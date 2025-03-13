@@ -28,6 +28,7 @@ const harvest = ref(false)
 const notes = ref(null);
 const transPlantingDate = ref(null)
 const transplantLocation = ref(null)
+const transplantLocations = ref([]);
 const harvestDate = ref(null)
 const multipleAssets = ref(false)
 
@@ -296,7 +297,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
 
 
 const onSubmit = () => {
-  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, multipleAssets: multipleAssets.value });
+  onDialogOK({ seedCount: seedCount.value, plantSeason: plantSeason.value, planting: planting.value, plantType: plantType.value, notes: notes.value, seedAsset: seedAsset.value, transPlanting: transPlanting.value, transPlantingDate: transPlantingDate.value, transplantLocation: transplantLocation.value, harvestDate: harvestDate.value, harvest: harvest.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, multipleAssets: multipleAssets.value, transplantLocations: transplantLocations.value });
 };
 
 
@@ -529,27 +530,44 @@ const additionalFilters = [
             />
         </div>
         <div v-if="transPlanting && planting">
-            <div class="q-pa-md">
-                    <q-input filled v-model="transPlantingDate" mask="date" :rules="['date']" label="Transplanting date">
-                        <template v-slot:append>
-                            <q-icon name="mdi-calendar" class="cursor-pointer">
-                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                <q-date
-                                    v-model="transPlantingDate"
-                                    today-btn
-                                    subtitle="Transplanting date"
-                                    first-day-of-week="1"
-                                >
-                                <div class="row items-center justify-end">
-                                    <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
-                                </div>
-                                </q-date>
-                            </q-popup-proxy>
-                            </q-icon>
-                        </template>
-                    </q-input>
-                
+          <div class="q-pa-md">
+            <q-input
+              filled
+              v-model="transPlantingDate"
+              mask="date"
+              :rules="['date']"
+              label="Transplanting date"
+            >
+              <template v-slot:append>
+                <q-icon name="mdi-calendar" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date
+                      v-model="transPlantingDate"
+                      today-btn
+                      subtitle="Transplanting date"
+                      first-day-of-week="1"
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div v-if="multipleAssets">
+            <div v-for="i in seedCount" :key="i" class="q-pa-md">
+              <entity-select
+                :label="`Transplant location for asset ${plantType.name} ${i}`"
+                entity-type="asset"
+                v-model="transplantLocations[i - 1]"
+                :additional-filters="additionalFilters"
+                :rules="[val => !!val || 'Transplant location is required']"
+              />
             </div>
+        </div>
+        <div v-else>
             <div class="q-pa-md">
                 <entity-select
                 label="Transplant location"
@@ -557,10 +575,9 @@ const additionalFilters = [
                 v-model="transplantLocation"
                 :additional-filters="additionalFilters"
                 :rules="[val => !!val || 'Transplant location is required']"
-                ></entity-select>
+                />
+            </div>
         </div>
-            
-            
         </div>
         <div class="q-pa-md">
             <q-toggle 
@@ -654,7 +671,7 @@ export default {
         action.type('asset-action');
         action.weight(-10);
 
-        //console.log('Planting plugin: V0.141')
+        console.log('Planting plugin: V0.145')
 
         action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
@@ -703,8 +720,16 @@ export default {
                 console.log('harvestDate', harvestDate)
                 const multipleAssets = dialogResult.multipleAssets;
                 console.log('multipleAssets', multipleAssets)
+                const transplantLocations = dialogResult.transplantLocations;
+                console.log('transplantLocations', transplantLocations)
                 
 
+                if (transplantLocations && transplantLocations.length > 0) {
+                    transplantLocations.forEach(location => {
+                        console.log('Transplant Location:', location);
+
+                    });
+                }
 
                 let seed_id;
                 if (planting) {
@@ -914,41 +939,68 @@ export default {
                 };
                 console.log('plantingLog:', plantingLog)
 
-                let transplantingLog;
+                let transplantingLogs = [];
                 if (planting && transPlanting) {
-                    transplantingLog = {
-                        type: 'log--transplanting',
-                        attributes: {
-                            name: `Transplant ${plantName}`,
-                            timestamp: formatRFC3339(new Date(transPlantingDate)),
-                            status: "pending",
-
-                        },
-                        relationships: {
-                            asset: {
-                                data: plantIDs.map(id => ({
-                                    type: 'asset--plant',
-                                    id,
-                                })),
+                    if (transplantLocations && transplantLocations.length > 0) {
+                        transplantingLogs = plantIDs.map((id, index) => ({
+                            type: 'log--transplanting',
+                            attributes: {
+                                name: `Transplant ${plantName} ${multipleAssets ? `#${index + 1}` : ''}`,
+                                timestamp: formatRFC3339(new Date(transPlantingDate)),
+                                status: "pending",
                             },
-                            location: {
-                                data: [
-                                    {
-                                    type: transplantLocation.type,
-                                    id: transplantLocation.id,
-                                    }
-                                ]
+                            relationships: {
+                                asset: {
+                                    data: [
+                                        {
+                                            type: 'asset--plant',
+                                            id,
+                                        },
+                                    ],
+                                },
+                                location: {
+                                    data: [
+                                        {
+                                            type: transplantLocations[index].type,
+                                            id: transplantLocations[index].id,
+                                        },
+                                    ],
+                                },
                             },
-                        },
-                    };
+                        }));
+                    } else {
+                        transplantingLogs = [{
+                            type: 'log--transplanting',
+                            attributes: {
+                                name: `Transplant ${plantName}`,
+                                timestamp: formatRFC3339(new Date(transPlantingDate)),
+                                status: "pending",
+                            },
+                            relationships: {
+                                asset: {
+                                    data: plantIDs.map(id => ({
+                                        type: 'asset--plant',
+                                        id,
+                                    })),
+                                },
+                                location: {
+                                    data: [
+                                        {
+                                            type: transplantLocation.type,
+                                            id: transplantLocation.id,
+                                        },
+                                    ],
+                                },
+                            },
+                        }];
+                    }
                 } else {
-                    transplantingLog = {
+                    transplantingLogs = [{
                         type: 'log--transplanting',
                         attributes: {
                             name: `Transplant ${plantName}`,
                             timestamp: formatRFC3339(new Date()),
                             status: "done",
-
                         },
                         relationships: {
                             asset: {
@@ -960,25 +1012,24 @@ export default {
                             location: {
                                 data: [
                                     {
-                                    type: asset.type,
-                                    id: asset.id,
-                                    }
-                                ]
+                                        type: asset.type,
+                                        id: asset.id,
+                                    },
+                                ],
                             },
                             quantity: {
                                 data: [
                                     {
-                                    type: seedQuantity.type,
-                                    id: seedQuantity.id,
-                                    }
-                                ]
+                                        type: seedQuantity.type,
+                                        id: seedQuantity.id,
+                                    },
+                                ],
                             },
                         },
-                    };
+                    }];
                 }
-                
 
-                console.log('transplantingLog:', transplantingLog)
+                console.log('transplantingLogs:', transplantingLogs);
 
 
                 let harvestLog;
@@ -1021,12 +1072,14 @@ export default {
                 }
                 
                 
+                // Update the entity source with the transplanting logs
                 if (transPlanting) {
                     assetLink.entitySource.update(
                         (t) => [
-                            t.addRecord(transplantingLog),
+                            ...transplantingLogs.map(log => t.addRecord(log)),
                         ],
-                        {label: `Create transplanting log`});
+                        { label: `Create transplanting logs` }
+                    );
                 }
 
                 if (harvest) {
