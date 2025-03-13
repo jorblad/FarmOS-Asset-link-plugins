@@ -51,7 +51,6 @@ const geojson = wktToGeoJSON(props.asset.attributes.geometry.value);
 const onMapInitialized = (map) => {
   map.addBehavior("sidePanel");
   map.addBehavior("layerSwitcherInSidePanel");
-  console.log("Map initialized", map);
   console.log("Props: ", props);
 
   const allAssetsLayer = map.addLayer('geojson', {
