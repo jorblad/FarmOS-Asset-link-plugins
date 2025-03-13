@@ -48,6 +48,8 @@ const wktToGeoJSON = (wkt) => {
 // Convert WKT to GeoJSON
 const geojson = wktToGeoJSON(props.asset.attributes.geometry.value);
 
+console.log("GeoJSON: ", geojson);
+
 const onMapInitialized = (map) => {
   map.addBehavior("sidePanel");
   map.addBehavior("layerSwitcherInSidePanel");
