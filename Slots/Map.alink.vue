@@ -17,7 +17,7 @@ const assetLink = inject('assetLink');
 // Function to convert WKT to GeoJSON
 const wktToGeoJSON = (wkt) => {
   const type = wkt.split(' ')[0];
-  const coordinatesString = wkt.match(/\(([^)]+)\)/)[1];
+  const coordinatesString = wkt.match(/\(\(([^)]+)\)\)/)[1];
   let coordinates;
 
   if (type === 'POLYGON') {
@@ -55,7 +55,7 @@ const onMapInitialized = (map) => {
 
   console.log("GeoJSON: ", geojson);
   console.log("Props: ", props);
-  console.log("Map version 0.1");
+  console.log("Map version 0.2");
 
   const allAssetsLayer = map.addLayer('geojson', {
     title: 'All Assets',
