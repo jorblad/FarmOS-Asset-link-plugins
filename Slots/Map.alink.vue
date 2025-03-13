@@ -23,6 +23,8 @@ const onMapInitialized = (map) => {
     url: createDrupalUrl('/assets/geojson/full/all'),
     style: (feature) => {
       // Check if the feature corresponds to the asset in props
+      console.log('feature', feature);
+      console.log('props.asset', props.asset);
       if (feature.get('id') === props.asset.id) {
         // Return a different style for the asset in props
         return new ol.style.Style({
