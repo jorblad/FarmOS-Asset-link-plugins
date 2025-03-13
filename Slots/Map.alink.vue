@@ -1,9 +1,7 @@
 <script setup>
-import { computed, inject, ref, onMounted, onUnmounted } from 'vue';
-
+import { inject } from 'vue';
 import { createDrupalUrl } from "assetlink-plugin-api";
-
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
@@ -22,14 +20,39 @@ const onMapInitialized = (map) => {
 
   const layer = map.addLayer('geojson', {
     title: 'All Assets',
-    url: createDrupalUrl('/assets/geojson/full/all')
+    url: createDrupalUrl('/assets/geojson/full/all'),
+    style: (feature) => {
+      // Check if the feature corresponds to the asset in props
+      if (feature.get('id') === props.asset.id) {
+        // Return a different style for the asset in props
+        return new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: 'rgba(255, 0, 0, 0.6)', // Red color with transparency
+          }),
+          stroke: new ol.style.Stroke({
+            color: 'rgba(255, 0, 0, 1)', // Red color
+            width: 2,
+          }),
+        });
+      } else {
+        // Return the default style for other assets
+        return new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: 'rgba(0, 0, 255, 0.6)', // Blue color with transparency
+          }),
+          stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 255, 1)', // Blue color
+            width: 1,
+          }),
+        });
+      }
+    },
   });
 
   layer.getSource().on('change', function () {
     map.zoomToVectors();
   });
 };
-
 </script>
 
 <template>
@@ -40,7 +63,7 @@ const onMapInitialized = (map) => {
       style="
         height: auto;
         min-height: 160px;
-        height: 25vh;
+        height: 75vh;
         position: relative;
         contain: strict;
         overflow: auto;
