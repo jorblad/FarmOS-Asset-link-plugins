@@ -14,48 +14,15 @@ const props = defineProps({
 
 const assetLink = inject('assetLink');
 
-// Function to convert WKT to GeoJSON
-const wktToGeoJSON = (wkt) => {
-  const type = wkt.split(' ')[0];
-  const coordinatesString = wkt.match(/\(\(([^)]+)\)\)/)[1];
-  let coordinates;
-
-  if (type === 'POLYGON') {
-    coordinates = coordinatesString.split(', ').map(coord => coord.split(' ').map(Number));
-    return {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [coordinates],
-      },
-      properties: {},
-    };
-  } else if (type === 'POINT') {
-    coordinates = coordinatesString.split(' ').map(Number);
-    return {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: coordinates,
-      },
-      properties: {},
-    };
-  } else {
-    throw new Error('Unsupported WKT type');
-  }
-};
-
-
 
 const onMapInitialized = (map) => {
   map.addBehavior("sidePanel");
   map.addBehavior("layerSwitcherInSidePanel");
-  // Convert WKT to GeoJSON
-  const geojson = wktToGeoJSON(props.asset.attributes.geometry.value);
+  props.asset.attributes.geometry.value
 
   console.log("GeoJSON: ", geojson);
   console.log("Props: ", props);
-  console.log("Map version 0.2");
+  console.log("Map version 0.3");
 
   const allAssetsLayer = map.addLayer('geojson', {
     title: 'All Assets',
@@ -64,10 +31,13 @@ const onMapInitialized = (map) => {
 
   });
 
-  const propsLayer = map.addLayer('geojson', {
-    title: 'Props Asset',
-    geojson: geojson,
-  });
+  const wktOpts = {
+    title: props.asset.name,
+    wkt: props.asset.attributes.geometry.value,
+    color: 'orange', // defaults to 'orange'
+  };
+
+  const propsLayer = map.addLayer('wkt', wktOpts);
 
   allAssetsLayer.getSource().on('change', function () {
     map.zoomToVectors();
