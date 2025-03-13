@@ -14,19 +14,63 @@ const props = defineProps({
 
 const assetLink = inject('assetLink');
 
+// Function to convert WKT to GeoJSON
+const wktToGeoJSON = (wkt) => {
+  const type = wkt.split(' ')[0];
+  const coordinatesString = wkt.replace(`${type} (`, '').replace(')', '');
+  let coordinates;
+
+  if (type === 'POLYGON') {
+    coordinates = coordinatesString.split(', ').map(coord => coord.split(' ').map(Number));
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [coordinates],
+      },
+      properties: {},
+    };
+  } else if (type === 'POINT') {
+    coordinates = coordinatesString.split(' ').map(Number);
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: coordinates,
+      },
+      properties: {},
+    };
+  } else {
+    throw new Error('Unsupported WKT type');
+  }
+};
+
+// Convert WKT to GeoJSON
+const geojson = wktToGeoJSON(props.asset.attributes.geometry.value);
+
 const onMapInitialized = (map) => {
   map.addBehavior("sidePanel");
   map.addBehavior("layerSwitcherInSidePanel");
   console.log("Map initialized", map);
   console.log("Props: ", props);
 
-  const layer = map.addLayer('geojson', {
+  const allAssetsLayer = map.addLayer('geojson', {
     title: 'All Assets',
     url: createDrupalUrl('/assets/geojson/full/all'),
-    colour: '#0000ff',
+    color: 'grey', // defaults to 'orange'
+
   });
 
-  layer.getSource().on('change', function () {
+  const propsLayer = map.addLayer('geojson', {
+    title: 'Props Asset',
+    geojson: geojson,
+  });
+
+  allAssetsLayer.getSource().on('change', function () {
+    map.zoomToVectors();
+  });
+
+  propsLayer.getSource().on('change', function () {
     map.zoomToVectors();
   });
 };
