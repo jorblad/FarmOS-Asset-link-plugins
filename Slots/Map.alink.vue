@@ -55,6 +55,7 @@ const onMapInitialized = (map) => {
 
   console.log("GeoJSON: ", geojson);
   console.log("Props: ", props);
+  console.log("Map version 0.1");
 
   const allAssetsLayer = map.addLayer('geojson', {
     title: 'All Assets',
