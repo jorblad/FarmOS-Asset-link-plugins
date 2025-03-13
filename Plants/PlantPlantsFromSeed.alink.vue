@@ -939,41 +939,68 @@ export default {
                 };
                 console.log('plantingLog:', plantingLog)
 
-                let transplantingLog;
+                let transplantingLogs = [];
                 if (planting && transPlanting) {
-                    transplantingLog = {
-                        type: 'log--transplanting',
-                        attributes: {
-                            name: `Transplant ${plantName}`,
-                            timestamp: formatRFC3339(new Date(transPlantingDate)),
-                            status: "pending",
-
-                        },
-                        relationships: {
-                            asset: {
-                                data: plantIDs.map(id => ({
-                                    type: 'asset--plant',
-                                    id,
-                                })),
+                    if (transplantLocations && transplantLocations.length > 0) {
+                        transplantingLogs = plantIDs.map((id, index) => ({
+                            type: 'log--transplanting',
+                            attributes: {
+                                name: `Transplant ${plantName} ${multipleAssets ? `#${index + 1}` : ''}`,
+                                timestamp: formatRFC3339(new Date(transPlantingDate)),
+                                status: "pending",
                             },
-                            location: {
-                                data: [
-                                    {
-                                    type: transplantLocation.type,
-                                    id: transplantLocation.id,
-                                    }
-                                ]
+                            relationships: {
+                                asset: {
+                                    data: [
+                                        {
+                                            type: 'asset--plant',
+                                            id,
+                                        },
+                                    ],
+                                },
+                                location: {
+                                    data: [
+                                        {
+                                            type: transplantLocations[index].type,
+                                            id: transplantLocations[index].id,
+                                        },
+                                    ],
+                                },
                             },
-                        },
-                    };
+                        }));
+                    } else {
+                        transplantingLogs = [{
+                            type: 'log--transplanting',
+                            attributes: {
+                                name: `Transplant ${plantName}`,
+                                timestamp: formatRFC3339(new Date(transPlantingDate)),
+                                status: "pending",
+                            },
+                            relationships: {
+                                asset: {
+                                    data: plantIDs.map(id => ({
+                                        type: 'asset--plant',
+                                        id,
+                                    })),
+                                },
+                                location: {
+                                    data: [
+                                        {
+                                            type: transplantLocation.type,
+                                            id: transplantLocation.id,
+                                        },
+                                    ],
+                                },
+                            },
+                        }];
+                    }
                 } else {
-                    transplantingLog = {
+                    transplantingLogs = [{
                         type: 'log--transplanting',
                         attributes: {
                             name: `Transplant ${plantName}`,
                             timestamp: formatRFC3339(new Date()),
                             status: "done",
-
                         },
                         relationships: {
                             asset: {
@@ -985,25 +1012,24 @@ export default {
                             location: {
                                 data: [
                                     {
-                                    type: asset.type,
-                                    id: asset.id,
-                                    }
-                                ]
+                                        type: asset.type,
+                                        id: asset.id,
+                                    },
+                                ],
                             },
                             quantity: {
                                 data: [
                                     {
-                                    type: seedQuantity.type,
-                                    id: seedQuantity.id,
-                                    }
-                                ]
+                                        type: seedQuantity.type,
+                                        id: seedQuantity.id,
+                                    },
+                                ],
                             },
                         },
-                    };
+                    }];
                 }
-                
 
-                console.log('transplantingLog:', transplantingLog)
+                console.log('transplantingLogs:', transplantingLogs);
 
 
                 let harvestLog;
@@ -1046,12 +1072,14 @@ export default {
                 }
                 
                 
+                // Update the entity source with the transplanting logs
                 if (transPlanting) {
                     assetLink.entitySource.update(
                         (t) => [
-                            t.addRecord(transplantingLog),
+                            ...transplantingLogs.map(log => t.addRecord(log)),
                         ],
-                        {label: `Create transplanting log`});
+                        { label: `Create transplanting logs` }
+                    );
                 }
 
                 if (harvest) {
