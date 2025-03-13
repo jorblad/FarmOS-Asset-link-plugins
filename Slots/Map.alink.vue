@@ -81,7 +81,7 @@ export default {
   onLoad(handle) {
     handle.defineSlot('se.jorblad.farmos_asset_link.slots.v0.map', actionsSlot => {
       actionsSlot.type('page-slot');
-      actionsSlot.weight(10); // Set the weight to determine the order
+      actionsSlot.weight(200); // Set the weight to determine the order
 
       actionsSlot.showIf(context => context.pageName === 'asset-page');
 
