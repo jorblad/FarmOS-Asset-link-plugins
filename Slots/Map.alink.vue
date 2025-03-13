@@ -32,7 +32,7 @@ const onMapInitialized = (map) => {
 
 </script>
 
-<template alink-slot[se.jorblad.farmos_asset_link.slots.v0.map]="page-slot(weight: 80)">
+<template>
   <div>
     <h5 class="q-my-xs">Map:</h5>
     <div
@@ -50,3 +50,17 @@ const onMapInitialized = (map) => {
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  onLoad(handle) {
+    handle.defineSlot('se.jorblad.farmos_asset_link.slots.v0.map', actionsSlot => {
+      actionsSlot.type('page-slot');
+
+      actionsSlot.showIf(context => context.pageName === 'asset-page');
+
+      actionsSlot.component(handle.thisPlugin);
+    });
+  }
+}
+</script>
