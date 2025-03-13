@@ -34,6 +34,19 @@ const onMapInitialized = (map) => {
 
 <template alink-slot[se.jorblad.farmos_asset_link.slots.v0.map]="page-slot(weight: 80)">
   <div>
-    <farm-map @map-initialized="onMapInitialized"></farm-map>
+    <h5 class="q-my-xs">Map:</h5>
+    <div
+      class="col"
+      style="
+        height: auto;
+        min-height: 160px;
+        height: 25vh;
+        position: relative;
+        contain: strict;
+        overflow: auto;
+      "
+    >
+      <farm-map @map-initialized="onMapInitialized"></farm-map>
+    </div>
   </div>
 </template>
