@@ -20,7 +20,6 @@ const onMapInitialized = (map) => {
   map.addBehavior("layerSwitcherInSidePanel");
   props.asset.attributes.geometry.value
 
-  console.log("GeoJSON: ", geojson);
   console.log("Props: ", props);
   console.log("Map version 0.3");
 
