@@ -20,6 +20,10 @@ Like the quickform in farmos you can choose to directly transplant, then it is g
 ### Add seeds to inventory
 Depends on the farm_ledger module to register the price and creating a purchase log for the amount of bought seeds.
 
+## Mousetraps
+### Reset trap
+Emptying a trap, either on its own or while putting it back together, increments the `Fångade möss` material inventory (asset ID `43`) by one `St`. Resetting without emptying does not change inventory.
+
 ## Weather
 ### Observe rainfall
 Lets you record rainfall in mm.

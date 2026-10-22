@@ -128,6 +128,11 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
 
+const CATCH_INVENTORY_ASSET = {
+  type: 'asset--material',
+  id: '43',
+};
+const CATCH_INVENTORY_UNIT = 'St';
 
 export default {
   async onLoad(handle, assetLink) {
@@ -153,6 +158,36 @@ export default {
 
         const actionName = selectedAction === 'reset' ? 'Reset' : selectedAction === 'empty' ? 'Empty' : 'Put together and empty';
         console.log('Action name:', actionName);
+        const catchQuantity = ['empty', 'putTogetherAndEmpty'].includes(selectedAction)
+          ? {
+              type: 'quantity--standard',
+              id: uuidv4(),
+              attributes: {
+                measure: 'count',
+                value: {
+                  numerator: 1,
+                  denominator: 1,
+                  decimal: '1',
+                },
+                inventory_adjustment: 'increment',
+              },
+              relationships: {
+                inventory_asset: {
+                  data: CATCH_INVENTORY_ASSET,
+                },
+                units: {
+                  data: {
+                    type: 'taxonomy_term--unit',
+                    id: uuidv4(),
+                    '$relateByName': {
+                      name: CATCH_INVENTORY_UNIT,
+                    },
+                  },
+                },
+              },
+            }
+          : null;
+
         const resetTrapLog = {
           type: 'log--activity',
           attributes: {
@@ -169,11 +204,22 @@ export default {
                 }
               ]
             },
+            ...(catchQuantity && {
+              quantity: {
+                data: [
+                  {
+                    type: catchQuantity.type,
+                    id: catchQuantity.id,
+                  },
+                ],
+              },
+            }),
           },
         };
 
         assetLink.entitySource.update(
             (t) => [
+              ...(catchQuantity ? [t.addRecord(catchQuantity)] : []),
               t.addRecord(resetTrapLog),
             ],
             {label: `Record reset ${asset.attributes.name}`});
