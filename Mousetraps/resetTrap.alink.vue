@@ -128,11 +128,42 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
 
-const CATCH_INVENTORY_ASSET = {
-  type: 'asset--material',
-  id: '43',
-};
 const CATCH_INVENTORY_UNIT = 'St';
+const CATCH_INVENTORY_ASSET_NAME = 'Fångade möss';
+
+const findCatchInventoryAsset = async (entitySource) => {
+  const results = await entitySource.query(q => q
+    .findRecords('asset--product')
+    .filter({ attribute: 'name', op: 'equal', value: CATCH_INVENTORY_ASSET_NAME }));
+
+  return results.flatMap(l => l).find(a => a);
+};
+
+// The catch inventory must point at a real product asset. Find an existing one
+// by name, or create it on first use, so the inventory_asset relationship always
+// resolves (a dangling reference was causing the quantity POST to 404).
+const ensureCatchInventoryAsset = async () => {
+  let asset = await findCatchInventoryAsset(assetLink.entitySource.cache);
+  if (!asset) {
+    asset = await findCatchInventoryAsset(assetLink.entitySource);
+  }
+  if (asset) {
+    return asset;
+  }
+
+  const newAsset = {
+    type: 'asset--product',
+    id: uuidv4(),
+    attributes: {
+      name: CATCH_INVENTORY_ASSET_NAME,
+      status: 'active',
+    },
+  };
+
+  return await assetLink.entitySource.update(
+    (t) => t.addRecord(newAsset),
+    { label: `Create ${CATCH_INVENTORY_ASSET_NAME} inventory asset` });
+};
 
 export default {
   async onLoad(handle, assetLink) {
@@ -158,6 +189,10 @@ export default {
 
         const actionName = selectedAction === 'reset' ? 'Reset' : selectedAction === 'empty' ? 'Empty' : 'Put together and empty';
         console.log('Action name:', actionName);
+
+        const catchInventoryAsset = await ensureCatchInventoryAsset();
+        console.log('Catch inventory asset:', catchInventoryAsset);
+
         const catchQuantity = ['empty', 'putTogetherAndEmpty'].includes(selectedAction)
           ? {
               type: 'quantity--standard',
@@ -173,7 +208,10 @@ export default {
               },
               relationships: {
                 inventory_asset: {
-                  data: CATCH_INVENTORY_ASSET,
+                  data: {
+                    type: catchInventoryAsset.type,
+                    id: catchInventoryAsset.id,
+                  },
                 },
                 units: {
                   data: {
