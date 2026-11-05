@@ -126,6 +126,11 @@ export default {
 
 
 
+    // Animal types (by name, matched case-insensitively as a substring) for which
+    // the egg harvest action is offered. Edit this list to suit your flock, e.g.
+    // add 'kyckling' for Swedish, or 'duck' for ducks.
+    const EGG_ANIMAL_TYPE_MATCHES = ['chicken', 'kyckling'];
+
     handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.harvestEgg', action => {
 
       action.type('asset-action');
@@ -157,10 +162,11 @@ export default {
         // interchangeably - usage must match the cardinality of the
         // relationship.
 
-        // Ideally, there'd be a better "machine readable" way to determine
-        // if a given animal type can be "harvested" - and maybe provide
-        // defaults to the harvest dialog.
-        return animalType.attributes.name.toLowerCase().includes('chicken');
+        // Match the animal type name against the configurable list above
+        // (case-insensitive substring match).
+        const animalTypeName = animalType.attributes.name.toLowerCase();
+        return EGG_ANIMAL_TYPE_MATCHES.some(match =>
+          animalTypeName.includes(match.toLowerCase()));
       });
 
 
