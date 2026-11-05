@@ -28,7 +28,6 @@ const findUnitTerms = async (entitySource) => {
 
   const unitTerms = results.flatMap((l) => l);
 
-  console.log('All taxonomy_term--unit records:', unitTerms);
 
   return unitTerms;
 };
@@ -37,7 +36,6 @@ const unitTerms = ref([]);
 
 onMounted(async () => {
   unitTerms.value = await findUnitTerms(assetLink.entitySource);
-  console.log("Props: ", props)
   
 });
 
@@ -95,7 +93,7 @@ const onSubmit = () => {
 <script>
 import { h } from 'vue';
 import { QBtn } from 'quasar';
-import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
+import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 
 export default {
   async onLoad(handle, assetLink) {
@@ -112,11 +110,8 @@ export default {
         action.showIf(({ log }) => log.attributes.status != `done` && log.type === 'log--harvest' );
         const doActionWorkflow = async (log) => {
             const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { log });
-            console.log('Dialog result:', dialogResult);
             const harvestCount = dialogResult.harvestCount;
-            console.log('Harvest Count:', harvestCount);
             const harvestUnitTerm = dialogResult.quantityType;
-            console.log('QuantityType:', harvestUnitTerm);
 
             if (!harvestUnitTerm) {
             return;

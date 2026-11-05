@@ -1,11 +1,7 @@
 <script setup>
 import { computed, inject, ref, onMounted, onUnmounted } from 'vue';
 
-import { currentEpochSecond, parseJSONDate } from "assetlink-plugin-api";
-
-import { useRouter } from 'vue-router'
-
-const router = useRouter();
+import { parseJSONDate } from "assetlink-plugin-api";
 
 const props = defineProps({
   asset: {
@@ -29,13 +25,10 @@ const pendingAssetLogNodes = computed(() => {
 });
 
 const resolvePendingAssetLogs = async () => {
-  console.log("Resolving pending asset logs...");
   
-  console.log("Pending asset logTypesNodes:", pendingAssetLogNodes.value);
 
   const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
-  console.log("Pending asset logTypes:", logTypes);
 
   const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
     return q.findRecords(`log--${logType}`)
@@ -50,7 +43,6 @@ const resolvePendingAssetLogs = async () => {
 
   pendingAssetLogs.value = results.flatMap(l => l)
     .sort((logA, logB) => parseJSONDate(logA.attributes.timestamp) - parseJSONDate(logB.attributes.timestamp));
-  console.log("Pending asset logs:", pendingAssetLogs.value);
 };
 
 const onAssetLogsChanged = ({ assetType, assetId }) => {
@@ -62,12 +54,11 @@ const onAssetLogsChanged = ({ assetType, assetId }) => {
   }
 };
 
-let unsubber;
 onMounted(() => {
   resolvePendingAssetLogs();
-  unsubber = assetLink.eventBus.$on("changed:assetLogs", onAssetLogsChanged);
+  assetLink.eventBus.$on("changed:assetLogs", onAssetLogsChanged);
 });
-onUnmounted(() => unsubber && unsubber.$off());
+onUnmounted(() => assetLink.eventBus.$off("changed:assetLogs", onAssetLogsChanged));
 </script>
 
 <template alink-slot[se.jorblad.farmos_asset_link.slots.v0.pending_asset_logs]="page-slot(weight: 150)">

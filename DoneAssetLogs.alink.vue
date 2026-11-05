@@ -1,11 +1,7 @@
 <script setup>
 import { computed, inject, ref, onMounted, onUnmounted } from 'vue';
 
-import { currentEpochSecond, parseJSONDate } from "assetlink-plugin-api";
-
-import { useRouter } from 'vue-router'
-
-const router = useRouter();
+import { parseJSONDate } from "assetlink-plugin-api";
 
 const props = defineProps({
   asset: {
@@ -29,13 +25,10 @@ const doneAssetLogNodes = computed(() => {
 });
 
 const resolveDoneAssetLogs = async () => {
-  console.log("Resolving done asset logs...");
   
-  console.log("Done asset logTypes:", doneAssetLogNodes.value);
   
   const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
-  console.log("Done asset logTypes:", logTypes);
 
 
   const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
@@ -51,7 +44,6 @@ const resolveDoneAssetLogs = async () => {
 
   doneAssetLogs.value = results.flatMap(l => l)
     .sort((logA, logB) => parseJSONDate(logA.attributes.timestamp) - parseJSONDate(logB.attributes.timestamp));
-  console.log("Done asset logs:", doneAssetLogs.value);
 };
 
 const onAssetLogsChanged = ({ assetType, assetId }) => {
@@ -63,12 +55,11 @@ const onAssetLogsChanged = ({ assetType, assetId }) => {
   }
 };
 
-let unsubber;
 onMounted(() => {
   resolveDoneAssetLogs();
-  unsubber = assetLink.eventBus.$on("changed:assetLogs", onAssetLogsChanged);
+  assetLink.eventBus.$on("changed:assetLogs", onAssetLogsChanged);
 });
-onUnmounted(() => unsubber && unsubber.$off());
+onUnmounted(() => assetLink.eventBus.$off("changed:assetLogs", onAssetLogsChanged));
 </script>
 
 <template alink-slot[se.jorblad.farmos_asset_link.slots.v0.done_asset_logs]="page-slot(weight: 180)">

@@ -40,45 +40,8 @@ const seedAssetsOptions = ref([]);
 const maxDesiredSearchEntries = 200;
 
 // Photo adding
-const capturedPhotos = ref([]);
-
-const photoCaptureModel = ref(null);
-const carouselPosition = ref("capture-photo");
-
-watch(photoCaptureModel, async () => {
-  const file = photoCaptureModel.value;
-
-  if (!file) {
-    return;
-  }
-
-  const fileToArrayBuffer = data => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-    reader.readAsArrayBuffer(data);
-  });
-
-  const fileName = file.name;
-  const fileType = file.type;
-  const fileData = await fileToArrayBuffer(file);
-
-  const fileStringData = new Uint8Array(fileData).reduce((data, byte) => {
-    return data + String.fromCharCode(byte);
-  }, '');
-
-  const fileDataUrl = `data:${fileType};base64, ` + btoa(fileStringData);
-
-  const photoId = uuidv4()
-
-  capturedPhotos.value.push({
-    id: photoId,
-    fileName,
-    fileDataUrl,
-  });
-
-  carouselPosition.value = photoId;
-});
+import { usePhotoCapture } from '../usePhotoCapture.js';
+const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture()
 
 
 // Find functions
@@ -140,7 +103,6 @@ const plantType = ref(null);
 const seedAsset = ref(null);
 
 const seasonsFilterFn = async (val, update, abort) => {
-    console.log("val", val)
     const searchRequest = {
         id: uuidv4(),
         type: "text-search",
@@ -148,7 +110,6 @@ const seasonsFilterFn = async (val, update, abort) => {
         entityBundles: ["season"],
         term: val,
     };
-    console.log("searchRequest", searchRequest)
 
     let entitySearchResultCursor = assetLink.searchEntities(
         searchRequest,
@@ -163,9 +124,7 @@ const seasonsFilterFn = async (val, update, abort) => {
     }
 
     update(() => {
-        console.log("seasonsOptions before update", seasonsOptions)
         seasonsOptions.value = [];
-        console.log("seasonsOptions after update", seasonsOptions)
     });
 
     const alreadyFoundEntityIds = new Set();
@@ -192,7 +151,6 @@ const seasonsFilterFn = async (val, update, abort) => {
 
 
 const plantTypesFilterFn = async (val, update = () => {}, abort = () => {}) => {
-    console.log("val", val)
     const searchRequest = {
         id: uuidv4(),
         type: "text-search",
@@ -200,7 +158,6 @@ const plantTypesFilterFn = async (val, update = () => {}, abort = () => {}) => {
         entityBundles: ["plant_type"],
         term: val,
     };
-    console.log("searchRequest", searchRequest)
 
     let entitySearchResultCursor = assetLink.searchEntities(
         searchRequest,
@@ -215,9 +172,7 @@ const plantTypesFilterFn = async (val, update = () => {}, abort = () => {}) => {
     }
 
     update(() => {
-        console.log("plantTypesOptions before update", plantTypesOptions)
         plantTypesOptions.value = [];
-        console.log("plantTypesOptions after update", plantTypesOptions)
     });
 
     const alreadyFoundEntityIds = new Set();
@@ -244,7 +199,6 @@ const plantTypesFilterFn = async (val, update = () => {}, abort = () => {}) => {
 
 
 const seedAssetsFilterFn = async (val, update, abort) => {
-    console.log("val", val)
     const searchRequest = {
         id: uuidv4(),
         type: "text-search",
@@ -252,7 +206,6 @@ const seedAssetsFilterFn = async (val, update, abort) => {
         entityBundles: ["seed"],
         term: val,
     };
-    console.log("searchRequest", searchRequest)
 
     let entitySearchResultCursor = assetLink.searchEntities(
         searchRequest,
@@ -267,9 +220,7 @@ const seedAssetsFilterFn = async (val, update, abort) => {
     }
 
     update(() => {
-        console.log("seedAssetsOptions before update", seedAssetsOptions)
         seedAssetsOptions.value = [];
-        console.log("seedAssetsOptions after update", seedAssetsOptions)
     });
 
     const alreadyFoundEntityIds = new Set();
@@ -302,11 +253,9 @@ const onSubmit = () => {
 
 
 watch(seedAsset, async (newValue) => {
-  console.log("Type of seed", typeof newValue);
   if (newValue !== null && typeof newValue !== 'string' && newValue.plantTypeID) {
     try {
         // Perform actions based on the selected seedAsset
-        console.log('Selected seedAsset:', newValue);
 
         // Find the corresponding plant type object based on the selected seedAsset's plantTypeID
         const selectedPlantType = plantTypeOptionsWithLabel.value.find(
@@ -321,7 +270,6 @@ watch(seedAsset, async (newValue) => {
   } else {
     // If seedAsset is null or does not have a valid plantTypeID, set plantType to null
     plantType.value = null;
-    console.log("Reset planttype")
   }
 });
 
@@ -330,7 +278,6 @@ watch(seedAsset, async (newValue) => {
 watch(plantType, (newValue) => {
   if (newValue) {
     // Perform actions based on the selected plantType
-    console.log('Selected plantType:', newValue);
     // Extract maturity_days from newValue
     const maturityDays = newValue.maturity_days;
     const transplantDays = newValue.transplant_days;
@@ -338,7 +285,6 @@ watch(plantType, (newValue) => {
     // Calculate the date after adding maturity_days
     const prefillHarvestDate = new Date();
     prefillHarvestDate.setDate(prefillHarvestDate.getDate() + parseInt(maturityDays));
-    console.log("Harvest Date", prefillHarvestDate)
     const harvest_date = new Date(prefillHarvestDate);
     const harvestYear = harvest_date.getFullYear();
     const harvestMonth = (harvest_date.getMonth() + 1).toString().padStart(2, '0');
@@ -346,12 +292,10 @@ watch(plantType, (newValue) => {
 
     // Update selectedDate with the prefill date
     harvestDate.value = `${harvestYear}/${harvestMonth}/${harvestDay}`;
-    console.log("harvestDate: ", harvestDate)
 
     // Calculate the date after adding transplant_days
     const prefillTransplantDate = new Date();
     prefillTransplantDate.setDate(prefillTransplantDate.getDate() + parseInt(transplantDays));
-    console.log("Transplant Date", prefillTransplantDate)
     const transplant_date = new Date(prefillTransplantDate);
     const transplantYear = transplant_date.getFullYear();
     const transplantMonth = (transplant_date.getMonth() + 1).toString().padStart(2, '0');
@@ -359,7 +303,6 @@ watch(plantType, (newValue) => {
 
     // Update selectedDate with the prefill date
     transPlantingDate.value = `${transplantYear}/${transplantMonth}/${transplantDay}`;
-    console.log("transPlantingDate: ", transPlantingDate)
   }
 });
 
@@ -396,7 +339,7 @@ const seedAssetOptionsWithLabel = computed(() => {
     label: `${seed_asset.entity.attributes.name} (${seed_asset.entity.attributes.drupal_internal__id})`,
     value: seed_asset.entity.id,
     name: seed_asset.entity.attributes.name,
-    plantTypeID: seed_asset.entity.relationships.plant_type.data[0].id
+    plantTypeID: seed_asset.entity.relationships.plant_type && seed_asset.entity.relationships.plant_type.data && seed_asset.entity.relationships.plant_type.data[0] ? seed_asset.entity.relationships.plant_type.data[0].id : null,
   }));
 });
 
@@ -658,7 +601,7 @@ const additionalFilters = [
 <script>
 import { h } from 'vue';
 import { QBtn } from 'quasar';
-import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
+import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 
 const UNIT_NAME = "st";
 
@@ -680,22 +623,16 @@ export default {
         const doActionWorkflow = async (asset) => {
             try {
                 const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-                console.log('Dialog result:', dialogResult);
                 const seedCount = dialogResult.seedCount;
-                console.log('seedCount', seedCount)
                 const planting = dialogResult.planting;
-                console.log('planting', planting)
                 const plantSeason = dialogResult.plantSeason;
-                console.log('plantSeason', plantSeason)
                 let seasonName;
                 if (typeof plantSeason === 'string') {
                     seasonName = plantSeason
                 } else {
                     seasonName = plantSeason.name
                 }
-                console.log('seasonName', seasonName)
                 const plantType = dialogResult.plantType;
-                console.log('plantType', plantType)
                 let plantTypeName;
                 if (typeof plantType === 'string') {
                     plantTypeName = plantType
@@ -703,30 +640,19 @@ export default {
                     plantTypeName = plantType.name
                 }
                 const notes = dialogResult.notes;
-                console.log('notes', notes)
                 const seedAsset = dialogResult.seedAsset;
-                console.log('seedAsset', seedAsset)
                 const photos = dialogResult.capturedPhotos;
-                console.log('Photos', photos)
                 const transPlanting = dialogResult.transPlanting;
-                console.log('transPlanting', transPlanting)
                 const transPlantingDate = dialogResult.transPlantingDate;
-                console.log('transPlantingDate', transPlantingDate)
                 const transplantLocation = dialogResult.transplantLocation;
-                console.log('transplantLocation', transplantLocation)
                 const harvest = dialogResult.harvest;
-                console.log('harvest', harvest)
                 const harvestDate = dialogResult.harvestDate;
-                console.log('harvestDate', harvestDate)
                 const multipleAssets = dialogResult.multipleAssets;
-                console.log('multipleAssets', multipleAssets)
                 const transplantLocations = dialogResult.transplantLocations;
-                console.log('transplantLocations', transplantLocations)
                 
 
                 if (transplantLocations && transplantLocations.length > 0) {
                     transplantLocations.forEach(location => {
-                        console.log('Transplant Location:', location);
 
                     });
                 }
@@ -736,7 +662,6 @@ export default {
                     let newSeedRecord;
                     // If seed array is empty, add a new record
                     if (typeof seedAsset === 'string') {
-                        console.log("Seed name for creaton of new seed", seedAsset)
                         seed_id = uuidv4();
                         newSeedRecord = {
                             type: 'asset--seed',
@@ -760,20 +685,17 @@ export default {
                         };
                 
 
-                        console.log('New Seed Record', newSeedRecord);
-                        assetLink.entitySource.update(
+                        await assetLink.entitySource.update(
                             (t) => [
                             t.addRecord(newSeedRecord),
                             ],
                             {label: `Add new seeds`});
 
-                        console.log('Added Seed Record', newSeedRecord);
 
                     } else {
                         // Extract the id from the first item (if available)
-                        seed_id = seedAsset.value;
+                        seed_id = seedAsset ? seedAsset.value : null;
                     }
-                    console.log('Final Seed ID', seed_id);
                 }
 
 
@@ -839,7 +761,6 @@ export default {
                 }
                 
 
-                console.log('plants:', plants);
 
                 let seedQuantity;
                 
@@ -901,7 +822,6 @@ export default {
                 }
                 
 
-                console.log('seedQuantity:', seedQuantity)
 
                 const plantingLog = {
                     type: 'log--seeding',
@@ -936,7 +856,6 @@ export default {
                         },
                     },
                 };
-                console.log('plantingLog:', plantingLog)
 
                 let transplantingLogs = [];
                 if (planting && transPlanting) {
@@ -945,7 +864,7 @@ export default {
                             type: 'log--transplanting',
                             attributes: {
                                 name: `Transplant ${plantName} ${multipleAssets ? `#${index + 1}` : ''}`,
-                                timestamp: formatRFC3339(new Date(transPlantingDate)),
+                                timestamp: formatRFC3339(new Date(String(transPlantingDate).replace(/\//g, '-'))),
                                 status: "pending",
                             },
                             relationships: {
@@ -972,7 +891,7 @@ export default {
                             type: 'log--transplanting',
                             attributes: {
                                 name: `Transplant ${plantName}`,
-                                timestamp: formatRFC3339(new Date(transPlantingDate)),
+                                timestamp: formatRFC3339(new Date(String(transPlantingDate).replace(/\//g, '-'))),
                                 status: "pending",
                             },
                             relationships: {
@@ -1028,7 +947,6 @@ export default {
                     }];
                 }
 
-                console.log('transplantingLogs:', transplantingLogs);
 
 
                 let harvestLog;
@@ -1037,7 +955,7 @@ export default {
                     type: 'log--harvest',
                     attributes: {
                     name: `Harvest ${plantName}`,
-                    timestamp: formatRFC3339(new Date(harvestDate)),
+                    timestamp: formatRFC3339(new Date(String(harvestDate).replace(/\//g, '-'))),
                     status: "pending",
                     },
                     relationships: {
@@ -1049,13 +967,12 @@ export default {
                     },
                     },
                 };
-                console.log('harvestLog:', harvestLog);
                 }
                 
 
                 
 
-                assetLink.entitySource.update(
+                await assetLink.entitySource.update(
                     (t) => [
                         ...plants.map(plant => t.addRecord(plant)),
                         t.addRecord(seedQuantity),
@@ -1063,7 +980,7 @@ export default {
                 );
 
                 if (planting) {
-                    assetLink.entitySource.update(
+                    await assetLink.entitySource.update(
                     (t) => [
                         t.addRecord(plantingLog),
                     ],
@@ -1073,7 +990,7 @@ export default {
                 
                 // Update the entity source with the transplanting logs
                 if (transPlanting) {
-                    assetLink.entitySource.update(
+                    await assetLink.entitySource.update(
                         (t) => [
                             ...transplantingLogs.map(log => t.addRecord(log)),
                         ],
@@ -1082,7 +999,7 @@ export default {
                 }
 
                 if (harvest) {
-                    assetLink.entitySource.update(
+                    await assetLink.entitySource.update(
                         (t) => [
                             t.addRecord(harvestLog),
                         ],

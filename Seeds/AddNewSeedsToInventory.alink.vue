@@ -101,7 +101,7 @@ const onSubmit = () => {
 <script>
 import { h } from 'vue';
 import { QBtn } from 'quasar';
-import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
+import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 
 const UNIT_NAME = "st";
 
@@ -119,17 +119,11 @@ export default {
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-        console.log('Dialog result:', dialogResult);
         const seedCount = dialogResult.seedCount;
-        console.log('seedCount', seedCount)
         const seller = dialogResult.seller;
-        console.log('seller', seller)
         const invoice_number = dialogResult.invoice_number;
-        console.log('invoice_number', invoice_number)
         const lot_number = dialogResult.lot_number;
-        console.log('lot_number', lot_number)
         const seedCost = dialogResult.seedCost;
-        console.log('total cost', seedCost)
 
         if (!seedCount || seedCount <= 0) {
           return;

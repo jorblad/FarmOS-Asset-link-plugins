@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref,watch, onMounted } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 const props = defineProps({
@@ -18,45 +18,8 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 const harvestCount = ref(0);
 
 // Photo adding
-const capturedPhotos = ref([]);
-
-const photoCaptureModel = ref(null);
-const carouselPosition = ref("capture-photo");
-
-watch(photoCaptureModel, async () => {
-  const file = photoCaptureModel.value;
-
-  if (!file) {
-    return;
-  }
-
-  const fileToArrayBuffer = data => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-    reader.readAsArrayBuffer(data);
-  });
-
-  const fileName = file.name;
-  const fileType = file.type;
-  const fileData = await fileToArrayBuffer(file);
-
-  const fileStringData = new Uint8Array(fileData).reduce((data, byte) => {
-    return data + String.fromCharCode(byte);
-  }, '');
-
-  const fileDataUrl = `data:${fileType};base64, ` + btoa(fileStringData);
-
-  const photoId = uuidv4()
-
-  capturedPhotos.value.push({
-    id: photoId,
-    fileName,
-    fileDataUrl,
-  });
-
-  carouselPosition.value = photoId;
-});
+import { usePhotoCapture } from '../usePhotoCapture.js';
+const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture();
 
 const findUnitTerms = async (entitySource) => {
   const results = await entitySource.query((q) =>
@@ -66,7 +29,6 @@ const findUnitTerms = async (entitySource) => {
 
   const unitTerms = results.flatMap((l) => l);
 
-  console.log('All taxonomy_term--unit records:', unitTerms);
 
   return unitTerms;
 };
@@ -179,7 +141,7 @@ const onSubmit = () => {
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 
-import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
+import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 
 
 export default {
@@ -212,7 +174,6 @@ export default {
             return false;
           }
 
-        //console.log("plantTypes=", plantTypes);
         
         // Obviously, since `plant_type` is a required (N >= 1)
         // attribute, we didn't actually need to load them it would have
@@ -226,17 +187,12 @@ export default {
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-        console.log('Dialog result:', dialogResult);
         const harvestCount = dialogResult.harvestCount;
-        console.log('Harvest Count:', harvestCount);
         const harvestUnitTerm = dialogResult.quantityType;
-        console.log('QuantityType:', harvestUnitTerm);
         const harvestInventoryProduct = dialogResult.selectProduct;
-        console.log('harvestInventoryProduct:', harvestInventoryProduct);
 
         //Photos
         const photos = dialogResult.capturedPhotos;
-        console.log('Photos', photos)
 
         if (!harvestUnitTerm) {
           return;

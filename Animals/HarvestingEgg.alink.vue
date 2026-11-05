@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onMounted } from 'vue';
+import { inject, ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 const assetLink = inject('assetLink');
 const props = defineProps({
@@ -18,45 +18,8 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 const harvestCount = ref(0);
 
 // Photo adding
-const capturedPhotos = ref([]);
-
-const photoCaptureModel = ref(null);
-const carouselPosition = ref("capture-photo");
-
-watch(photoCaptureModel, async () => {
-  const file = photoCaptureModel.value;
-
-  if (!file) {
-    return;
-  }
-
-  const fileToArrayBuffer = data => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-    reader.readAsArrayBuffer(data);
-  });
-
-  const fileName = file.name;
-  const fileType = file.type;
-  const fileData = await fileToArrayBuffer(file);
-
-  const fileStringData = new Uint8Array(fileData).reduce((data, byte) => {
-    return data + String.fromCharCode(byte);
-  }, '');
-
-  const fileDataUrl = `data:${fileType};base64, ` + btoa(fileStringData);
-
-  const photoId = uuidv4()
-
-  capturedPhotos.value.push({
-    id: photoId,
-    fileName,
-    fileDataUrl,
-  });
-
-  carouselPosition.value = photoId;
-});
+import { usePhotoCapture } from '../usePhotoCapture.js';
+const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture();
 
 const onSubmit = () => {
   onDialogOK({ harvestCount: harvestCount.value, capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value });
@@ -129,7 +92,7 @@ const onSubmit = () => {
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 
-import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
+import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 
 const UNIT_NAME = "egg(s)";
 
@@ -193,7 +156,6 @@ export default {
         // a single entity respectively. They cannot be used
         // interchangeably - usage must match the cardinality of the
         // relationship.
-        console.log("animalType=", animalType);
 
         // Ideally, there'd be a better "machine readable" way to determine
         // if a given animal type can be "harvested" - and maybe provide
@@ -204,11 +166,9 @@ export default {
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-        console.log('Dialog result:', dialogResult);
         const harvestCount = dialogResult.harvestCount;
-        console.log('Harvest Count:', harvestCount);
 
-        if (!harvestUnitTerm) {
+        if (!eggUnitTerm) {
           return;
         }
 

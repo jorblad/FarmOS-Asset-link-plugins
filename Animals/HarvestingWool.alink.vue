@@ -26,7 +26,6 @@ const findUnitTerms = async (entitySource) => {
 
   const unitTerms = results.flatMap((l) => l);
 
-  console.log('All taxonomy_term--unit records:', unitTerms);
 
   return unitTerms;
 };
@@ -93,7 +92,7 @@ const onSubmit = () => {
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 
-import { formatRFC3339, summarizeAssetNames, uuidv4 } from "assetlink-plugin-api";
+import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 
 
 export default {
@@ -131,7 +130,6 @@ export default {
         // a single entity respectively. They cannot be used
         // interchangeably - usage must match the cardinality of the
         // relationship.
-        console.log("animalType=", animalType);
 
         // Ideally, there'd be a better "machine readable" way to determine
         // if a given animal type can be "harvested" - and maybe provide
@@ -142,11 +140,8 @@ export default {
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
-        console.log('Dialog result:', dialogResult);
         const harvestCount = dialogResult.harvestCount;
-        console.log('Harvest Count:', harvestCount);
         const harvestUnitTerm = dialogResult.quantityType;
-        console.log('QuantityType:', harvestUnitTerm);
 
         if (!harvestUnitTerm) {
           return;

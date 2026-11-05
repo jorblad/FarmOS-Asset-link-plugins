@@ -5,6 +5,9 @@ Asset-link plugins for farmOS
 ### Harvesting wool
 Plugin that lets you record harvested wool.
 
+### Harvesting egg
+Records eggs harvested from an animal, with a count and photos. Only shown for animals whose type name contains "chicken".
+
 ## Plants
 ### Harvesting plants
 A plugin that lets you choose what unit you want to record the harvest in.
@@ -16,13 +19,22 @@ Season, seed asset and species are created if you input something that dosen't e
 
 Like the quickform in farmos you can choose to directly transplant, then it is going to be transplanted now in the location of the asset you started it from.
 
+### Harvest log
+A log action on pending harvest logs that records the actual harvest (count + unit) and marks the log done.
+
+### Water plants
+Records a watering activity on land, greenhouse, or plant assets, with optional photos.
+
+### Transplanting plants
+Records a transplanting log moving a plant to a new location, with optional photos.
+
 ## Seeds
 ### Add seeds to inventory
 Depends on the farm_ledger module to register the price and creating a purchase log for the amount of bought seeds.
 
 ## Mousetraps
 ### Reset trap
-Emptying a trap, either on its own or while putting it back together, increments the `Fångade möss` material inventory (asset ID `43`) by one `St`. Resetting without emptying does not change inventory.
+Emptying a trap, either on its own or while putting it back together, increments the `Fångade möss` product inventory by one `St` (the product asset is resolved by name and created automatically if it does not exist yet). Resetting without emptying does not change inventory.
 
 ## Weather
 ### Observe rainfall
