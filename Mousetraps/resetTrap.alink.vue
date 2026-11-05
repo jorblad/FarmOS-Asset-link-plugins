@@ -1,6 +1,7 @@
 <script setup>
 import { inject, ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import { usePhotoCapture } from '../usePhotoCapture.js';
 const assetLink = inject('assetLink');
 const props = defineProps({
   asset: {
@@ -23,7 +24,6 @@ const actionOptions = [
 ];
 
 // Photo adding
-import { usePhotoCapture } from '../usePhotoCapture.js';
 const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture();
 
 const onSubmit = () => {
