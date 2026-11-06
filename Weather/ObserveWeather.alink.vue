@@ -1,71 +1,45 @@
 <script setup>
 import { ref, inject } from 'vue';
-  
-import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+
+import { formatRFC3339 } from "assetlink-plugin-api";
+import { ensureTaxonomyTerm, runUpdate } from '../useFarmOS.js';
 
 const assetLink = inject('assetLink');
 
-const loadingUnitTerm = ref(true);
-let mmUnitTerm = undefined;
+// The kinds of weather you can record. Add more here (e.g. "Air pressure",
+// "Soil moisture") — each maps to a farmOS quantity measure + unit name.
+const observationTypes = [
+  { label: 'Rainfall',     measure: 'length',     unit: 'mm',  suffix: 'mm' },
+  { label: 'Temperature',  measure: 'temperature', unit: '°C', suffix: '°C' },
+  { label: 'Wind speed',   measure: 'rate',       unit: 'm/s', suffix: 'm/s' },
+  { label: 'Humidity',     measure: 'ratio',      unit: '%',   suffix: '%' },
+];
 
-const loadUnitTerm = async () => {
-  await assetLink.booted;
+const selectedType = ref(observationTypes[0]);
+const value = ref(null);
 
-  const UNIT_NAME = "mm";
-
-  const findUnitTerm = async entitySource => {
-    const results = await entitySource.query(q => q
-        .findRecords('taxonomy_term--unit')
-        .filter({ attribute: 'name', op: 'equal', value: UNIT_NAME }));
-
-    return results.flatMap(l => l).find(a => a);
-  };
-
-  mmUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
-
-  if (!mmUnitTerm) {
-    mmUnitTerm = await findUnitTerm(assetLink.entitySource);
-  }
-
-  if (!mmUnitTerm) {
-    const unitTermToCreate = {
-        type: 'taxonomy_term--unit',
-        id: uuidv4(),
-        attributes: {
-          name: UNIT_NAME,
-        },
-    };
-
-    mmUnitTerm = await assetLink.entitySource.update(
-        (t) => t.addRecord(unitTermToCreate),
-        {label: `Add '${UNIT_NAME}' unit`});
-  }
-
-  loadingUnitTerm.value = false;
-};
-loadUnitTerm();
-
-const mmOfRain = ref(0);
-
-const onSubmit = (mmOfRain) => {
-  if (!mmOfRain || mmOfRain <= 0) {
+const onSubmit = async () => {
+  if (value.value === null || value.value === undefined || value.value === '') {
     return;
   }
 
-  const rainfallQuantity = {
+  // Resolve (or create) the unit for the chosen observation type.
+  const unitTerm = await ensureTaxonomyTerm(assetLink, selectedType.value.unit);
+
+  const quantity = {
     type: 'quantity--standard',
-    id: uuidv4(),
+    id: window.crypto.randomUUID ? window.crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)),
     attributes: {
-      measure: 'count',
+      measure: selectedType.value.measure,
       value: {
-        decimal: `${mmOfRain}`,
+        decimal: `${value.value}`,
       },
     },
     relationships: {
       units: {
         data: {
-          type: mmUnitTerm.type,
-          id: mmUnitTerm.id,
+          type: unitTerm.type,
+          id: unitTerm.id,
         }
       },
     },
@@ -74,7 +48,7 @@ const onSubmit = (mmOfRain) => {
   const observationLog = {
     type: 'log--observation',
     attributes: {
-      name: `Measured ${mmOfRain} mm of rainfall`,
+      name: `Measured ${value.value} ${selectedType.value.unit} ${selectedType.value.label.toLowerCase()}`,
       timestamp: formatRFC3339(new Date()),
       status: "done",
     },
@@ -82,51 +56,54 @@ const onSubmit = (mmOfRain) => {
       quantity: {
         data: [
           {
-            type: rainfallQuantity.type,
-            id: rainfallQuantity.id,
+            type: quantity.type,
+            id: quantity.id,
           }
         ]
       },
     },
   };
 
-  assetLink.entitySource.update(
+  await runUpdate(assetLink, `Record ${selectedType.value.label.toLowerCase()} observation`,
       (t) => [
-        t.addRecord(rainfallQuantity),
+        t.addRecord(quantity),
         t.addRecord(observationLog),
       ],
-      {label: `Record rainfall observation`});
+      { notifySuccess: true });
 };
 </script>
 
-<template alink-route[se.jorblad.farmos_asset_link.routes.v0.observe_rainfall_page]="/observe-rainfall">
+<template alink-route[se.jorblad.farmos_asset_link.routes.v0.observe_weather_page]="/observe-weather">
   <q-page padding class="column text-left">
-    <h4>How much rain was there?</h4>
+    <h4>Record a weather observation</h4>
     <div class="q-pa-md">
-    <q-slider
-      v-model="mmOfRain"
-      :min="0"
-      :max="100"
-      :step="1"
-      snap
-      label
-    />
-    <q-input
-      v-model.number="mmOfRain"
-      type="number"
-      filled
-      suffix="mm"
-    />
+      <q-select
+        filled
+        v-model="selectedType"
+        :options="observationTypes"
+        :option-label="opt => opt.label"
+        label="Observation type"
+        emit-value
+        map-options
+      />
+    </div>
+    <div class="q-pa-md">
+      <q-input
+        v-model.number="value"
+        type="number"
+        filled
+        :label="`Value (${selectedType.suffix})`"
+        :suffix="selectedType.suffix"
+      />
     </div>
     <div class="q-pa-sm q-gutter-sm row justify-end">
       <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
       <q-btn
         color="primary"
         label="Record"
-        @click="() => onSubmit(mmOfRain)"
-        :disabled="mmOfRain <= 0"
+        @click="onSubmit"
+        :disabled="value === null || value === undefined || value === ''"
       />
     </div>
-    <q-inner-loading :showing="loadingUnitTerm"></q-inner-loading>
   </q-page>
 </template>
