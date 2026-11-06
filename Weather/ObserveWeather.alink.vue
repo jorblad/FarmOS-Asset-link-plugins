@@ -2,7 +2,7 @@
 import { ref, inject } from 'vue';
 
 import { formatRFC3339 } from "assetlink-plugin-api";
-import { ensureTaxonomyTerm, runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { ensureTaxonomyTerm, runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const assetLink = inject('assetLink');
 
@@ -19,7 +19,7 @@ const selectedType = ref(observationTypes[0]);
 const value = ref(null);
 
 const onSubmit = async () => {
-  if (value.value === null || value.value === undefined || value.value === '') {
+  if (!requireValue(value.value !== null && value.value !== undefined && value.value !== '', 'Enter a measurement value before recording.')) {
     return;
   }
 

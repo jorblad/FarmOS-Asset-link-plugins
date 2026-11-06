@@ -99,7 +99,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 
 export default {
@@ -148,6 +148,10 @@ export default {
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         const transplantLocation = dialogResult.transplantLocation;
+
+        if (!requireValue(transplantLocation, 'Select a destination location before transplanting.')) {
+          return;
+        }
 
         //Photos
         const photos = dialogResult.capturedPhotos;

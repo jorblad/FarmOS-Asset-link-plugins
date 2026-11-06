@@ -93,7 +93,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { ensureAsset, runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 
 export default {
@@ -144,12 +144,12 @@ export default {
         const harvestCount = dialogResult.harvestCount;
         const harvestUnitTerm = dialogResult.quantityType;
 
-        if (!harvestUnitTerm) {
+        if (!requireValue(harvestUnitTerm, 'Select a unit before recording the harvest.')) {
           return;
         }
 
 
-        if (!harvestCount || harvestCount <= 0) {
+        if (!requireValue(harvestCount > 0, 'Enter a harvest quantity greater than 0.')) {
           return;
         }
 

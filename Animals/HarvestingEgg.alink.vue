@@ -93,7 +93,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { ensureTaxonomyTerm, runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { ensureTaxonomyTerm, runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const UNIT_NAME = "egg(s)";
 
@@ -154,12 +154,12 @@ export default {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         const harvestCount = dialogResult.harvestCount;
 
-        if (!eggUnitTerm) {
+        if (!requireValue(eggUnitTerm, 'Select a unit before recording the harvest.')) {
           return;
         }
 
 
-        if (!harvestCount || harvestCount <= 0) {
+        if (!requireValue(harvestCount > 0, 'Enter a harvest quantity greater than 0.')) {
           return;
         }
 

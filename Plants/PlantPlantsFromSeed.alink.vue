@@ -602,7 +602,7 @@ const additionalFilters = [
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { runUpdate, ensureTaxonomyTerm, normalizeName } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { runUpdate, ensureTaxonomyTerm, normalizeName, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const UNIT_NAME = "st";
 
@@ -704,7 +704,7 @@ export default {
                 const plantName = `${seasonName} ${asset.attributes.name} ${plantTypeName}`;
 
 
-                if (!seedCount || seedCount <= 0) {
+                if (!requireValue(seedCount > 0, 'Enter a seed count greater than 0.')) {
                 return;
                 }
 

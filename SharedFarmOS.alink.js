@@ -51,6 +51,16 @@ function notify(opts) {
   return undefined;
 }
 
+// Guard used by action workflows: if `condition` is falsy, show a warning and
+// return false so the caller can `if (!requireValue(...)) return;`. Without this
+// the action would silently do nothing (no log, no error, nothing queued), which
+// is exactly the failure mode users report as "the log just isn't created".
+export function requireValue(condition, message) {
+  if (condition) return true;
+  notify({ type: 'warning', message });
+  return false;
+}
+
 // Map each asset bundle to the taxonomy vocabulary that identifies its type.
 // farmOS 4.x requires this relationship at creation time.
 const ASSET_TYPE_VOCAB = {
@@ -349,6 +359,7 @@ export default class SharedFarmOS {
         usePhotoCapture,
         AssetLogsPanel,
         notify,
+        requireValue,
       });
     });
   }
