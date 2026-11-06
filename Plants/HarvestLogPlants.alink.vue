@@ -159,7 +159,7 @@ export default {
               || await ensureAsset(assetLink, cropName, 'asset--product', { parentAsset });
 
             const harvestQuantity = {
-            type: 'quantity--standard',
+            type: 'quantity--material',
             id: uuidv4(),
             attributes: {
                 measure: harvestQuantityMeasure,

@@ -27,7 +27,7 @@ const onSubmit = async () => {
   const unitTerm = await ensureTaxonomyTerm(assetLink, selectedType.value.unit);
 
   const quantity = {
-    type: 'quantity--standard',
+    type: 'quantity--material',
     id: window.crypto.randomUUID ? window.crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)),
     attributes: {
       measure: selectedType.value.measure,

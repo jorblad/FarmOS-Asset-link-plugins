@@ -60,5 +60,7 @@ Nothing here is implemented yet — use this as a working list.
 - Key farmOS 4.x findings captured in README: API base is `/api` (farm_api), not
   `/jsonapi`; quantities are `quantity--material` (no `quantity--standard`);
   assets need their type term (plant_type, product_type, …). These affect plugin
-  code — `quantity--standard` references in plugins should be migrated to
-  `quantity--material`.
+  code — `quantity--standard` references in plugins have been migrated to
+  `quantity--material` (HarvestingWool, HarvestingEgg, resetTrap, ObserveWeather,
+  HarvestLogPlants, HarvestingPlants). Product-inventory quantities keep their
+  `inventory_asset` → `asset--product` relationship and use `quantity--material`.

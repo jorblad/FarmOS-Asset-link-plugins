@@ -124,7 +124,7 @@ export default {
 
         const catchQuantity = ['empty', 'putTogetherAndEmpty'].includes(selectedAction)
           ? {
-              type: 'quantity--standard',
+              type: 'quantity--material',
               id: uuidv4(),
               attributes: {
                 measure: 'count',

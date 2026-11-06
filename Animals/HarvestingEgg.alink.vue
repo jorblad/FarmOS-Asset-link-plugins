@@ -166,7 +166,7 @@ export default {
 
 
         const harvestQuantity = {
-          type: 'quantity--standard',
+          type: 'quantity--material',
           id: uuidv4(),
           attributes: {
             measure: 'count',
