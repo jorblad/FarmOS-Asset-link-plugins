@@ -59,6 +59,24 @@ $DRUSH php:script /tmp/seed-default-plugins.php
 docker compose exec -T "$CONTAINER" rm -f /tmp/plugins.repo.json /tmp/seed-default-plugins.php
 echo "==> Default plugins served at: http://localhost:8080/alink/backend/default-plugins.repo.json"
 
+# ---------------------------------------------------------------------------
+# Neutralize the Asset Link service worker for local dev.
+#
+# The stock Workbox SW precaches the app shell (so edited plugin code looks
+# "old") and intercepts /alink/backend/models.json, re-issuing it from the SW
+# context without the session -> 403 HTML -> Asset Link hangs on "Loading
+# models". We overwrite it with a pass-through no-op (scripts/asset-link-dev-sw.js)
+# so every request hits the network normally. The container is image-baked, so
+# this must run on every `setup-farmos.sh` invocation.
+# ---------------------------------------------------------------------------
+echo "==> Disabling Asset Link service worker caching (dev only)..."
+docker compose cp scripts/asset-link-dev-sw.js "$CONTAINER:/tmp/asset-link-dev-sw.js"
+docker compose exec -T "$CONTAINER" cp /tmp/asset-link-dev-sw.js \
+  /opt/drupal/web/modules/farmos_asset_link/asset-link-dist/service-worker.js
+# Best-effort cleanup; the /tmp copy may be immutable in some images.
+docker compose exec -T "$CONTAINER" rm -f /tmp/asset-link-dev-sw.js || true
+echo "==> Service worker is now a pass-through no-op (no precache / no stale models.json)."
+
 echo ""
 echo "Done. Asset Link dev instance is available at:"
 echo "  http://localhost:8080/alink   (login: admin / admin)"
