@@ -602,6 +602,7 @@ const additionalFilters = [
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { runUpdate, ensureTaxonomyTerm, normalizeName } from '../useFarmOS.js';
 
 const UNIT_NAME = "st";
 
@@ -676,7 +677,7 @@ export default {
                                             type: 'taxonomy_term--plant_type',
                                             id: uuidv4(),
                                             '$relateByName': {
-                                            name: plantTypeName,
+                                            name: normalizeName(plantTypeName),
                                             },
                                         }
                                     ]
@@ -685,11 +686,10 @@ export default {
                         };
                 
 
-                        await assetLink.entitySource.update(
+                        await runUpdate(assetLink, `Add new seeds`,
                             (t) => [
                             t.addRecord(newSeedRecord),
-                            ],
-                            {label: `Add new seeds`});
+                            ]);
 
 
                     } else {
@@ -728,7 +728,7 @@ export default {
                             type: 'taxonomy_term--plant_type',
                             id: uuidv4(),
                             '$relateByName': {
-                            name: plantTypeName,
+                            name: normalizeName(plantTypeName),
                             },
                         },
                         ],
@@ -739,7 +739,7 @@ export default {
                             type: 'taxonomy_term--season',
                             id: uuidv4(),
                             '$relateByName': {
-                            name: seasonName,
+                            name: normalizeName(seasonName),
                             },
                         },
                         ],
@@ -761,6 +761,10 @@ export default {
                 }
                 
 
+
+                // Resolve (or create) the seed unit so we reference a real term
+                // id instead of relying on $relateByName auto-creation.
+                const seedUnitTerm = await ensureTaxonomyTerm(assetLink, UNIT_NAME);
 
                 let seedQuantity;
                 
@@ -786,11 +790,8 @@ export default {
                             },
                             units: {
                                 data: {
-                                    type: 'taxonomy_term--unit',
-                                    id: uuidv4(),
-                                    '$relateByName': {
-                                    name: UNIT_NAME,
-                                    },
+                                    type: seedUnitTerm.type,
+                                    id: seedUnitTerm.id,
                                 }
                             },
                         },
@@ -810,11 +811,8 @@ export default {
                         relationships: {
                             units: {
                                 data: {
-                                    type: 'taxonomy_term--unit',
-                                    id: uuidv4(),
-                                    '$relateByName': {
-                                    name: UNIT_NAME,
-                                    },
+                                    type: seedUnitTerm.type,
+                                    id: seedUnitTerm.id,
                                 }
                             },
                         },
@@ -972,7 +970,7 @@ export default {
 
                 
 
-                await assetLink.entitySource.update(
+                await runUpdate(assetLink, `Create ${seedCount} plant(s) from seeds`,
                     (t) => [
                         ...plants.map(plant => t.addRecord(plant)),
                         t.addRecord(seedQuantity),
@@ -980,30 +978,28 @@ export default {
                 );
 
                 if (planting) {
-                    await assetLink.entitySource.update(
+                    await runUpdate(assetLink, `Plant from seeds`,
                     (t) => [
                         t.addRecord(plantingLog),
-                    ],
-                    {label: `Plant from seeds`});
+                    ]);
                 }
-                
-                
+
+
                 // Update the entity source with the transplanting logs
                 if (transPlanting) {
-                    await assetLink.entitySource.update(
+                    await runUpdate(assetLink, `Create transplanting logs`,
                         (t) => [
                             ...transplantingLogs.map(log => t.addRecord(log)),
-                        ],
-                        { label: `Create transplanting logs` }
+                        ]
                     );
                 }
 
                 if (harvest) {
-                    await assetLink.entitySource.update(
+                    await runUpdate(assetLink, `Create harvest log`,
                         (t) => [
                             t.addRecord(harvestLog),
-                        ],
-                        {label: `Create harvest log`});
+                        ]
+                    );
                 }
 
             } catch (error) {

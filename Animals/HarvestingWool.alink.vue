@@ -93,6 +93,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { runUpdate } from '../useFarmOS.js';
 
 
 export default {
@@ -175,11 +176,8 @@ export default {
           relationships: {
             units: {
               data: {
-                type: 'taxonomy_term--unit',
-                id: uuidv4(),
-                '$relateByName': {
-                  name: harvestUnitTerm.attributes.name,
-                },
+                type: harvestUnitTerm.type,
+                id: harvestUnitTerm.id,
               }
             },
           },
@@ -212,12 +210,12 @@ export default {
           },
         };
 
-        assetLink.entitySource.update(
+        await runUpdate(assetLink, `Record wool harvest for ${asset.attributes.name}`,
             (t) => [
               t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
-            {label: `Record wool harvest for ${asset.attributes.name}`});
+            { notifySuccess: true });
       };
 
       action.component(({ asset }) =>

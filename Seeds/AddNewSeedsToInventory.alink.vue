@@ -100,8 +100,9 @@ const onSubmit = () => {
 
 <script>
 import { h } from 'vue';
-import { QBtn } from 'quasar';
+import { QBtn, Notify } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { runUpdate, ensureTaxonomyTerm } from '../useFarmOS.js';
 
 const UNIT_NAME = "st";
 
@@ -109,11 +110,31 @@ export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
 
+    // The buy-seeds workflow records a `log--purchase` and a `quantity--price`
+    // (total_price), both provided by the farm_ledger module. Probe for it and
+    // disable the action (with a warning) if it isn't enabled, so the user
+    // doesn't hit a confusing 4xx when they try to buy seeds.
+    let farmLedgerEnabled = true;
+    try {
+      await assetLink.entitySource.query(q => q.findRecords('log--purchase').page({ limit: 1 }));
+    } catch (err) {
+      farmLedgerEnabled = false;
+      Notify.create({
+        type: 'warning',
+        message: 'Seeds: the farm_ledger module is not enabled, so "Buy new seeds" is disabled.',
+        caption: 'Enable farm_ledger in farmOS to record seed purchases with price.',
+        icon: 'warning',
+        timeout: 0,
+        actions: [{ label: 'Dismiss', color: 'white', handler: () => {} }],
+      });
+    }
+
 
     handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.increment_seed_inventory', action => {
       action.type('asset-action');
 
-      action.showIf(({ asset }) => asset.attributes.status !== 'archived'
+      action.showIf(({ asset }) => farmLedgerEnabled
+          && asset.attributes.status !== 'archived'
           // TODO: Implement a better predicate here...
           && asset.type === 'asset--seed');
 
@@ -128,6 +149,11 @@ export default {
         if (!seedCount || seedCount <= 0) {
           return;
         }
+
+        // Resolve (or create) the "st" unit so we reference a real term id
+        // instead of relying on $relateByName auto-creation (which can create
+        // duplicate terms for e.g. "st" vs "St").
+        const unitTerm = await ensureTaxonomyTerm(assetLink, UNIT_NAME);
 
         const seedQuantity = {
           type: 'quantity--price',
@@ -154,12 +180,9 @@ export default {
             },
             units: {
               data: {
-                type: 'taxonomy_term--unit',
-                id: uuidv4(),
-                '$relateByName': {
-                name: UNIT_NAME,
-                },
-    }
+                type: unitTerm.type,
+                id: unitTerm.id,
+              }
             },
           },
         };
@@ -194,12 +217,12 @@ export default {
           },
         };
 
-        assetLink.entitySource.update(
+        await runUpdate(assetLink, `Buy new seeds`,
             (t) => [
               t.addRecord(seedQuantity),
               t.addRecord(purchaseLog),
             ],
-            {label: `Buy new seeds`});
+            { notifySuccess: true });
       };
 
       action.component(({ asset }) =>

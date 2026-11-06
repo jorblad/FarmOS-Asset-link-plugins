@@ -91,6 +91,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { ensureAsset, ensureTaxonomyTerm, runUpdate } from '../useFarmOS.js';
 
 const CATCH_INVENTORY_UNIT = 'St';
 const CATCH_INVENTORY_ASSET_NAME = 'Fångade möss';
@@ -98,40 +99,6 @@ const CATCH_INVENTORY_ASSET_NAME = 'Fångade möss';
 export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
-
-    const findCatchInventoryAsset = async (entitySource) => {
-      const results = await entitySource.query(q => q
-        .findRecords('asset--product')
-        .filter({ attribute: 'name', op: 'equal', value: CATCH_INVENTORY_ASSET_NAME }));
-
-      return results.flatMap(l => l).find(a => a);
-    };
-
-    // The catch inventory must point at a real product asset. Find an existing one
-    // by name, or create it on first use, so the inventory_asset relationship always
-    // resolves (a dangling reference was causing the quantity POST to 404).
-    const ensureCatchInventoryAsset = async () => {
-      let asset = await findCatchInventoryAsset(assetLink.entitySource.cache);
-      if (!asset) {
-        asset = await findCatchInventoryAsset(assetLink.entitySource);
-      }
-      if (asset) {
-        return asset;
-      }
-
-      const newAsset = {
-        type: 'asset--product',
-        id: uuidv4(),
-        attributes: {
-          name: CATCH_INVENTORY_ASSET_NAME,
-          status: 'active',
-        },
-      };
-
-      return await assetLink.entitySource.update(
-        (t) => t.addRecord(newAsset),
-        { label: `Create ${CATCH_INVENTORY_ASSET_NAME} inventory asset` });
-    };
 
     handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.resetTrap', action => {
 
@@ -149,7 +116,11 @@ export default {
 
         const actionName = selectedAction === 'reset' ? 'Reset' : selectedAction === 'empty' ? 'Empty' : 'Put together and empty';
 
-        const catchInventoryAsset = await ensureCatchInventoryAsset();
+        // The catch inventory must point at a real product asset (resolved by
+        // name). ensureAsset finds an existing one or creates it on first use
+        // so the inventory_asset relationship always resolves.
+        const catchInventoryAsset = await ensureAsset(assetLink, CATCH_INVENTORY_ASSET_NAME, 'asset--product');
+        const catchUnitTerm = await ensureTaxonomyTerm(assetLink, CATCH_INVENTORY_UNIT);
 
         const catchQuantity = ['empty', 'putTogetherAndEmpty'].includes(selectedAction)
           ? {
@@ -173,11 +144,8 @@ export default {
                 },
                 units: {
                   data: {
-                    type: 'taxonomy_term--unit',
-                    id: uuidv4(),
-                    '$relateByName': {
-                      name: CATCH_INVENTORY_UNIT,
-                    },
+                    type: catchUnitTerm.type,
+                    id: catchUnitTerm.id,
                   },
                 },
               },
@@ -213,12 +181,11 @@ export default {
           },
         };
 
-        assetLink.entitySource.update(
+        await runUpdate(assetLink, `Record reset ${asset.attributes.name}`,
             (t) => [
               ...(catchQuantity ? [t.addRecord(catchQuantity)] : []),
               t.addRecord(resetTrapLog),
-            ],
-            {label: `Record reset ${asset.attributes.name}`});
+            ], { notifySuccess: true });
       };
 
       action.component(({ asset }) =>

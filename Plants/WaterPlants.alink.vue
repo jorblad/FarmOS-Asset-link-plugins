@@ -74,6 +74,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { runUpdate } from '../useFarmOS.js';
 
 
 export default {
@@ -128,11 +129,11 @@ export default {
           },
         };
 
-        assetLink.entitySource.update(
+        await runUpdate(assetLink, `Record water for ${asset.attributes.name}`,
             (t) => [
               t.addRecord(waterLog),
             ],
-            {label: `Record water for ${asset.attributes.name}`});
+            { notifySuccess: true });
       };
 
       action.component(({ asset }) =>

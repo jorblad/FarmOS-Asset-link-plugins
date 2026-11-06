@@ -99,6 +99,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { runUpdate } from '../useFarmOS.js';
 
 
 export default {
@@ -180,11 +181,11 @@ export default {
             },
         };
 
-        assetLink.entitySource.update(
+        await runUpdate(assetLink, `Transplant ${asset.attributes.name}`,
             (t) => [
               t.addRecord(transplantingLog)
             ],
-            {label: `Transplant ${asset.attributes.name}`});
+            { notifySuccess: true });
       };
 
       action.component(({ asset }) =>

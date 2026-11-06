@@ -93,6 +93,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { ensureTaxonomyTerm, runUpdate } from '../useFarmOS.js';
 
 const UNIT_NAME = "egg(s)";
 
@@ -101,28 +102,7 @@ export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
 
-    const findUnitTerm = async entitySource => {
-      const results = await entitySource.query(q => q
-          .findRecords('taxonomy_term--unit')
-          .filter({ attribute: 'name', op: 'equal', value: UNIT_NAME }));
-      return results.flatMap(l => l).find(a => a);
-    };
-    let eggUnitTerm = await findUnitTerm(assetLink.entitySource.cache);
-    if (!eggUnitTerm) {
-      eggUnitTerm = await findUnitTerm(assetLink.entitySource);
-    }
-    if (!eggUnitTerm) {
-      const unitTermToCreate = {
-          type: 'taxonomy_term--unit',
-          id: uuidv4(),
-          attributes: {
-            name: UNIT_NAME,
-          },
-      };
-      eggUnitTerm = await assetLink.entitySource.update(
-          (t) => t.addRecord(unitTermToCreate),
-          {label: `Add '${UNIT_NAME}' unit`});
-    }
+    const eggUnitTerm = await ensureTaxonomyTerm(assetLink, UNIT_NAME);
 
 
 
@@ -233,12 +213,12 @@ export default {
           },
         };
 
-        assetLink.entitySource.update(
+        await runUpdate(assetLink, `Record egg harvest for ${asset.attributes.name}`,
             (t) => [
               t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
-            {label: `Record egg harvest for ${asset.attributes.name}`});
+            { notifySuccess: true });
       };
 
       action.component(({ asset }) =>
