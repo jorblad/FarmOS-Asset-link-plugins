@@ -2,6 +2,7 @@
 import { inject, ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 import { usePhotoCapture } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { t } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 const assetLink = inject('assetLink');
 const props = defineProps({
   asset: {
@@ -18,9 +19,9 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const selectedAction = ref(null);
 const actionOptions = [
-  { label: 'Reset trap', value: 'reset' },
-  { label: 'Empty trap', value: 'empty' },
-  { label: 'Put together and empty trap', value: 'putTogetherAndEmpty' }
+  { label: t('resetTrap'), value: 'reset' },
+  { label: t('emptyTrap'), value: 'empty' },
+  { label: t('putTogetherAndEmptyTrap'), value: 'putTogetherAndEmpty' }
 ];
 
 // Photo adding
@@ -34,12 +35,12 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>Reset trap {{ props.asset.attributes.name }}?</h4>
+      <h4>{{ t('resetTrapHeading', { name: props.asset.attributes.name }) }}</h4>
       <div class="q-gutter-sm">
         <q-select
           v-model="selectedAction"
           :options="actionOptions"
-          label="Select Action"
+          :label="t('selectAction')"
           emit-value
           map-options
         />
@@ -74,10 +75,10 @@ const onSubmit = () => {
         </div>
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
-        <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+        <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
         <q-btn
           color="primary"
-          label="Record"
+          :label="t('record')"
           :disabled="!selectedAction"
           @click="onSubmit"
         />
@@ -92,10 +93,7 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 import { ensureAsset, ensureTaxonomyTerm, runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
-
-const CATCH_INVENTORY_UNIT = 'St';
-const CATCH_INVENTORY_ASSET_NAME = 'Fångade möss';
-const CATCH_INVENTORY_PRODUCT_TYPE = 'Catch';
+import { config, t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 export default {
   async onLoad(handle, assetLink) {
@@ -115,13 +113,14 @@ export default {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         const selectedAction = dialogResult.selectedAction;
 
-        const actionName = selectedAction === 'reset' ? 'Reset' : selectedAction === 'empty' ? 'Empty' : 'Put together and empty';
+        const actionName = selectedAction === 'reset' ? translate('resetAction')
+          : selectedAction === 'empty' ? translate('emptyAction') : translate('putTogetherAndEmptyAction');
 
         // The catch inventory must point at a real product asset (resolved by
         // name). ensureAsset finds an existing one or creates it on first use
         // so the inventory_asset relationship always resolves.
-        const catchInventoryAsset = await ensureAsset(assetLink, CATCH_INVENTORY_ASSET_NAME, 'asset--product', { typeTerm: CATCH_INVENTORY_PRODUCT_TYPE });
-        const catchUnitTerm = await ensureTaxonomyTerm(assetLink, CATCH_INVENTORY_UNIT);
+        const catchInventoryAsset = await ensureAsset(assetLink, config.inventoryAssets.catch, 'asset--product', { typeTerm: config.productTypes.catch });
+        const catchUnitTerm = await ensureTaxonomyTerm(assetLink, config.units.catch);
 
         const catchQuantity = ['empty', 'putTogetherAndEmpty'].includes(selectedAction)
           ? {
@@ -182,7 +181,7 @@ export default {
           },
         };
 
-        await runUpdate(assetLink, `Record reset ${asset.attributes.name}`,
+        await runUpdate(assetLink, translate('recordResetFor', { name: asset.attributes.name }),
             (t) => [
               ...(catchQuantity ? [t.addRecord(catchQuantity)] : []),
               t.addRecord(resetTrapLog),
@@ -190,7 +189,7 @@ export default {
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Reset" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  translate('recordReset') ));
     });
 
   }

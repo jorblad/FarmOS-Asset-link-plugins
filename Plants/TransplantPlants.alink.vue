@@ -1,6 +1,7 @@
 <script setup>
 import { inject, ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import { t } from 'plugin-library:org.jorblad.farmos_asset_link.config'
 const assetLink = inject('assetLink');
 const props = defineProps({
   asset: {
@@ -43,11 +44,11 @@ const onSubmit = () => {
 
         <div class="q-pa-md">
             <entity-select
-            label="Transplant location"
+            :label="t('transplantLocation')"
             entity-type="asset"
             v-model="transplantLocation"
             :additional-filters="additionalFilters"
-            :rules="[val => !!val || 'Transplant location is required']"
+            :rules="[val => !!val || t('transplantLocationRequired')]"
             ></entity-select>
 
         </div>
@@ -82,10 +83,10 @@ const onSubmit = () => {
             </div>
 
       <div class="q-pa-sm q-gutter-sm row justify-end">
-        <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+        <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
         <q-btn
           color="primary"
-          label="Record"
+          :label="t('record')"
           @click="onSubmit"
           :disabled="!transplantLocation"
         />
@@ -100,6 +101,7 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 import { runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 
 export default {
@@ -149,7 +151,7 @@ export default {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         const transplantLocation = dialogResult.transplantLocation;
 
-        if (!requireValue(transplantLocation, 'Select a destination location before transplanting.')) {
+        if (!requireValue(transplantLocation, translate('transplantDestRequired'))) {
           return;
         }
 
@@ -160,7 +162,7 @@ export default {
         transplantingLog = {
             type: 'log--transplanting',
             attributes: {
-                name: `Transplant ${asset.attributes.name}`,
+                name: translate('transplantName', { name: asset.attributes.name }),
                 timestamp: formatRFC3339(new Date()),
                 status: "done",
 
@@ -185,7 +187,7 @@ export default {
             },
         };
 
-        await runUpdate(assetLink, `Transplant ${asset.attributes.name}`,
+        await runUpdate(assetLink, translate('transplantFor', { name: asset.attributes.name }),
             (t) => [
               t.addRecord(transplantingLog)
             ],
@@ -193,7 +195,7 @@ export default {
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Transplant plant" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  translate('transplantPlant') ));
     });
 
   }

@@ -3,23 +3,21 @@ import { ref, inject } from 'vue';
 
 import { formatRFC3339 } from "assetlink-plugin-api";
 import { ensureTaxonomyTerm, runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
+import { config, t } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 const assetLink = inject('assetLink');
 
-// The kinds of weather you can record. Add more here (e.g. "Air pressure",
-// "Soil moisture") — each maps to a farmOS quantity measure + unit name.
-const observationTypes = [
-  { label: 'Rainfall',     measure: 'length',     unit: 'mm',  suffix: 'mm' },
-  { label: 'Temperature',  measure: 'temperature', unit: '°C', suffix: '°C' },
-  { label: 'Wind speed',   measure: 'rate',       unit: 'm/s', suffix: 'm/s' },
-  { label: 'Humidity',     measure: 'ratio',      unit: '%',   suffix: '%' },
-];
+// The kinds of weather you can record. The technical `measure`/`unit`/`suffix`
+// values live in config.observationTypes; only `label` is localized here. Edit
+// config.observationTypes to add e.g. "Air pressure" / "Soil moisture".
+const observationTypes = config.observationTypes.map(o => ({ ...o, label: t(o.labelKey) }));
 
 const selectedType = ref(observationTypes[0]);
 const value = ref(null);
 
 const onSubmit = async () => {
-  if (!requireValue(value.value !== null && value.value !== undefined && value.value !== '', 'Enter a measurement value before recording.')) {
+  if (!requireValue(value.value !== null && value.value !== undefined && value.value !== '', translate('measurementValueRequired'))) {
     return;
   }
 
@@ -48,7 +46,7 @@ const onSubmit = async () => {
   const observationLog = {
     type: 'log--observation',
     attributes: {
-      name: `Measured ${value.value} ${selectedType.value.unit} ${selectedType.value.label.toLowerCase()}`,
+      name: translate('measuredObs', { value: value.value, unit: selectedType.value.unit, label: selectedType.value.label }),
       timestamp: formatRFC3339(new Date()),
       status: "done",
     },
@@ -64,7 +62,7 @@ const onSubmit = async () => {
     },
   };
 
-  await runUpdate(assetLink, `Record ${selectedType.value.label.toLowerCase()} observation`,
+  await runUpdate(assetLink, translate('recordObs', { label: selectedType.value.label }),
       (t) => [
         t.addRecord(quantity),
         t.addRecord(observationLog),
@@ -75,14 +73,14 @@ const onSubmit = async () => {
 
 <template alink-route[se.jorblad.farmos_asset_link.routes.v0.observe_weather_page]="/observe-weather">
   <q-page padding class="column text-left">
-    <h4>Record a weather observation</h4>
+    <h4>{{ t('weatherHeading') }}</h4>
     <div class="q-pa-md">
       <q-select
         filled
         v-model="selectedType"
         :options="observationTypes"
         :option-label="opt => opt.label"
-        label="Observation type"
+        :label="t('observationType')"
         emit-value
         map-options
       />
@@ -92,15 +90,15 @@ const onSubmit = async () => {
         v-model.number="value"
         type="number"
         filled
-        :label="`Value (${selectedType.suffix})`"
+        :label="t('valueLabel', { suffix: selectedType.suffix })"
         :suffix="selectedType.suffix"
       />
     </div>
     <div class="q-pa-sm q-gutter-sm row justify-end">
-      <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+      <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
       <q-btn
         color="primary"
-        label="Record"
+        :label="t('record')"
         @click="onSubmit"
         :disabled="value === null || value === undefined || value === ''"
       />

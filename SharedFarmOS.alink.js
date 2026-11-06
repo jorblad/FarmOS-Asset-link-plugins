@@ -121,7 +121,7 @@ export async function ensureTaxonomyTerm(assetLink, name, bundle = 'taxonomy_ter
       caption: err && err.message ? err.message : String(err),
       icon: 'error',
       timeout: 0,
-      actions: [{ label: 'Dismiss', color: 'white', handler: () => {} }],
+      actions: [{ label: 'Stäng', color: 'white', handler: () => {} }],
     });
     throw err;
   }
@@ -214,7 +214,7 @@ export async function runUpdate(assetLink, label, mutator, { notifySuccess = fal
       caption: err && err.message ? err.message : String(err),
       icon: 'error',
       timeout: 0,
-      actions: [{ label: 'Dismiss', color: 'white', handler: () => {} }],
+      actions: [{ label: 'Stäng', color: 'white', handler: () => {} }],
     });
     throw err;
   }
@@ -330,7 +330,12 @@ export const AssetLogsPanel = {
     onUnmounted(() => assetLink.eventBus.$off('changed:assetLogs', onChanged));
 
     return () => h('div', [
-      h('h5', { class: 'q-my-xs' }, isDone ? 'Done Logs:' : 'Pending Logs:'),
+      // NOTE: these strings are hardcoded in Swedish on purpose. SharedFarmOS is
+      // imported directly by the unit tests (tests/AssetLogsPanel.test.js), which
+      // only stub `quasar`/`assetlink-plugin-api` and cannot resolve the
+      // `plugin-library:org.jorblad.farmos_asset_link.config` import. Every other
+      // plugin gets its labels through config.t(); this panel is the one exception.
+      h('h5', { class: 'q-my-xs' }, isDone ? 'Klara loggar:' : 'Väntande loggar:'),
       h('div', {
         class: 'col',
         style: 'height:auto;min-height:160px;height:25vh;position:relative;contain:strict;overflow:auto;',
@@ -339,7 +344,7 @@ export const AssetLogsPanel = {
           'node-key': 'id',
           nodes: logNodes.value,
           selected: null,
-          'no-nodes-label': isDone ? 'No done logs' : 'No pending logs',
+          'no-nodes-label': isDone ? 'Inga klara loggar' : 'Inga väntande loggar',
           class: 'q-ml-md',
         }, {
           'default-header': (prop) => h('entity-name', { entity: prop.node.log }),

@@ -35,7 +35,7 @@ describe('AssetLogsPanel', () => {
       global: { provide: { assetLink } },
     });
     await nextTick();
-    expect(wrapper.text()).toContain('Done Logs:');
+    expect(wrapper.text()).toContain('Klara loggar:');
     expect(on).toHaveBeenCalledWith('changed:assetLogs', expect.any(Function));
   });
 
@@ -46,7 +46,7 @@ describe('AssetLogsPanel', () => {
       global: { provide: { assetLink } },
     });
     await nextTick();
-    expect(wrapper.text()).toContain('Pending Logs:');
+    expect(wrapper.text()).toContain('Väntande loggar:');
   });
 
   it('unsubscribes from the event bus on unmount (regression guard)', async () => {
