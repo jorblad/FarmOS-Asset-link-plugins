@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Notify } from 'quasar';
+import { Dialog } from 'quasar';
 import {
   normalizeName,
   ensureTaxonomyTerm,
@@ -22,7 +22,7 @@ function makeAssetLink({ cacheRecords = [], sourceRecords = [], updateImpl } = {
   };
 }
 
-beforeEach(() => Notify.reset());
+beforeEach(() => Dialog.reset());
 
 describe('normalizeName', () => {
   it('trims surrounding whitespace', () => {
@@ -70,7 +70,7 @@ describe('ensureTaxonomyTerm', () => {
       },
     });
     await expect(ensureTaxonomyTerm(assetLink, 'St')).rejects.toThrow('boom');
-    expect(Notify._calls.at(-1).type).toBe('negative');
+    expect(Dialog._calls.at(-1).title).toBe('Error');
   });
 });
 
@@ -116,13 +116,13 @@ describe('runUpdate', () => {
       notifySuccess: true,
     });
     expect(result).toBeDefined();
-    expect(Notify._calls.at(-1).type).toBe('positive');
+    expect(Dialog._calls.at(-1).title).toBe('Notice');
   });
 
   it('does not toast success when notifySuccess is false', async () => {
     const assetLink = makeAssetLink();
     await runUpdate(assetLink, 'Do thing', (t) => [t.addRecord({})]);
-    expect(Notify._calls).toHaveLength(0);
+    expect(Dialog._calls).toHaveLength(0);
   });
 
   it('toasts failure and rethrows so the workflow can stop', async () => {
@@ -132,6 +132,6 @@ describe('runUpdate', () => {
       },
     });
     await expect(runUpdate(assetLink, 'Do thing', () => {})).rejects.toThrow('nope');
-    expect(Notify._calls.at(-1).type).toBe('negative');
+    expect(Dialog._calls.at(-1).title).toBe('Error');
   });
 });

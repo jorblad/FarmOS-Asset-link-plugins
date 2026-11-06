@@ -116,7 +116,7 @@ export default {
     // doesn't hit a confusing 4xx when they try to buy seeds.
     let farmLedgerEnabled = true;
     try {
-      await assetLink.entitySource.query(q => q.findRecords('log--purchase').page({ limit: 1 }));
+      await assetLink.entitySource.query(q => q.findRecords('log--purchase').page({ offset: 0, limit: 1 }));
     } catch (err) {
       farmLedgerEnabled = false;
       notify({

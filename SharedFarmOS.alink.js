@@ -11,24 +11,28 @@
 //   - an Asset Link plugin (the default export's onLoad provides the library), and
 //   - a plain ESM module (the named exports) so the unit tests can import it
 //     directly without a running Asset Link.
-import { Dialog, Notify, QTree } from 'quasar';
+import { Dialog, QTree } from 'quasar';
 import { uuidv4, parseJSONDate } from 'assetlink-plugin-api';
 import { ref, computed, inject, onMounted, onUnmounted, h, watch } from 'vue';
 
 // Asset Link installs Quasar with only the Dialog + Loading plugins; the Notify
-// plugin is NOT registered, so `Notify.create` is undefined at runtime. We prefer
-// Notify when the host app provides it (standard Asset Link builds), and fall
-// back to a Dialog-based toast otherwise so errors/warnings still reach the user.
+// plugin is NOT registered, so `Notify.create` is unavailable (it is only attached
+// during the Notify plugin's install). We therefore surface feedback exclusively
+// through the registered Dialog plugin. A try/catch guards against any build that
+// does not register Dialog, falling back to the console so a missing UI dep can
+// never crash a workflow.
 function notify(opts) {
-  if (typeof Notify?.create === 'function') {
-    return Notify.create(opts);
-  }
   const isObj = opts && typeof opts === 'object';
   const message = isObj ? (opts.message ?? '') : String(opts ?? '');
   const caption = isObj ? opts.caption : undefined;
   const type = isObj ? (opts.type ?? 'info') : 'info';
   const title = type === 'negative' ? 'Error' : type === 'warning' ? 'Warning' : 'Notice';
-  return Dialog.create({ title, message, caption });
+  try {
+    return Dialog.create({ title, message, caption });
+  } catch (e) {
+    console.error(`[notify] ${title}: ${message}`, caption ?? '', e);
+    return undefined;
+  }
 }
 
 // ---------------------------------------------------------------------------
