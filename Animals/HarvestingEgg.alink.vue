@@ -18,7 +18,7 @@ const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 const harvestCount = ref(0);
 
 // Photo adding
-import { usePhotoCapture } from '../usePhotoCapture.js';
+import { usePhotoCapture } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture();
 
 const onSubmit = () => {
@@ -93,7 +93,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { ensureTaxonomyTerm, runUpdate } from '../useFarmOS.js';
+import { ensureTaxonomyTerm, runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const UNIT_NAME = "egg(s)";
 

@@ -1,6 +1,6 @@
 <script setup>
 import { inject } from 'vue';
-import AssetLogsPanel from '../AssetLogsPanel.js';
+import { AssetLogsPanel } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const assetLink = inject('assetLink');
 const props = defineProps({

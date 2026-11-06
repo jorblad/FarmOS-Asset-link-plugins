@@ -43,9 +43,23 @@ A page for recording a weather observation: rainfall (mm), temperature (°C), wi
 ## Development
 
 ### Quick checks (no farmOS needed)
-- `npm run validate` — parse every `.alink.vue` with Vue's compiler and validate `repo.json` (catches broken-plugin / syntax regressions).
-- `npm test` — Vitest unit tests for the shared logic (`useFarmOS.js`, `AssetLogsPanel.js`), mocking `quasar`/`assetlink-plugin-api` so they run without a farmOS.
-- `npm run dev` — serve the repo locally (CORS-enabled) so the Asset Link app can fetch plugins cross-origin, e.g. `http://localhost:5173/Plants/HarvestingPlants.alink.vue`.
+- `npm run validate` — parse every `.alink.vue` with Vue's compiler and Node-syntax-check `SharedFarmOS.alink.js`; validates `repo.json` (catches broken-plugin / syntax regressions).
+- `npm test` — Vitest unit tests for the shared logic in `SharedFarmOS.alink.js`, mocking `quasar`/`assetlink-plugin-api` so they run without a farmOS.
+- `npm run dev` — serve the repo locally (CORS-enabled) so the Asset Link app can fetch plugins cross-origin, e.g. `http://localhost:5173/jorblads-plugins.repo.json`.
+
+### Shared helper library (important)
+Asset Link's loader **only resolves a fixed set of bare specifiers** (`vue`, `quasar`, `assetlink-plugin-api`, …) and `plugin-library:<name>` imports — it does **not** support relative imports between plugins. Importing e.g. `../useFarmOS.js` fails at runtime with `Unsupported import`.
+
+All shared code therefore lives in **`SharedFarmOS.alink.js`**, which is both:
+- an Asset Link **plugin** (its default export provides the library via `handle.provideLibrary('org.jorblad.farmos_asset_link.helpers', …)`), and
+- a plain ESM module (named exports) so the unit tests can import it directly.
+
+Every plugin consumes it through a single import:
+```js
+import { ensureAsset, ensureTaxonomyTerm, runUpdate, usePhotoCapture, AssetLogsPanel }
+  from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+```
+`jorblads-plugins.repo.json` lists `SharedFarmOS.alink.js` **first** so the library is registered before the plugins that need it are loaded. (URLs are relative so the same file works locally on `:5173` and, once pushed, on GitHub raw.)
 
 ### Local dev instance (farmOS in Docker)
 A real farmOS instance (image `jorblad/farmos-k8s`, the same image this project targets) is provided via `docker-compose.yml`. On Apple Silicon it runs emulated (`--platform linux/amd64`); on x86 it runs natively.
@@ -63,6 +77,17 @@ Point Asset Link's plugin loader / `jorblads-plugins.repo.json` at the dev serve
 in a Docker volume, so `docker compose down`/`up` keeps farmOS installed; re-run
 `setup-farmos.sh` only after wiping the volume.
 
+### Demo data
+`scripts/seed-farmos.mjs` populates the running dev instance with a small,
+idempotent set of demo data (units, plant/animal/product/seed/land assets, plus
+an observation and a harvest log) so the plugins have something to click through.
+Re-running it is safe — existing records (matched by name) are reused.
+
+```sh
+node scripts/seed-farmos.mjs            # against http://localhost:8080 (default)
+FARMOS_URL=http://other:8080 node scripts/seed-farmos.mjs
+```
+
 ### End-to-end tests (Playwright)
 `npm run test:e2e` runs the suite in `e2e/`:
 - `api.farmos.spec.js` — the JSON:API contract the plugins depend on (units, plant/product assets, quantities with measures, inventory adjustment, observation/harvest logs). These are real writes against the dev farmOS.
@@ -76,6 +101,8 @@ This farmOS version differs from older docs in ways that affect the plugins:
 - The JSON:API is served at **`/api`** (the `farm_api` module), **not** `/jsonapi`.
 - Quantities use **`quantity--material`** (with a `measure`, `value` as `{decimal}`, a `units` reference, and optional `inventory_adjustment` + `inventory_asset`). There is **no `quantity--standard`** resource in this version — plugins must target `quantity--material`.
 - Assets require their type term: `asset--plant` needs a `plant_type`, `asset--product` needs a `product_type`, etc.
+- Assets have **no `status` attribute** in this build — they default to active, so do not send one (it 422s). `land_type` is a `list_string` attribute whose value must be an existing `land_type` entity id (only `other` exists by default).
+- Log `timestamp` must be `YYYY-MM-DDTHH:MM:SSZ` (no milliseconds); a UNIX timestamp also works.
 - Renovate keeps the dev dependencies up to date (see `renovate.json`).
 
 See `IDEAS.md` for the backlog.

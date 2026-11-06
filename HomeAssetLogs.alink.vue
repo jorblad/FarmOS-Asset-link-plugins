@@ -1,5 +1,5 @@
 <script setup>
-import AssetLogsPanel from '../AssetLogsPanel.js';
+import { AssetLogsPanel } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 </script>
 
 <!--

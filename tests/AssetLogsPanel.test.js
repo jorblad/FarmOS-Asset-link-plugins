@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import AssetLogsPanel from '../AssetLogsPanel.js';
+import { AssetLogsPanel } from '../SharedFarmOS.alink.js';
 
 // Fake assetLink: getLogTypes + a query returning a couple of logs, plus a
 // spyable eventBus (the wiring we fixed in the Done/Pending refactor).

@@ -103,7 +103,7 @@ const onSubmit = () => {
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { ensureAsset, runUpdate } from '../useFarmOS.js';
+import { ensureAsset, runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 // Default product asset that harvest yield is counted against when the user
 // doesn't pick a specific product. Named after the harvested plant's

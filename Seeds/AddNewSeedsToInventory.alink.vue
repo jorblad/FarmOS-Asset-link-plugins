@@ -102,7 +102,7 @@ const onSubmit = () => {
 import { h } from 'vue';
 import { QBtn, Notify } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { runUpdate, ensureTaxonomyTerm } from '../useFarmOS.js';
+import { runUpdate, ensureTaxonomyTerm } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const UNIT_NAME = "st";
 

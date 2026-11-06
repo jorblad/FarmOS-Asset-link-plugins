@@ -5,7 +5,7 @@ import {
   ensureTaxonomyTerm,
   ensureAsset,
   runUpdate,
-} from '../useFarmOS.js';
+} from '../SharedFarmOS.alink.js';
 
 // Build a fake assetLink. `cacheRecords` / `sourceRecords` are the arrays
 // returned by the cache / source `query` (already in the flat shape the code

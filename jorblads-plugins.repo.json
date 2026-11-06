@@ -1,34 +1,37 @@
 {
     "plugins": [
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/HarvestingPlants.alink.vue"
+            "url": "SharedFarmOS.alink.js"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Animals/HarvestingWool.alink.vue"
+            "url": "Plants/HarvestingPlants.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Animals/HarvestingEgg.alink.vue"
+            "url": "Animals/HarvestingWool.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Weather/ObserveWeather.alink.vue"
+            "url": "Animals/HarvestingEgg.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/PlantPlantsFromSeed.alink.vue"
+            "url": "Weather/ObserveWeather.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/TransplantPlants.alink.vue"
+            "url": "Plants/PlantPlantsFromSeed.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/HarvestLogPlants.alink.vue"
+            "url": "Plants/TransplantPlants.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Plants/WaterPlants.alink.vue"
+            "url": "Plants/HarvestLogPlants.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Mousetraps/resetTrap.alink.vue"
+            "url": "Plants/WaterPlants.alink.vue"
         },
         {
-            "url": "https://raw.githubusercontent.com/jorblad/FarmOS-Asset-link-plugins/main/Seeds/AddNewSeedsToInventory.alink.vue"
+            "url": "Mousetraps/resetTrap.alink.vue"
+        },
+        {
+            "url": "Seeds/AddNewSeedsToInventory.alink.vue"
         }
     ]
 }

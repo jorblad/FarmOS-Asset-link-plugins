@@ -52,8 +52,8 @@ try {
     errors.push('repo.json: missing "plugins" array');
   } else {
     repo.plugins.forEach((p, i) => {
-      if (!p.url || !p.url.endsWith('.alink.vue')) {
-        errors.push(`repo.json plugins[${i}]: url must end with .alink.vue`);
+      if (!p.url || !/\.alink\.(vue|js)$/.test(p.url)) {
+        errors.push(`repo.json plugins[${i}]: url must end with .alink.vue or .alink.js`);
       }
     });
   }
@@ -61,8 +61,8 @@ try {
   errors.push(`repo.json: ${e.message}`);
 }
 
-// Syntax-check the shared .js helpers (their runtime imports are not resolved here).
-for (const f of ['useFarmOS.js', 'AssetLogsPanel.js']) {
+// Syntax-check the shared helper library (its runtime imports are not resolved here).
+for (const f of ['SharedFarmOS.alink.js']) {
   try {
     execSync(`node --check ${f}`, { cwd: root, stdio: 'pipe' });
   } catch {

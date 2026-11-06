@@ -40,7 +40,7 @@ const seedAssetsOptions = ref([]);
 const maxDesiredSearchEntries = 200;
 
 // Photo adding
-import { usePhotoCapture } from '../usePhotoCapture.js';
+import { usePhotoCapture } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture()
 
 
@@ -602,7 +602,7 @@ const additionalFilters = [
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { runUpdate, ensureTaxonomyTerm, normalizeName } from '../useFarmOS.js';
+import { runUpdate, ensureTaxonomyTerm, normalizeName } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const UNIT_NAME = "st";
 

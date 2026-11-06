@@ -2,7 +2,7 @@
 import { ref, inject } from 'vue';
 
 import { formatRFC3339 } from "assetlink-plugin-api";
-import { ensureTaxonomyTerm, runUpdate } from '../useFarmOS.js';
+import { ensureTaxonomyTerm, runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const assetLink = inject('assetLink');
 

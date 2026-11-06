@@ -16,7 +16,7 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 // Photo adding
-import { usePhotoCapture } from '../usePhotoCapture.js';
+import { usePhotoCapture } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture();
 
 const onSubmit = () => {
@@ -74,7 +74,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { runUpdate } from '../useFarmOS.js';
+import { runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 
 export default {

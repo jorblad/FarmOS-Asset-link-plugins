@@ -1,7 +1,7 @@
 <script setup>
 import { inject, ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
-import { usePhotoCapture } from '../usePhotoCapture.js';
+import { usePhotoCapture } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 const assetLink = inject('assetLink');
 const props = defineProps({
   asset: {
@@ -91,7 +91,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { ensureAsset, ensureTaxonomyTerm, runUpdate } from '../useFarmOS.js';
+import { ensureAsset, ensureTaxonomyTerm, runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const CATCH_INVENTORY_UNIT = 'St';
 const CATCH_INVENTORY_ASSET_NAME = 'Fångade möss';
