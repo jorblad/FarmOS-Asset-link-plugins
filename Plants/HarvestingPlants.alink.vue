@@ -142,11 +142,18 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { ensureAsset, runUpdate } from '../useFarmOS.js';
 
 
 export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
+
+    // When the user doesn't pick a product, harvest yield is counted against a
+    // product named after the plant's crop/variety (Gröda/sort). An existing one
+    // is reused; otherwise it's created as a child of the plant. Every harvest
+    // therefore always records inventory.
+    const FALLBACK_PRODUCT_NAME = 'Skörd';
 
 
     handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.harvestPlant', action => {
@@ -189,7 +196,6 @@ export default {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         const harvestCount = dialogResult.harvestCount;
         const harvestUnitTerm = dialogResult.quantityType;
-        const harvestInventoryProduct = dialogResult.selectProduct;
 
         //Photos
         const photos = dialogResult.capturedPhotos;
@@ -203,16 +209,24 @@ export default {
           return;
         }
 
-        let harvestQuantityMeasure = "count";
-        if (harvestUnitTerm.attributes.name === "gram" ) {
-          harvestQuantityMeasure = "weight";
-        } else {
-          harvestQuantityMeasure = "count";
-        }
+        let harvestQuantityMeasure = harvestUnitTerm.attributes.name === "gram" ? "weight" : "count";
 
+        // Derive the default product name from the plant's crop/variety
+        // (Gröda/sort), so harvest of e.g. "Tomato" rolls up into a "Tomato"
+        // product. Fall back to the plant name, then a generic "Skörd".
+        const plantTypeRecs = assetLink.entitySource.cache.query((q) =>
+          q.findRelatedRecords({ type: asset.type, id: asset.id }, 'plant_type'));
+        const cropName = (plantTypeRecs && plantTypeRecs.length)
+          ? plantTypeRecs[0].attributes.name
+          : (asset.attributes.name || FALLBACK_PRODUCT_NAME);
 
+        // Always increment a product inventory. Use the product the user picked,
+        // or the crop-named product (reused if it exists, else created under the
+        // plant), so every harvest records yield even when no product is selected.
+        const harvestInventoryProduct = dialogResult.selectProduct
+          || await ensureAsset(assetLink, cropName, 'asset--product', { parentAsset: asset });
 
-        let harvestQuantity = {
+        const harvestQuantity = {
             type: 'quantity--standard',
             id: uuidv4(),
             attributes: {
@@ -222,78 +236,23 @@ export default {
                 denominator: 1,
                 decimal: `${harvestCount}`,
               },
+              inventory_adjustment: 'increment',
             },
             relationships: {
+              inventory_asset: {
+                data: {
+                  type: harvestInventoryProduct.type,
+                  id: harvestInventoryProduct.id,
+                }
+              },
               units: {
                 data: {
-                  type: 'taxonomy_term--unit',
-                  id: uuidv4(),
-                  '$relateByName': {
-                    name: harvestUnitTerm.attributes.name,
-                  },
+                  type: harvestUnitTerm.type,
+                  id: harvestUnitTerm.id,
                 }
               },
             },
           };
-        
-        
-
-        if (harvestInventoryProduct) {
-            harvestQuantity = {
-              type: 'quantity--standard',
-              id: uuidv4(),
-              attributes: {
-                measure: harvestQuantityMeasure,
-                value: {
-                  numerator: harvestCount,
-                  denominator: 1,
-                  decimal: `${harvestCount}`,
-                },
-                inventory_adjustment: 'increment',
-              },
-              relationships: {
-                inventory_asset: {
-                  data: {
-                      type: harvestInventoryProduct.type,
-                      id: harvestInventoryProduct.id,
-                    }
-                },
-                units: {
-                  data: {
-                    type: 'taxonomy_term--unit',
-                    id: uuidv4(),
-                    '$relateByName': {
-                      name: harvestUnitTerm.attributes.name,
-                    },
-                  }
-                },
-              },
-            };
-        } else {
-          harvestQuantity = {
-            type: 'quantity--standard',
-            id: uuidv4(),
-            attributes: {
-              measure: harvestQuantityMeasure,
-              value: {
-                numerator: harvestCount,
-                denominator: 1,
-                decimal: `${harvestCount}`,
-              },
-            },
-            relationships: {
-              units: {
-                data: {
-                  type: 'taxonomy_term--unit',
-                  id: uuidv4(),
-                  '$relateByName': {
-                    name: harvestUnitTerm.attributes.name,
-                  },
-                }
-              },
-            },
-          };
-        }
 
         const harvestLog = {
           type: 'log--harvest',
@@ -334,12 +293,12 @@ export default {
           },
         };
 
-        assetLink.entitySource.update(
+        await runUpdate(assetLink, `Record harvest for ${asset.attributes.name}`,
             (t) => [
               t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
             ],
-            {label: `Record harvest for ${asset.attributes.name}`});
+            { notifySuccess: true });
       };
 
       action.component(({ asset }) =>

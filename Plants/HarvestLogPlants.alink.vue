@@ -43,8 +43,10 @@ onMounted(async () => {
 const quantityType = ref(null);
 const unitLabelFn = unitTerm => unitTerm.attributes.name;
 
+const selectProduct = ref(null);
+
 const onSubmit = () => {
-  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value });
+  onDialogOK({ harvestCount: harvestCount.value, quantityType: quantityType.value, selectProduct: selectProduct.value });
 };
 </script>
 
@@ -77,6 +79,13 @@ const onSubmit = () => {
         />
         
         </div>
+        <div class="q-pa-md">
+          <entity-select
+            label="Product (optional)"
+            entity-type="asset"
+            v-model="selectProduct"
+          ></entity-select>
+        </div>
         <div class="q-pa-sm q-gutter-sm row justify-end">
             <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
             <q-btn
@@ -94,6 +103,12 @@ const onSubmit = () => {
 import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
+import { ensureAsset, runUpdate } from '../useFarmOS.js';
+
+// Default product asset that harvest yield is counted against when the user
+// doesn't pick a specific product. Named after the harvested plant's
+// crop/variety when available, so every harvest records inventory.
+const FALLBACK_PRODUCT_NAME = 'Skörd';
 
 export default {
   async onLoad(handle, assetLink) {
@@ -122,14 +137,26 @@ export default {
             return;
             }
 
-            let harvestQuantityMeasure = "count";
-            if (harvestUnitTerm.attributes.name === "gram" ) {
-            harvestQuantityMeasure = "weight";
-            } else {
-            harvestQuantityMeasure = "count";
+            let harvestQuantityMeasure = harvestUnitTerm.attributes.name === "gram" ? "weight" : "count";
+
+            // Derive the default product name from the related plant's
+            // crop/variety (Gröda/sort). Reuse an existing product, or create
+            // one under the plant. Every harvest records inventory.
+            const relatedAssets = (log.relationships && log.relationships.asset && log.relationships.asset.data) || [];
+            const plantRef = relatedAssets[0];
+            let parentAsset = null;
+            let cropName = FALLBACK_PRODUCT_NAME;
+            if (plantRef) {
+              parentAsset = { type: plantRef.type, id: plantRef.id };
+              const plantTypeRecs = assetLink.entitySource.cache.query((q) =>
+                q.findRelatedRecords({ type: plantRef.type, id: plantRef.id }, 'plant_type'));
+              if (plantTypeRecs && plantTypeRecs.length) {
+                cropName = plantTypeRecs[0].attributes.name;
+              }
             }
 
-
+            const harvestInventoryProduct = dialogResult.selectProduct
+              || await ensureAsset(assetLink, cropName, 'asset--product', { parentAsset });
 
             const harvestQuantity = {
             type: 'quantity--standard',
@@ -141,15 +168,19 @@ export default {
                 denominator: 1,
                 decimal: `${harvestCount}`,
                 },
+                inventory_adjustment: 'increment',
             },
             relationships: {
+                inventory_asset: {
+                data: {
+                    type: harvestInventoryProduct.type,
+                    id: harvestInventoryProduct.id,
+                }
+                },
                 units: {
                 data: {
-                    type: 'taxonomy_term--unit',
-                    id: uuidv4(),
-                    '$relateByName': {
-                    name: harvestUnitTerm.attributes.name,
-                    },
+                    type: harvestUnitTerm.type,
+                    id: harvestUnitTerm.id,
                 }
                 },
             },
@@ -174,12 +205,12 @@ export default {
             },
             };
 
-            assetLink.entitySource.update(
+            await runUpdate(assetLink, `Record harvest`,
                 (t) => [
                 t.addRecord(harvestQuantity),
                 t.updateRecord(harvestLog),
                 ],
-                {label: `Record harvest`});
+                { notifySuccess: true });
         };
         try {
             action.component(({ log }) =>
