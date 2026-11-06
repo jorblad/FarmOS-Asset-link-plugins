@@ -95,6 +95,7 @@ import { ensureAsset, ensureTaxonomyTerm, runUpdate } from 'plugin-library:org.j
 
 const CATCH_INVENTORY_UNIT = 'St';
 const CATCH_INVENTORY_ASSET_NAME = 'Fångade möss';
+const CATCH_INVENTORY_PRODUCT_TYPE = 'Catch';
 
 export default {
   async onLoad(handle, assetLink) {
@@ -119,7 +120,7 @@ export default {
         // The catch inventory must point at a real product asset (resolved by
         // name). ensureAsset finds an existing one or creates it on first use
         // so the inventory_asset relationship always resolves.
-        const catchInventoryAsset = await ensureAsset(assetLink, CATCH_INVENTORY_ASSET_NAME, 'asset--product');
+        const catchInventoryAsset = await ensureAsset(assetLink, CATCH_INVENTORY_ASSET_NAME, 'asset--product', { typeTerm: CATCH_INVENTORY_PRODUCT_TYPE });
         const catchUnitTerm = await ensureTaxonomyTerm(assetLink, CATCH_INVENTORY_UNIT);
 
         const catchQuantity = ['empty', 'putTogetherAndEmpty'].includes(selectedAction)

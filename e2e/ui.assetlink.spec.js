@@ -13,6 +13,11 @@ test.describe('Asset Link dev app (UI smoke)', () => {
     // Emulated farmOS loads data models slowly; give this flow room.
     test.setTimeout(150000);
 
+    // Capture console output so we can prove the server-seeded default plugins
+    // were actually fetched and executed by the SPA (surviving a cache clear).
+    const consoleLines = [];
+    page.on('console', (msg) => consoleLines.push(msg.text()));
+
     await page.goto('/alink', { waitUntil: 'domcontentloaded' });
 
     // The SPA shell mounts (the toolbar title is rendered by Quasar).
@@ -39,6 +44,17 @@ test.describe('Asset Link dev app (UI smoke)', () => {
       timeout: 20000,
     });
 
+    // The server-side default-plugin repository (seeded via `npm run setup:farmos`
+    // -> asset_link_default_plugin entities) must drive the SPA to load our dev
+    // plugins. The reset-trap plugin logs its version on load, so its presence in
+    // the console proves the list survived the cache clear and auto-loaded.
+    await expect
+      .poll(() => consoleLines.some((l) => /Reset trap:\s*V/i.test(l)), {
+        timeout: 60000,
+        intervals: [1000, 2000, 5000],
+      })
+      .toBeTruthy();
+
     // Soft check: once the data models finish loading the app reports "Online"
     // instead of "Unauthenticated". Under emulation this can be slow, so don't
     // fail the suite if it hasn't completed yet.
@@ -55,5 +71,11 @@ test.describe('Asset Link dev app (UI smoke)', () => {
     });
 
     await page.screenshot({ path: 'test-results/assetlink-after-login.png' }).catch(() => {});
+
+    test.info().annotations.push({
+      type: 'plugin-load',
+      description:
+        'seeded default plugins loaded and executed (reset trap ran on boot)',
+    });
   });
 });

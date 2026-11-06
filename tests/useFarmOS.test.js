@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Dialog } from 'quasar';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   normalizeName,
   ensureTaxonomyTerm,
@@ -22,7 +21,14 @@ function makeAssetLink({ cacheRecords = [], sourceRecords = [], updateImpl } = {
   };
 }
 
-beforeEach(() => Dialog.reset());
+// notify() logs to console (and renders a DOM toast that is a no-op under jsdom
+// without a body), so we assert on console output rather than Quasar statics.
+let errorSpy, warnSpy, logSpy;
+beforeEach(() => {
+  errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+});
 
 describe('normalizeName', () => {
   it('trims surrounding whitespace', () => {
@@ -70,7 +76,8 @@ describe('ensureTaxonomyTerm', () => {
       },
     });
     await expect(ensureTaxonomyTerm(assetLink, 'St')).rejects.toThrow('boom');
-    expect(Dialog._calls.at(-1).title).toBe('Error');
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls.at(-1).join(' ')).toContain('Could not create');
   });
 });
 
@@ -116,13 +123,16 @@ describe('runUpdate', () => {
       notifySuccess: true,
     });
     expect(result).toBeDefined();
-    expect(Dialog._calls.at(-1).title).toBe('Notice');
+    expect(logSpy).toHaveBeenCalled();
+    expect(logSpy.mock.calls.at(-1).join(' ')).toContain('Do thing');
   });
 
   it('does not toast success when notifySuccess is false', async () => {
     const assetLink = makeAssetLink();
     await runUpdate(assetLink, 'Do thing', (t) => [t.addRecord({})]);
-    expect(Dialog._calls).toHaveLength(0);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(warnSpy).not.toHaveBeenCalled();
+    expect(logSpy).not.toHaveBeenCalled();
   });
 
   it('toasts failure and rethrows so the workflow can stop', async () => {
@@ -132,6 +142,7 @@ describe('runUpdate', () => {
       },
     });
     await expect(runUpdate(assetLink, 'Do thing', () => {})).rejects.toThrow('nope');
-    expect(Dialog._calls.at(-1).title).toBe('Error');
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls.at(-1).join(' ')).toContain('nope');
   });
 });

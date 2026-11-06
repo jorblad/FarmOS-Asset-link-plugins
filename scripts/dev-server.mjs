@@ -46,6 +46,9 @@ createServer(async (req, res) => {
     const data = await readFile(file);
     res.writeHead(200, {
       ...corsHeaders,
+      // Never let the browser or any intermediary cache plugin source, so a
+      // rebuild is picked up immediately without a manual cache clear.
+      'Cache-Control': 'no-store',
       'content-type': contentTypes[extname(file)] || 'application/octet-stream',
     });
     res.end(data);

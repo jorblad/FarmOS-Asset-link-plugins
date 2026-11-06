@@ -224,7 +224,7 @@ export default {
         // or the crop-named product (reused if it exists, else created under the
         // plant), so every harvest records yield even when no product is selected.
         const harvestInventoryProduct = dialogResult.selectProduct
-          || await ensureAsset(assetLink, cropName, 'asset--product', { parentAsset: asset });
+          || await ensureAsset(assetLink, cropName, 'asset--product', { parentAsset: asset, typeTerm: cropName });
 
         const harvestQuantity = {
             type: 'quantity--material',

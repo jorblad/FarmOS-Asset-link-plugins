@@ -44,7 +44,23 @@ $DRUSH en -y "${MODULES[@]}"
 echo "==> Clearing caches..."
 $DRUSH cr
 
+# ---------------------------------------------------------------------------
+# Seed the Asset Link default plugin list server-side.
+#
+# Asset Link loads these automatically on every boot from
+# /alink/backend/default-plugins.repo.json, so the user never has to re-enter
+# the plugin list after clearing browser storage / cache. Idempotent: re-running
+# only updates URLs that changed.
+# ---------------------------------------------------------------------------
+echo "==> Seeding Asset Link default plugins..."
+docker compose cp jorblads-plugins.repo.json "$CONTAINER:/tmp/plugins.repo.json"
+docker compose cp scripts/seed-default-plugins.php "$CONTAINER:/tmp/seed-default-plugins.php"
+$DRUSH php:script /tmp/seed-default-plugins.php
+docker compose exec -T "$CONTAINER" rm -f /tmp/plugins.repo.json /tmp/seed-default-plugins.php
+echo "==> Default plugins served at: http://localhost:8080/alink/backend/default-plugins.repo.json"
+
 echo ""
 echo "Done. Asset Link dev instance is available at:"
 echo "  http://localhost:8080/alink   (login: admin / admin)"
 echo "  JSON:API (farm_api): http://localhost:8080/api"
+echo "  Plugins auto-load from the server-side default-plugin list."

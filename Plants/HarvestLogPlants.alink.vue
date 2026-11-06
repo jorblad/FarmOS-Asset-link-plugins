@@ -156,7 +156,7 @@ export default {
             }
 
             const harvestInventoryProduct = dialogResult.selectProduct
-              || await ensureAsset(assetLink, cropName, 'asset--product', { parentAsset });
+              || await ensureAsset(assetLink, cropName, 'asset--product', { parentAsset, typeTerm: cropName });
 
             const harvestQuantity = {
             type: 'quantity--material',

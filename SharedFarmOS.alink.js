@@ -11,29 +11,56 @@
 //   - an Asset Link plugin (the default export's onLoad provides the library), and
 //   - a plain ESM module (the named exports) so the unit tests can import it
 //     directly without a running Asset Link.
-import { Dialog, QTree } from 'quasar';
+import { QTree } from 'quasar';
 import { uuidv4, parseJSONDate } from 'assetlink-plugin-api';
 import { ref, computed, inject, onMounted, onUnmounted, h, watch } from 'vue';
 
-// Asset Link installs Quasar with only the Dialog + Loading plugins; the Notify
-// plugin is NOT registered, so `Notify.create` is unavailable (it is only attached
-// during the Notify plugin's install). We therefore surface feedback exclusively
-// through the registered Dialog plugin. A try/catch guards against any build that
-// does not register Dialog, falling back to the console so a missing UI dep can
-// never crash a workflow.
+// Asset Link installs Quasar with only the Dialog + Loading plugins, and the
+// Notify/Dialog *static* methods (Notify.create / Dialog.create) are only attached
+// to `$q` during plugin install, so they are not callable from a plain helper
+// function. Quasar's own plugins report via the console for the same reason. To
+// keep feedback working (and crash-proof) without depending on Quasar/Vue instance
+// state, we log to the console AND render a tiny self-contained DOM toast.
+function domToast(message, caption, type) {
+  if (typeof document === 'undefined' || !document.body) return;
+  const el = document.createElement('div');
+  el.textContent = caption ? `${message} — ${caption}` : message;
+  const color = type === 'negative' ? '#c10015'
+    : type === 'warning' ? '#f2c037' : '#21ba45';
+  const fg = type === 'warning' ? '#000' : '#fff';
+  el.style.cssText =
+    `position:fixed;right:12px;bottom:12px;z-index:2147483647;max-width:340px;` +
+    `padding:10px 14px;border-radius:8px;color:${fg};background:${color};` +
+    `font:13px/1.4 sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.35);`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), type === 'negative' || type === 'warning' ? 9000 : 3500);
+}
+
 function notify(opts) {
   const isObj = opts && typeof opts === 'object';
   const message = isObj ? (opts.message ?? '') : String(opts ?? '');
   const caption = isObj ? opts.caption : undefined;
   const type = isObj ? (opts.type ?? 'info') : 'info';
-  const title = type === 'negative' ? 'Error' : type === 'warning' ? 'Warning' : 'Notice';
+  const fn = type === 'negative' ? console.error
+    : type === 'warning' ? console.warn
+    : console.log;
+  fn(`[${type}] ${message}`, caption ?? '');
   try {
-    return Dialog.create({ title, message, caption });
-  } catch (e) {
-    console.error(`[notify] ${title}: ${message}`, caption ?? '', e);
-    return undefined;
-  }
+    domToast(message, caption, type);
+  } catch (_) { /* non-DOM environment */ }
+  return undefined;
 }
+
+// Map each asset bundle to the taxonomy vocabulary that identifies its type.
+// farmOS 4.x requires this relationship at creation time.
+const ASSET_TYPE_VOCAB = {
+  'asset--plant': 'plant_type',
+  'asset--animal': 'animal_type',
+  'asset--product': 'product_type',
+  'asset--seed': 'plant_type',
+  'asset--land': 'land_type',
+  'asset--equipment': 'equipment_type',
+};
 
 // ---------------------------------------------------------------------------
 // useFarmOS.js
@@ -92,8 +119,10 @@ export async function ensureTaxonomyTerm(assetLink, name, bundle = 'taxonomy_ter
 
 // Find an asset by (normalized) name, or create it with the given type.
 // Pass `{ parentAsset }` to make a newly-created asset a child of another asset
-// (e.g. a harvested product under its plant).
-export async function ensureAsset(assetLink, name, type, { parentAsset } = {}) {
+// (e.g. a harvested product under its plant). Pass `{ typeTerm }` to set the
+// asset's required type taxonomy term (e.g. the `product_type` for a product —
+// farmOS 4.x rejects asset creation without it).
+export async function ensureAsset(assetLink, name, type, { parentAsset, typeTerm } = {}) {
   const assetName = normalizeName(name);
 
   const findAsset = async (entitySource) => {
@@ -112,20 +141,27 @@ export async function ensureAsset(assetLink, name, type, { parentAsset } = {}) {
     return asset;
   }
 
+  const relationships = {};
+  if (parentAsset) {
+    relationships.parent = {
+      data: { type: parentAsset.type, id: parentAsset.id },
+    };
+  }
+
+  // farmOS 4.x requires the asset's type term (e.g. product_type) on creation.
+  const vocab = ASSET_TYPE_VOCAB[type];
+  if (vocab && typeTerm) {
+    const term = await ensureTaxonomyTerm(assetLink, typeTerm, vocab);
+    relationships[vocab] = {
+      data: { type: `taxonomy_term--${vocab}`, id: term.id },
+    };
+  }
+
   const newAsset = {
     type,
     id: uuidv4(),
     attributes: { name: assetName },
-    ...(parentAsset && {
-      relationships: {
-        parent: {
-          data: {
-            type: parentAsset.type,
-            id: parentAsset.id,
-          },
-        },
-      },
-    }),
+    ...(Object.keys(relationships).length ? { relationships } : {}),
   };
 
   try {
@@ -138,9 +174,6 @@ export async function ensureAsset(assetLink, name, type, { parentAsset } = {}) {
       type: 'negative',
       message: `Could not create ${type} '${assetName}'`,
       caption: err && err.message ? err.message : String(err),
-      icon: 'error',
-      timeout: 0,
-      actions: [{ label: 'Dismiss', color: 'white', handler: () => {} }],
     });
     throw err;
   }
