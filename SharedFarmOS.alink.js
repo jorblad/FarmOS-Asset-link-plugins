@@ -11,9 +11,25 @@
 //   - an Asset Link plugin (the default export's onLoad provides the library), and
 //   - a plain ESM module (the named exports) so the unit tests can import it
 //     directly without a running Asset Link.
-import { Notify, QTree } from 'quasar';
+import { Dialog, Notify, QTree } from 'quasar';
 import { uuidv4, parseJSONDate } from 'assetlink-plugin-api';
 import { ref, computed, inject, onMounted, onUnmounted, h, watch } from 'vue';
+
+// Asset Link installs Quasar with only the Dialog + Loading plugins; the Notify
+// plugin is NOT registered, so `Notify.create` is undefined at runtime. We prefer
+// Notify when the host app provides it (standard Asset Link builds), and fall
+// back to a Dialog-based toast otherwise so errors/warnings still reach the user.
+function notify(opts) {
+  if (typeof Notify?.create === 'function') {
+    return Notify.create(opts);
+  }
+  const isObj = opts && typeof opts === 'object';
+  const message = isObj ? (opts.message ?? '') : String(opts ?? '');
+  const caption = isObj ? opts.caption : undefined;
+  const type = isObj ? (opts.type ?? 'info') : 'info';
+  const title = type === 'negative' ? 'Error' : type === 'warning' ? 'Warning' : 'Notice';
+  return Dialog.create({ title, message, caption });
+}
 
 // ---------------------------------------------------------------------------
 // useFarmOS.js
@@ -58,7 +74,7 @@ export async function ensureTaxonomyTerm(assetLink, name, bundle = 'taxonomy_ter
       { label: `Create ${bundle} '${termName}'` }
     );
   } catch (err) {
-    Notify.create({
+    notify({
       type: 'negative',
       message: `Could not create unit '${termName}'`,
       caption: err && err.message ? err.message : String(err),
@@ -114,7 +130,7 @@ export async function ensureAsset(assetLink, name, type, { parentAsset } = {}) {
       { label: `Create ${assetName} (${type})` }
     );
   } catch (err) {
-    Notify.create({
+    notify({
       type: 'negative',
       message: `Could not create ${type} '${assetName}'`,
       caption: err && err.message ? err.message : String(err),
@@ -134,7 +150,7 @@ export async function runUpdate(assetLink, label, mutator, { notifySuccess = fal
   try {
     const result = await assetLink.entitySource.update(mutator, { label });
     if (notifySuccess) {
-      Notify.create({
+      notify({
         type: 'positive',
         message: label,
         icon: 'check_circle',
@@ -142,7 +158,7 @@ export async function runUpdate(assetLink, label, mutator, { notifySuccess = fal
     }
     return result;
   } catch (err) {
-    Notify.create({
+    notify({
       type: 'negative',
       message: `Failed: ${label}`,
       caption: err && err.message ? err.message : String(err),
@@ -295,6 +311,7 @@ export default class SharedFarmOS {
         runUpdate,
         usePhotoCapture,
         AssetLogsPanel,
+        notify,
       });
     });
   }

@@ -100,9 +100,9 @@ const onSubmit = () => {
 
 <script>
 import { h } from 'vue';
-import { QBtn, Notify } from 'quasar';
+import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
-import { runUpdate, ensureTaxonomyTerm } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { runUpdate, ensureTaxonomyTerm, notify } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 
 const UNIT_NAME = "st";
 
@@ -119,13 +119,10 @@ export default {
       await assetLink.entitySource.query(q => q.findRecords('log--purchase').page({ limit: 1 }));
     } catch (err) {
       farmLedgerEnabled = false;
-      Notify.create({
+      notify({
         type: 'warning',
         message: 'Seeds: the farm_ledger module is not enabled, so "Buy new seeds" is disabled.',
         caption: 'Enable farm_ledger in farmOS to record seed purchases with price.',
-        icon: 'warning',
-        timeout: 0,
-        actions: [{ label: 'Dismiss', color: 'white', handler: () => {} }],
       });
     }
 

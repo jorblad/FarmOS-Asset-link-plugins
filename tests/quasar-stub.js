@@ -15,6 +15,19 @@ export const Notify = {
   },
 };
 
+// Stand-in for the Dialog plugin (the only Quasar plugin Asset Link actually
+// registers). `notify()` falls back to Dialog.create when Notify is unavailable.
+export const Dialog = {
+  _calls: [],
+  create(opts) {
+    this._calls.push(opts);
+    return { dismiss: () => {}, update: () => {} };
+  },
+  reset() {
+    this._calls = [];
+  },
+};
+
 export const QTree = {
   name: 'QTree',
   props: ['nodes', 'nodeKey', 'selected', 'noNodesLabel', 'class'],
