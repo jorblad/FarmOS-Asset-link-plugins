@@ -1,4 +1,7 @@
-# LLM Guide — working on the farmOS Asset Link plugins
+# Agent Guide — working on the farmOS Asset Link plugins
+
+This file is named `AGENTS.md` so coding agents (Claude Code, OpenCode, Codex,
+Copilot, Cursor, …) auto-load it as repo instructions on every session.
 
 This guide is for an AI agent (or a human) picking up this repo cold. It
 captures the **hard-won gotchas** that are not obvious from reading the code,
