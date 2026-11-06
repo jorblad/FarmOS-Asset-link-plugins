@@ -30,6 +30,10 @@ self.addEventListener('activate', (event) => {
       const keys = await caches.keys();
       await Promise.all(keys.map((k) => caches.delete(k)));
       await self.clients.claim();
+      // Remove this (and the previously controlling stock) SW entirely so no
+      // service worker ever intercepts requests again. The app shell no longer
+      // re-registers one (see setup-farmos.sh app-JS patch), so this is final.
+      await self.registration.unregister();
     })()
   );
 });

@@ -77,6 +77,27 @@ docker compose exec -T "$CONTAINER" cp /tmp/asset-link-dev-sw.js \
 docker compose exec -T "$CONTAINER" rm -f /tmp/asset-link-dev-sw.js || true
 echo "==> Service worker is now a pass-through no-op (no precache / no stale models.json)."
 
+# ---------------------------------------------------------------------------
+# Also stop the app from ever re-registering a service worker.
+#
+# The no-op SW above self-unregisters on activation, which removes any SW that
+# was already controlling the page. But until that happens the old SW can keep
+# serving a cached app shell. Permanently disabling registration in the app
+# shell JS guarantees no SW is ever controlling again, regardless of SW update
+# timing. Idempotent: re-running finds nothing left to patch.
+# ---------------------------------------------------------------------------
+echo "==> Neutralizing service-worker registration in the app shell (dev only)..."
+SW_JS="$(docker compose exec -T "$CONTAINER" grep -rl 'navigator.serviceWorker.register' \
+  /opt/drupal/web/modules/farmos_asset_link/asset-link-dist/js/ 2>/dev/null | head -1 | tr -d '\r\n')"
+if [ -n "$SW_JS" ]; then
+  docker compose exec -T "$CONTAINER" sed -i \
+    's|navigator\.serviceWorker\.register(e,r)|Promise.resolve({waiting:null,addEventListener:function(){},onupdatefound:null})|' \
+    "$SW_JS"
+  echo "==> SW registration disabled in $SW_JS"
+else
+  echo "==> WARNING: could not locate Asset Link app JS to patch SW registration"
+fi
+
 echo ""
 echo "Done. Asset Link dev instance is available at:"
 echo "  http://localhost:8080/alink   (login: admin / admin)"
