@@ -47,11 +47,18 @@ Nothing here is implemented yet — use this as a working list.
   in the running app. Load the photo-dialog plugins and the shared-helper
   plugins once to confirm.
 
-## E2E test harness (future)
-- A Playwright suite driving the assetlink app against a real farmOS would catch
-  runtime/integration regressions (relative imports, slot ids, quantity measures)
-  that unit + static checks can't. The user has a Docker image with all needed
-  modules preinstalled: `jorblad/farmos-k8s:v4.0.9.2` (or the latest tag of the
-  same image). CI would spin up that container, load the plugins via the dev
-  server, and run Playwright flows per plugin (record a harvest, reset a trap,
-  observe weather, etc.). Out of scope for the initial unit + static + CI setup.
+## E2E test harness (DONE)
+- A Playwright suite now drives a real farmOS dev instance (the
+  `jorblad/farmos-k8s:v4.0.9.2` image) — see `docker-compose.yml`,
+  `scripts/setup-farmos.sh`, `playwright.config.js`, `e2e/`.
+  - `e2e/api.farmos.spec.js`: JSON:API contract the plugins depend on (units,
+    plant/product assets, `quantity--material` with measures, inventory
+    adjustment, observation/harvest logs).
+  - `e2e/ui.assetlink.spec.js`: Asset Link SPA boots and authenticates via farmOS.
+- CI: `.github/workflows/e2e.yml` spins up farmOS in CI (x86 → native, fast) and
+  runs the suite.
+- Key farmOS 4.x findings captured in README: API base is `/api` (farm_api), not
+  `/jsonapi`; quantities are `quantity--material` (no `quantity--standard`);
+  assets need their type term (plant_type, product_type, …). These affect plugin
+  code — `quantity--standard` references in plugins should be migrated to
+  `quantity--material`.

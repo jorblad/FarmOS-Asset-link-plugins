@@ -1,0 +1,54 @@
+# Local dev instance of farmOS for plugin development and e2e tests.
+#
+# The web image (jorblad/farmos-k8s) is amd64-only; on Apple Silicon it runs
+# under emulation via `--platform linux/amd64`. The database persists in a
+# volume so farmOS is only installed once (subsequent `up` just reconnect).
+#
+# Bring it up with:  docker compose up -d
+# Tear it down with: docker compose down
+#
+# Services:
+#   db      MariaDB backing store
+#   farmos  farmOS web + the farmos_asset_link / farm_ledger modules, serving
+#           the Asset Link UI and JSON:API.
+
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: farmos
+      MARIADB_USER: farmos
+      MARIADB_PASSWORD: farmos
+      MARIADB_ROOT_PASSWORD: rootpass
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-pfarmos"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - db-data:/var/lib/mysql
+
+  farmos:
+    image: jorblad/farmos-k8s:v4.0.9.2
+    platform: linux/amd64
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      # farmOS / Drupal database connection
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: farmos
+      DB_USER: farmos
+      DB_PASS: farmos
+      # Initial site install (consumed on first boot when the DB is empty)
+      FARMOS_ADMIN_USER: admin
+      FARMOS_ADMIN_PASSWORD: admin
+      FARMOS_ADMIN_EMAIL: admin@example.com
+      FARMOS_SITE_NAME: Dev FarmOS
+    restart: on-failure
+
+volumes:
+  db-data:

@@ -41,11 +41,42 @@ Emptying a trap, either on its own or while putting it back together, increments
 A page for recording a weather observation: rainfall (mm), temperature (°C), wind speed (m/s) and humidity (%). Each maps to a farmOS quantity measure + unit and is saved as an observation log.
 
 ## Development
-This repo has a lightweight dev environment, a static validation step and a unit-test suite (no live farmOS required for CI).
 
-- `npm run dev` — serve the repo locally so the assetlink dev loader can fetch plugins, e.g. `http://localhost:5173/Plants/HarvestingPlants.alink.vue`.
+### Quick checks (no farmOS needed)
 - `npm run validate` — parse every `.alink.vue` with Vue's compiler and validate `repo.json` (catches broken-plugin / syntax regressions).
 - `npm test` — Vitest unit tests for the shared logic (`useFarmOS.js`, `AssetLogsPanel.js`), mocking `quasar`/`assetlink-plugin-api` so they run without a farmOS.
+- `npm run dev` — serve the repo locally (CORS-enabled) so the Asset Link app can fetch plugins cross-origin, e.g. `http://localhost:5173/Plants/HarvestingPlants.alink.vue`.
+
+### Local dev instance (farmOS in Docker)
+A real farmOS instance (image `jorblad/farmos-k8s`, the same image this project targets) is provided via `docker-compose.yml`. On Apple Silicon it runs emulated (`--platform linux/amd64`); on x86 it runs natively.
+
+```sh
+docker compose up -d          # start db + farmOS (port 8080)
+./scripts/setup-farmos.sh    # install farmOS (first time) + enable required modules
+```
+farmOS is then available at:
+- `http://localhost:8080/alink` — the Asset Link app (login **admin / admin**)
+- `http://localhost:8080/api` — the farmOS JSON:API used by the plugins
+
+Point Asset Link's plugin loader / `jorblads-plugins.repo.json` at the dev server
+(`http://localhost:5173/…`) to load the plugins from this repo. The database lives
+in a Docker volume, so `docker compose down`/`up` keeps farmOS installed; re-run
+`setup-farmos.sh` only after wiping the volume.
+
+### End-to-end tests (Playwright)
+`npm run test:e2e` runs the suite in `e2e/`:
+- `api.farmos.spec.js` — the JSON:API contract the plugins depend on (units, plant/product assets, quantities with measures, inventory adjustment, observation/harvest logs). These are real writes against the dev farmOS.
+- `ui.assetlink.spec.js` — the Asset Link SPA boots and authenticates via farmOS.
+
+The dev instance above must be running first. A separate GitHub Actions workflow
+(`.github/workflows/e2e.yml`) spins up farmOS in CI and runs the same suite.
+
+### farmOS 4.x API notes (important for plugin authors)
+This farmOS version differs from older docs in ways that affect the plugins:
+- The JSON:API is served at **`/api`** (the `farm_api` module), **not** `/jsonapi`.
+- Quantities use **`quantity--material`** (with a `measure`, `value` as `{decimal}`, a `units` reference, and optional `inventory_adjustment` + `inventory_asset`). There is **no `quantity--standard`** resource in this version — plugins must target `quantity--material`.
+- Assets require their type term: `asset--plant` needs a `plant_type`, `asset--product` needs a `product_type`, etc.
 - Renovate keeps the dev dependencies up to date (see `renovate.json`).
 
-See `IDEAS.md` for the backlog, including a Playwright e2e harness targeting a Dockerized farmOS.
+See `IDEAS.md` for the backlog.
+

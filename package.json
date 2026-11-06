@@ -8,9 +8,12 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate": "node scripts/validate-plugins.mjs",
-    "dev": "node scripts/dev-server.mjs"
+    "dev": "node scripts/dev-server.mjs",
+    "setup:farmos": "./scripts/setup-farmos.sh",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.0",
     "@vue/compiler-sfc": "^3.5.13",
     "@vue/test-utils": "^2.4.6",
     "jsdom": "^25.0.1",
