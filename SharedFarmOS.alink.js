@@ -159,9 +159,12 @@ export async function ensureAsset(assetLink, name, type, { parentAsset, typeTerm
   }
 
   // farmOS 4.x requires the asset's type term (e.g. product_type) on creation.
+  // ensureTaxonomyTerm expects the full record type (taxonomy_term--<vocab>),
+  // not the bare vocabulary name, or Orbit rejects it as "Record type
+  // '<vocab>' does not exist in schema".
   const vocab = ASSET_TYPE_VOCAB[type];
   if (vocab && typeTerm) {
-    const term = await ensureTaxonomyTerm(assetLink, typeTerm, vocab);
+    const term = await ensureTaxonomyTerm(assetLink, typeTerm, `taxonomy_term--${vocab}`);
     relationships[vocab] = {
       data: { type: `taxonomy_term--${vocab}`, id: term.id },
     };
