@@ -2,6 +2,9 @@
 
 Asset-link plugins for farmOS
 
+For the gotchas and key reference links (Asset Link, farmOS API, Orbit.js,
+JSON:API), see [`LLM_GUIDE.md`](LLM_GUIDE.md).
+
 ## Animal
 
 ### Harvesting wool
