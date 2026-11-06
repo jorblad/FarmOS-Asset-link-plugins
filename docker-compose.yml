@@ -21,10 +21,16 @@ services:
       MARIADB_PASSWORD: farmos
       MARIADB_ROOT_PASSWORD: rootpass
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-pfarmos"]
+      # Force a real TCP connect to 127.0.0.1:3306 (not the Unix socket). The
+      # previous check used `-h localhost`, which MariaDB clients resolve to the
+      # socket — that comes up early in startup, before the TCP listener on 3306
+      # is ready. The false-positive made the farmos container start too soon and
+      # `drush site-install` fail with "SQLSTATE[HY000] [2002] Connection refused"
+      # (e.g. in CI, where setup-farmos.sh runs immediately after `up -d`).
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/3306'"]
       interval: 5s
       timeout: 5s
-      retries: 30
+      retries: 60
     volumes:
       - db-data:/var/lib/mysql
 

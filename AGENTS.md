@@ -170,6 +170,29 @@ imports. It does **not** support relative imports between plugins
 
 ---
 
+### 8. CI `e2e`: the MariaDB healthcheck must verify TCP, not the socket
+
+**Symptom:** in CI the `e2e` workflow fails at `setup-farmos.sh` with
+`SQLSTATE[HY000] [2002] Connection refused` the moment `drush site-install`
+runs, even though `docker compose up -d` reported the `db` container healthy.
+
+**Root cause:** the `db` service's healthcheck used
+`mariadb-admin ping -h localhost`. For MariaDB clients `localhost` resolves to
+the **Unix socket**, which appears during early startup **before** the TCP
+listener on `3306` is ready. So `depends_on: db: condition: service_healthy`
+passed on a false positive, the `farmos` container started, and drush's TCP
+connection to `db:3306` was refused. Locally this never shows because you run
+`setup-farmos.sh` long after MariaDB is fully up.
+
+**Fix (already applied):** the healthcheck now forces a real TCP connect
+(`bash -c 'exec 3<>/dev/tcp/127.0.0.1/3306'`), and `setup-farmos.sh` retries
+`site-install` (up to 30×3s) so a transient refusal doesn't hard-fail.
+
+**How to avoid:** if you touch the `db` service, never use `-h localhost` in a
+healthcheck that gates a dependent container on TCP readiness. Verify with
+`docker compose config` and a fresh-run (the runner always uses a fresh
+`db-data` volume, so MariaDB always does first-time init in CI).
+
 ## Workflow (PRs + CI)
 
 CI is set up in `.github/workflows/` and runs on **every pull request** (and on

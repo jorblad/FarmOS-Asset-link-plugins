@@ -30,10 +30,20 @@ echo "==> Checking farmOS install state..."
 BOOTSTRAP="$($DRUSH status --field=bootstrap 2>/dev/null || echo none)"
 if [[ "$BOOTSTRAP" == *"None"* || -z "$BOOTSTRAP" ]]; then
   echo "==> Installing farmOS (this can take a few minutes under emulation)..."
-  $DRUSH site-install farm -y \
-    --db-url=mysql://farmos:farmos@db/farmos \
-    --account-name=admin --account-pass=admin \
-    --site-name="Dev FarmOS" --locale=en
+  # Retry the install: on a fresh DB the MariaDB TCP listener may not be ready
+  # the instant the farmos container starts, which makes drush fail with
+  # "SQLSTATE[HY000] [2002] Connection refused". Wait and retry instead of
+  # failing hard. (The compose healthcheck now also gates on TCP readiness.)
+  for i in $(seq 1 30); do
+    if $DRUSH site-install farm -y \
+      --db-url=mysql://farmos:farmos@db/farmos \
+      --account-name=admin --account-pass=admin \
+      --site-name="Dev FarmOS" --locale=en; then
+      break
+    fi
+    echo "  DB not ready yet, retrying in 3s ($i/30)..."
+    sleep 3
+  done
 else
   echo "==> farmOS already installed (bootstrap: $BOOTSTRAP)"
 fi
