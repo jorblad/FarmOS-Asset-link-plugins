@@ -46,3 +46,12 @@ Nothing here is implemented yet — use this as a working list.
   `../AssetLogsPanel.js`) — confirmed to compile, but not yet verified to load
   in the running app. Load the photo-dialog plugins and the shared-helper
   plugins once to confirm.
+
+## E2E test harness (future)
+- A Playwright suite driving the assetlink app against a real farmOS would catch
+  runtime/integration regressions (relative imports, slot ids, quantity measures)
+  that unit + static checks can't. The user has a Docker image with all needed
+  modules preinstalled: `jorblad/farmos-k8s:v4.0.9.2` (or the latest tag of the
+  same image). CI would spin up that container, load the plugins via the dev
+  server, and run Playwright flows per plugin (record a harvest, reset a trap,
+  observe weather, etc.). Out of scope for the initial unit + static + CI setup.

@@ -37,5 +37,15 @@ Depends on the farm_ledger module to register the price and creating a purchase 
 Emptying a trap, either on its own or while putting it back together, increments the `Fångade möss` product inventory by one `St` (the product asset is resolved by name and created automatically if it does not exist yet). Resetting without emptying does not change inventory.
 
 ## Weather
-### Observe rainfall
-Lets you record rainfall in mm.
+### Observe weather
+A page for recording a weather observation: rainfall (mm), temperature (°C), wind speed (m/s) and humidity (%). Each maps to a farmOS quantity measure + unit and is saved as an observation log.
+
+## Development
+This repo has a lightweight dev environment, a static validation step and a unit-test suite (no live farmOS required for CI).
+
+- `npm run dev` — serve the repo locally so the assetlink dev loader can fetch plugins, e.g. `http://localhost:5173/Plants/HarvestingPlants.alink.vue`.
+- `npm run validate` — parse every `.alink.vue` with Vue's compiler and validate `repo.json` (catches broken-plugin / syntax regressions).
+- `npm test` — Vitest unit tests for the shared logic (`useFarmOS.js`, `AssetLogsPanel.js`), mocking `quasar`/`assetlink-plugin-api` so they run without a farmOS.
+- Renovate keeps the dev dependencies up to date (see `renovate.json`).
+
+See `IDEAS.md` for the backlog, including a Playwright e2e harness targeting a Dockerized farmOS.

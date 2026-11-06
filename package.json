@@ -1,0 +1,23 @@
+{
+  "name": "farmos-asset-link-plugins",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "FarmOS Asset-link plugins (jorblad) - dev environment, tests and CI",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate": "node scripts/validate-plugins.mjs",
+    "dev": "node scripts/dev-server.mjs"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.5.13",
+    "@vue/test-utils": "^2.4.6",
+    "jsdom": "^25.0.1",
+    "vitest": "^2.1.8",
+    "vue": "^3.5.13"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true
+  }
+}
