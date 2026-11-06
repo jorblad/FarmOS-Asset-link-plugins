@@ -193,6 +193,23 @@ healthcheck that gates a dependent container on TCP readiness. Verify with
 `docker compose config` and a fresh-run (the runner always uses a fresh
 `db-data` volume, so MariaDB always does first-time init in CI).
 
+### 9. Cleanup `rm` inside a container needs `|| true`
+
+**Symptom:** `setup-farmos.sh` fails in CI at the very end with
+`rm: cannot remove '...': Operation not permitted`, even though the real work
+(seeding, SW patching) already succeeded.
+
+**Root cause:** `docker compose cp` drops files into the container's `/tmp` as
+**root**. The container's exec user is non-root in CI (but root under Docker
+Desktop locally), so `rm` of a root-owned file fails with `EPERM` — and
+`set -e` turns that into a hard failure.
+
+**Fix (already applied):** every best-effort container cleanup uses `rm -f ... || true`
+(mirrors the existing asset-link SW cleanup).
+
+**How to avoid:** never rely on `rm` (or any non-essential command) succeeding
+inside a container under `set -e`; append `|| true` for cleanups.
+
 ## Workflow (PRs + CI)
 
 CI is set up in `.github/workflows/` and runs on **every pull request** (and on

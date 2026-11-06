@@ -66,7 +66,10 @@ echo "==> Seeding Asset Link default plugins..."
 docker compose cp jorblads-plugins.repo.json "$CONTAINER:/tmp/plugins.repo.json"
 docker compose cp scripts/seed-default-plugins.php "$CONTAINER:/tmp/seed-default-plugins.php"
 $DRUSH php:script /tmp/seed-default-plugins.php
-docker compose exec -T "$CONTAINER" rm -f /tmp/plugins.repo.json /tmp/seed-default-plugins.php
+# Best-effort cleanup; the /tmp copies are written as root by `docker compose cp`
+# and may not be deletable by the container's non-root exec user (e.g. in CI),
+# which would otherwise abort the script under `set -e`.
+docker compose exec -T "$CONTAINER" rm -f /tmp/plugins.repo.json /tmp/seed-default-plugins.php || true
 echo "==> Default plugins served at: http://localhost:8080/alink/backend/default-plugins.repo.json"
 
 # ---------------------------------------------------------------------------
