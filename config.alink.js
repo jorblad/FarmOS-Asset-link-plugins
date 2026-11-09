@@ -35,6 +35,7 @@ export const config = {
   animalTypeMatches: {
     egg: ['chicken', 'kyckling'],
     sheep: ['sheep', 'får'],
+    milk: ['cow', 'ko', 'goat', 'get'],
   },
 
   // Quantity unit names used when creating taxonomy terms. Keep these EXACT:
@@ -44,6 +45,16 @@ export const config = {
     seed: 'st',
     egg: 'egg(s)',
     catch: 'St',
+    milk: 'L',
+  },
+
+  // Milking: the milk is recorded against a shared `Mjölk` (milk) product
+  // inventory. `productName` is the product asset's name; `productType` is the
+  // `product_type` taxonomy term created (if missing) when the product is first
+  // ensured. `units.milk` above is the volume unit (litres).
+  milk: {
+    productName: 'Mjölk',
+    productType: 'Milk',
   },
 
   // Inventory asset + product-type names created on first use (catch/mouse trap).
@@ -101,6 +112,7 @@ export const config = {
       harvestLogHeading: 'Hur mycket skördade du?',
       plantingHeading: 'Plantering',
       weatherHeading: 'Registrera en väderobservation',
+      milkHeading: 'Hur mycket mjölk mjölkade du från {name}?',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -136,6 +148,7 @@ export const config = {
       transplantLocationRequired: 'Omplanteringsplats krävs',
       selectUnitBeforeHarvest: 'Välj en enhet innan du registrerar skörden.',
       harvestQtyGreaterThanZero: 'Ange en skördemängd större än 0.',
+      milkVolumeGreaterThanZero: 'Ange en mjölkmängd större än 0.',
       seedCountGreaterThanZero: 'Ange ett fröantal större än 0.',
       transplantDestRequired: 'Välj en destinationsplats innan du omplanterar.',
       measurementValueRequired: 'Ange ett mätvärde innan du registrerar.',
@@ -151,6 +164,7 @@ export const config = {
       harvest: 'Skörda',
       transplantPlant: 'Omplantera växt',
       plantPlants: 'Plantera',
+      recordMilking: 'Mjölka',
 
       // Reset-trap action options
       resetTrap: 'Återställ fälla',
@@ -197,6 +211,8 @@ export const config = {
       createTransplantingLogs: 'Skapa omplanteringsloggar',
       createHarvestLog: 'Skapa skördelogg',
       harvestName: 'Skörda {name}',
+      milkedFrom: 'Mjölkade {volume} L från {name}',
+      recordMilkFor: 'Registrera mjölkning för {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Frön: farm_ledger-modulen är inte aktiverad, så "{action}" är inaktiverad.',
@@ -218,6 +234,7 @@ export const config = {
       harvestLogHeading: 'How much did you harvest?',
       plantingHeading: 'Planting',
       weatherHeading: 'Record a weather observation',
+      milkHeading: 'How much milk did you milk from {name}?',
 
       // Field / select labels
       selectAction: 'Select Action',
@@ -253,6 +270,7 @@ export const config = {
       transplantLocationRequired: 'Transplant location is required',
       selectUnitBeforeHarvest: 'Select a unit before recording the harvest.',
       harvestQtyGreaterThanZero: 'Enter a harvest quantity greater than 0.',
+      milkVolumeGreaterThanZero: 'Enter a milk volume greater than 0.',
       seedCountGreaterThanZero: 'Enter a seed count greater than 0.',
       transplantDestRequired: 'Select a destination location before transplanting.',
       measurementValueRequired: 'Enter a measurement value before recording.',
@@ -268,6 +286,7 @@ export const config = {
       harvest: 'Harvest',
       transplantPlant: 'Transplant plant',
       plantPlants: 'Plant plants',
+      recordMilking: 'Milk',
 
       // Reset-trap action options
       resetTrap: 'Reset trap',
@@ -314,6 +333,8 @@ export const config = {
       createTransplantingLogs: 'Create transplanting logs',
       createHarvestLog: 'Create harvest log',
       harvestName: 'Harvest {name}',
+      milkedFrom: 'Milked {volume} L from {name}',
+      recordMilkFor: 'Record milking for {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Seeds: the farm_ledger module is not enabled, so "{action}" is disabled.',

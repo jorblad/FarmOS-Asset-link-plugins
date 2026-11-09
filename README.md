@@ -15,6 +15,16 @@ Plugin that lets you record harvested wool.
 
 Records eggs harvested from an animal, with a count and photos. Only shown for animals whose type name contains "chicken".
 
+### Milking log
+
+Records a milk volume (litres) milked from a dairy animal and increments a shared
+`Mjölk` (milk) product inventory. The milk product and its `product_type` term
+are created on first use (configurable via `config.milk`). The recorded volume is
+a `quantity--material` with `inventory_adjustment: 'increment'` pointing at the
+`Mjölk` product, referenced by a harvest log. Only shown for animals whose type
+name contains "cow"/"ko" or "goat"/"get" (configurable via
+`config.animalTypeMatches.milk`).
+
 ## Plants
 
 ### Harvesting plants
