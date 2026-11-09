@@ -230,7 +230,11 @@ pushes to `main`):
 - `ci.yml` → `npm run validate` + `npm test` (unit).
 - `e2e.yml` → Playwright against a real farmOS (same `jorblad/farmos-k8s` image
   used locally) — `api.farmos.spec.js` (JSON:API contract) + `ui.assetlink.spec.js`
-  (boot/auth smoke).
+  (boot/auth smoke) + `plugins-load.spec.js` (every plugin in
+  `jorblads-plugins.repo.json` is served, fetched, and executes without errors;
+  this catches the seed-drift regression where the server-side default-plugin
+  list no longer matches the manifest, and the Service-Worker `models.json` 403
+  gotcha — see #1).
 
 **New work goes in a PR, not directly on `main`:**
 

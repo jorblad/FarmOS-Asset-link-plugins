@@ -91,13 +91,19 @@ docker compose exec -T "$CONTAINER" rm -f /tmp/asset-link-dev-sw.js || true
 echo "==> Service worker is now a pass-through no-op (no precache / no stale models.json)."
 
 # ---------------------------------------------------------------------------
-# Also stop the app from ever re-registering a service worker.
+# Neutralize the Asset Link service worker (dev only).
 #
-# The no-op SW above self-unregisters on activation, which removes any SW that
-# was already controlling the page. But until that happens the old SW can keep
-# serving a cached app shell. Permanently disabling registration in the app
-# shell JS guarantees no SW is ever controlling again, regardless of SW update
-# timing. Idempotent: re-running finds nothing left to patch.
+# The stock Asset Link SW is a Workbox precache/network-first SW. In dev it is
+# actively harmful: it precaches the app shell (so edited plugin code looks old)
+# and intercepts /alink/backend/models.json without the session cookie, so
+# farmOS returns 403 HTML and the app hangs on "Loading models" (see AGENTS.md
+# #1). The no-op service-worker.js deployed above has NO fetch handler and
+# self-unregisters on activation, so no SW ever intercepts requests.
+#
+# The Asset Link bundle registers the SW through an offline-plugin wrapper
+# rather than a bare `navigator.serviceWorker.register(...)` call, so this
+# literal sed is a no-op on the current build — it is kept only as a best-effort
+# guard. The no-op service-worker.js is what actually keeps the SW quiet.
 # ---------------------------------------------------------------------------
 echo "==> Neutralizing service-worker registration in the app shell (dev only)..."
 SW_JS="$(docker compose exec -T "$CONTAINER" grep -rl 'navigator.serviceWorker.register' \
@@ -108,7 +114,7 @@ if [ -n "$SW_JS" ]; then
     "$SW_JS"
   echo "==> SW registration disabled in $SW_JS"
 else
-  echo "==> WARNING: could not locate Asset Link app JS to patch SW registration"
+  echo "==> (no bare register call found; relying on no-op service-worker.js)"
 fi
 
 echo ""
