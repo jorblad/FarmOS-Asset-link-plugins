@@ -93,3 +93,39 @@ export async function createQuantity(request, { measure, value, unitId, inventor
   }
   return res.json.data;
 }
+
+// Navigate to an asset's page and locate an asset-action button by its accessible
+// name, retrying across reloads.
+//
+// The asset page renders its action chips only after the asset's relationships
+// (e.g. animal_type) are present in Asset Link's synchronous cache — and under
+// the emulated farmOS dev instance that load is racy, so the chip sometimes
+// isn't present on the first paint. The rest of the suite only ever lands on the
+// start page (which is reliable); these plugin-flow tests are the first to drive
+// `/alink/asset/:id`, so they need this resilience. Re-loading the page gives the
+// relationship cache another chance to populate before `showIf` evaluates.
+export async function gotoAssetAndLocateAction(page, assetId, actionButtonName, {
+  maxAttempts = 3,
+} = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // A fresh load (goto on the first attempt, reload on retries) re-runs the
+    // boot + action-evaluation pipeline from scratch.
+    if (attempt === 1) {
+      await page.goto(`/alink/asset/${assetId}`, { waitUntil: 'domcontentloaded' });
+    } else {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+    }
+    // The SPA shell mounts regardless of which asset we're viewing.
+    await page.locator('.q-toolbar__title').waitFor({ timeout: 20000 });
+
+    try {
+      const btn = page.getByRole('button', { name: actionButtonName });
+      await btn.waitFor({ state: 'visible', timeout: 20000 });
+      return btn;
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError;
+}

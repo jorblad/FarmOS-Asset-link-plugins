@@ -16,6 +16,9 @@
             "url": "Animals/HarvestingEgg.alink.vue"
         },
         {
+            "url": "Animals/MilkingLog.alink.vue"
+        },
+        {
             "url": "Weather/ObserveWeather.alink.vue"
         },
         {
