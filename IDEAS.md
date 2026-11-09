@@ -35,16 +35,30 @@ Nothing here is implemented yet — use this as a working list.
   helper; plugins now render Swedish UI via `t('key', vars)` instead of hardcoded
   English. (Quasar i18n / vue-i18n is NOT wired into Asset Link, so the custom map
   is used instead.) Merged in PR #35.
-- **Hide `TestMap` from production** — it's a dev/debug utility; keep it in the
-  repo but out of the shipped `repo.json`, or gate it behind a debug flag.
+- **Hide `TestMap` from production** — **DONE**: `TestMap.alink.vue` already lives
+  in the repo but is NOT listed in `jorblads-plugins.repo.json`, so it never ships.
+  Confirmed via grep; no further action needed.
 - **Make the egg/wool/sheep animal-type predicates configurable at runtime** —
-  today they're editable lists in code; a settings screen or a farmOS taxonomy
-  to pick from would avoid code edits.
-- **ObserveWeather measures** — add more observation types (air pressure, soil
-  moisture, …) and double-check farmOS accepts the `measure` enum values used.
-- **Home-page Done/Pending slot id** — `HomeAssetLogs.alink.vue` guesses
-  `se.jorblad.farmos_asset_link.slots.v0.home`; verify it actually renders on
-  the start page and adjust if needed.
+  **PENDING / needs decision**: the substrings are already centralized in
+  `config.animalTypeMatches` (editable in one place, no code duplication), but a
+  true *runtime* UI (settings screen or a farmOS taxonomy picker) is not built
+  yet. Open question: is centralizing in config enough, or do you want an
+  in-app editor?
+- **ObserveWeather measures** — **DONE (verify)**: added `obsAirPressure`
+  (`measure: 'pressure'`) and `obsSoilMoisture` (`measure: 'ratio'`) to
+  `config.observationTypes` + labels. The `measure` enum values must be
+  confirmed against the running farmOS (esp. `'pressure'`) — that's the exact
+  "double-check farmOS accepts the measure enum" caveat from the original idea.
+- **Home-page Done/Pending slot id** — **IN PROGRESS**: `HomeAssetLogs.alink.vue`
+  is now registered in `jorblads-plugins.repo.json` (it renders the done +
+  pending `AssetLogsPanel`s into the `slots.v0.home` slot). Needs a visual check
+  that the `home` slot id actually renders on the start page; adjust the id if not.
+- **Related-equipment panel** — **DONE**: new `Equipment/RelatedEquipment.alink.vue`
+  renders a `page-slot` on any `asset--equipment` page listing the first ~10 other
+  equipment assets (clickable to navigate). Registered in `repo.json`.
+- **Reset-trap comments field** — **DONE**: added a `notes` textarea to the
+  reset-trap dialog; the value is stored on the resulting `log--activity`'s
+  `notes` attribute (same shape as the planting log).
 
 ## Verification TODO (not yet confirmed at runtime)
 

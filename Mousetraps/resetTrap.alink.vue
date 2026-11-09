@@ -27,8 +27,11 @@ const actionOptions = [
 // Photo adding
 const { capturedPhotos, photoCaptureModel, carouselPosition } = usePhotoCapture();
 
+// Optional free-text comment, stored on the resulting log's `notes` attribute.
+const comments = ref('');
+
 const onSubmit = () => {
-  onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, selectedAction: selectedAction.value });
+  onDialogOK({ capturedPhotos: capturedPhotos.value, photoCaptureModel: photoCaptureModel.value, selectedAction: selectedAction.value, comments: comments.value });
 };
 </script>
 
@@ -73,6 +76,15 @@ const onSubmit = () => {
             </q-carousel-slide>
           </q-carousel>
         </div>
+
+      <div class="q-pa-md">
+          <q-input
+            v-model="comments"
+            type="textarea"
+            autogrow
+            :label="t('notes')"
+          />
+      </div>
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
         <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
@@ -112,6 +124,7 @@ export default {
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         const selectedAction = dialogResult.selectedAction;
+        const comments = dialogResult.comments;
 
         const actionName = selectedAction === 'reset' ? translate('resetAction')
           : selectedAction === 'empty' ? translate('emptyAction') : translate('putTogetherAndEmptyAction');
@@ -158,6 +171,9 @@ export default {
             name: `${actionName} ${asset.attributes.name}`,
             timestamp: formatRFC3339(new Date()),
             status: "done",
+            // Store the optional comment on the log's standard `notes` field,
+            // same shape as the planting log (notes: { value: '...' }).
+            ...(comments ? { notes: { value: comments } } : {}),
           },
           relationships: {
             asset: {

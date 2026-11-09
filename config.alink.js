@@ -75,6 +75,11 @@ export const config = {
     { labelKey: 'obsTemperature', measure: 'temperature', unit: '°C', suffix: '°C' },
     { labelKey: 'obsWindSpeed',   measure: 'rate',        unit: 'm/s', suffix: 'm/s' },
     { labelKey: 'obsHumidity',    measure: 'ratio',       unit: '%',   suffix: '%' },
+    // Air pressure / soil moisture added per backlog; the `measure` enum values
+    // (e.g. 'pressure') must be confirmed against the running farmOS instance
+    // (see IDEAS.md "ObserveWeather measures"). 'ratio' % is used for moisture.
+    { labelKey: 'obsAirPressure',  measure: 'pressure', unit: 'hPa', suffix: 'hPa' },
+    { labelKey: 'obsSoilMoisture', measure: 'ratio',    unit: '%',   suffix: '%' },
   ],
 
   // --- Bilingual UI label maps ------------------------------------------------
@@ -162,6 +167,13 @@ export const config = {
       obsTemperature: 'Temperatur',
       obsWindSpeed: 'Vindhastighet',
       obsHumidity: 'Luftfuktighet',
+      obsAirPressure: 'Lufttryck',
+      obsSoilMoisture: 'Jordfuktighet',
+
+      // Related-equipment panel
+      relatedEquipment: 'Relaterad utrustning',
+      loading: 'Laddar…',
+      noRelatedEquipment: 'Ingen annan utrustning hittades',
 
       // Log names / runUpdate labels (static parts; {placeholders} are filled in)
       harvestedFrom: 'Skördade {count} från {name}',
@@ -272,6 +284,13 @@ export const config = {
       obsTemperature: 'Temperature',
       obsWindSpeed: 'Wind speed',
       obsHumidity: 'Humidity',
+      obsAirPressure: 'Air pressure',
+      obsSoilMoisture: 'Soil moisture',
+
+      // Related-equipment panel
+      relatedEquipment: 'Related equipment',
+      loading: 'Loading…',
+      noRelatedEquipment: 'No other equipment found',
 
       // Log names / runUpdate labels
       harvestedFrom: 'Harvested {count} from {name}',
