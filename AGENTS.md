@@ -148,6 +148,10 @@ These differ from older farmOS docs and will 422 / fail silently if ignored
 - **Assets have no `status` attribute** in this build — do not send one (422).
 - Log `timestamp` must be `YYYY-MM-DDTHH:MM:SSZ` (no milliseconds); a UNIX
   timestamp also works. Log `status: 'done'` is accepted.
+- **`notes` (and any `text_with_summary` field) must be sent as an object
+  `{ value: '...' }`**, not a plain string. A plain string 422s with
+  `record operation is invalid / value is invalid`. The server round-trips it
+  back as `{ value, format, processed }`, so read `notes.value` when asserting.
 
 ### 6. Plugin list must be seeded server-side (survives cache clears)
 
@@ -248,6 +252,34 @@ another `repo.json` is just another (broken) plugin file.
   plugin repository** — that path expands it. But the server-seeded defaults
   are per-plugin only.
 - See `README.md` → "Registering plugins in farmOS" for the same guidance.
+
+### 11. e2e tests that drive `/alink/asset/:id` are flaky by nature
+
+**Symptom:** a plugin-flow e2e (open an asset, click its action chip, save)
+passes locally ~2/3 of the time and fails in CI with "button not found" or a
+poll timeout — even though the plugin is correct (it mirrors a working pattern).
+
+**Root cause (two independent races):**
+1. The asset page renders its action chips only **after the asset's
+   relationships** (e.g. `animal_type`, `equipment_type`) land in Asset Link's
+   *synchronous* cache. Under the emulated farmOS dev instance that load is
+   racy, so the chip is occasionally absent on first paint.
+2. The emulated dev instance occasionally **resets the API connection**
+   (`ECONNRESET`) under load, so an `apiCall` GET inside `expect.poll` can throw
+   and abort the poll.
+
+**Fix (see `e2e/milking.spec.js` / `e2e/maintenance.spec.js`):**
+- Use a reload-retry locate helper (`gotoAssetAndLocateAction`) that navigates
+  to the asset page and retries across reloads until the action button is
+  visible. Re-loading re-runs the boot + action-evaluation pipeline.
+- Wrap each `apiCall` GET inside the poll in `try/catch` and `return false` on
+  failure so a transient `ECONNRESET` retries instead of failing the test.
+- Keep the assertion tolerant of the field round-trip shape (e.g. `notes.value`
+  — see gotcha #5).
+
+**How to avoid:** any new plugin e2e that opens an asset's action should reuse
+`gotoAssetAndLocateAction` from `e2e/helpers.js` (or a local copy if you're on a
+separate PR branch that doesn't yet have it) and the ECONNRESET-tolerant poll.
 
 ## Workflow (PRs + CI)
 
