@@ -1,6 +1,7 @@
 <script setup>
 import { inject, ref, onMounted } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import { t } from 'plugin-library:org.jorblad.farmos_asset_link.config'
 
 const assetLink = inject('assetLink');
 
@@ -53,7 +54,7 @@ const onSubmit = () => {
 <template>
     <q-dialog ref="dialogRef" @hide="onDialogHide">
         <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-        <h4>How much did you harvest?</h4>
+        <h4>{{ t('harvestLogHeading') }}</h4>
         <div class="q-pa-md">
         <q-slider
             v-model="harvestCount"
@@ -75,22 +76,22 @@ const onSubmit = () => {
             filled v-model="quantityType"
             :options="unitTerms"
             :option-label="unitLabelFn"
-            label="Standard"
+            :label="t('unit')"
         />
         
         </div>
         <div class="q-pa-md">
           <entity-select
-            label="Product (optional)"
+            :label="t('productOptional')"
             entity-type="asset"
             v-model="selectProduct"
           ></entity-select>
         </div>
         <div class="q-pa-sm q-gutter-sm row justify-end">
-            <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+            <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
             <q-btn
             color="primary"
-            label="Record"
+            :label="t('record')"
             @click="onSubmit"
             :disabled="harvestCount <= 0"
             />
@@ -104,11 +105,13 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 import { ensureAsset, runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { config, t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 // Default product asset that harvest yield is counted against when the user
 // doesn't pick a specific product. Named after the harvested plant's
 // crop/variety when available, so every harvest records inventory.
-const FALLBACK_PRODUCT_NAME = 'Skörd';
+// (Name taken from config.defaultHarvestProductName.)
+const FALLBACK_PRODUCT_NAME = config.defaultHarvestProductName;
 
 export default {
   async onLoad(handle, assetLink) {
@@ -128,16 +131,16 @@ export default {
             const harvestCount = dialogResult.harvestCount;
             const harvestUnitTerm = dialogResult.quantityType;
 
-            if (!requireValue(harvestUnitTerm, 'Select a unit before recording the harvest.')) {
+            if (!requireValue(harvestUnitTerm, translate('selectUnitBeforeHarvest'))) {
             return;
             }
 
 
-            if (!requireValue(harvestCount > 0, 'Enter a harvest quantity greater than 0.')) {
+            if (!requireValue(harvestCount > 0, translate('harvestQtyGreaterThanZero'))) {
             return;
             }
 
-            let harvestQuantityMeasure = harvestUnitTerm.attributes.name === "gram" ? "weight" : "count";
+            let harvestQuantityMeasure = harvestUnitTerm.attributes.name === config.weightUnitSentinel ? "weight" : "count";
 
             // Derive the default product name from the related plant's
             // crop/variety (Gröda/sort). Reuse an existing product, or create
@@ -145,7 +148,7 @@ export default {
             const relatedAssets = (log.relationships && log.relationships.asset && log.relationships.asset.data) || [];
             const plantRef = relatedAssets[0];
             let parentAsset = null;
-            let cropName = FALLBACK_PRODUCT_NAME;
+            let cropName = FALLBACK_PRODUCT_NAME; // = config.defaultHarvestProductName
             if (plantRef) {
               parentAsset = { type: plantRef.type, id: plantRef.id };
               const plantTypeRecs = assetLink.entitySource.cache.query((q) =>
@@ -205,7 +208,7 @@ export default {
             },
             };
 
-            await runUpdate(assetLink, `Record harvest`,
+            await runUpdate(assetLink, translate('recordHarvest'),
                 (t) => [
                 t.addRecord(harvestQuantity),
                 t.updateRecord(harvestLog),
@@ -214,7 +217,7 @@ export default {
         };
         try {
             action.component(({ log }) =>
-                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(log), 'no-caps': true },  "Harvest" ));
+                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(log), 'no-caps': true },  translate('harvest') ));
         } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
         }

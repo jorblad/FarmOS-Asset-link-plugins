@@ -2,6 +2,7 @@
 import { inject, ref, watch, onMounted,  computed } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
 import { RacingLocalRemoteAsyncIterator } from 'assetlink-plugin-api';
+import { config, t } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 
 const assetLink = inject('assetLink');
@@ -37,7 +38,7 @@ const seasonsOptions = ref([]);
 const plantTypesOptions = ref([]);
 const seedAssetsOptions = ref([]);
 
-const maxDesiredSearchEntries = 200;
+const maxDesiredSearchEntries = config.maxDesiredSearchEntries;
 
 // Photo adding
 import { usePhotoCapture } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
@@ -362,7 +363,7 @@ const additionalFilters = [
         >
 
         
-        <h4>Planting</h4>
+        <h4>{{ t('plantingHeading') }}</h4>
         <div class="q-pa-md">
             <q-slider
                 v-model="seedCount"
@@ -376,9 +377,9 @@ const additionalFilters = [
                 v-model.number="seedCount"
                 type="number"
                 filled
-                label="How many seeds/plants are you planting?"
+                :label="t('seedsPlantingCount')"
                 autofocus
-                :rules="[val => val > 0 || 'Seed Count is required to be more than 0']"
+                :rules="[val => val > 0 || t('seedCountRequired')]"
             />
         </div>
         <div class="q-pa-md">
@@ -386,20 +387,20 @@ const additionalFilters = [
                 filled
                 v-model="plantSeason"
                 :options="seasonOptionsWithLabel"
-                label="Season"
+                :label="t('season')"
                 use-input
                 clearable
                 input-debounce="300"
                 datalist
                 @filter="seasonsFilterFn"
                 new-value-mode="add-unique"
-                :rules="[val => !!val || 'Season is required']"
+                :rules="[val => !!val || t('seasonRequired')]"
             /> 
         </div>
         <div class="q-pa-md">
             <q-toggle 
                 v-model="multipleAssets"
-                label="Create multiple assets"
+                :label="t('createMultipleAssets')"
                 icon="mdi-sprout"
                 size="xl"
                 color="green"
@@ -408,7 +409,7 @@ const additionalFilters = [
         <div class="q-pa-md">
             <q-toggle 
                     v-model="planting"
-                    label="Create planting log"
+                    :label="t('createPlantingLog')"
                     icon="mdi-sprout"
                     size="xl"
                     color="green"
@@ -418,7 +419,7 @@ const additionalFilters = [
                 self="top middle"
                 :offset="[0, 10]"
                 >
-                    Disable this toggle if you are directly transplanting.
+                    {{ t('disableToggleTransplant') }}
             </q-tooltip>
 
         </div>
@@ -428,14 +429,14 @@ const additionalFilters = [
                     filled
                     v-model="seedAsset"
                     :options="seedAssetOptionsWithLabel"
-                    label="Seed asset"
+                    :label="t('seedAsset')"
                     use-input
                     clearable
                     input-debounce="300"
                     datalist
                     @filter="seedAssetsFilterFn"
                     new-value-mode="add-unique"
-                    :rules="[val => !!val || 'Seed is required']"
+                    :rules="[val => !!val || t('seedRequired')]"
                 />
             </div>
         </div>
@@ -445,20 +446,20 @@ const additionalFilters = [
                 filled
                 v-model="plantType"
                 :options="plantTypeOptionsWithLabel"
-                label="Species"
+                :label="t('species')"
                 use-input
                 clearable
                 input-debounce="300"
                 datalist
                 @filter="plantTypesFilterFn"
                 new-value-mode="add-unique"
-                :rules="[val => !!val || 'Species is required']"
+                :rules="[val => !!val || t('speciesRequired')]"
             />
         </div>
         <div class="q-pa-md">
             <q-input
                 v-model="notes"
-                label="Notes"
+                :label="t('notes')"
                 filled
                 autogrow
             />
@@ -466,7 +467,7 @@ const additionalFilters = [
         <div class="q-pa-md">
             <q-toggle 
                 v-model="transPlanting"
-                label="Create transplanting log"
+                :label="t('createTransplantingLog')"
                 icon="mdi-sprout"
                 size="xl"
                 color="green"
@@ -479,7 +480,7 @@ const additionalFilters = [
               v-model="transPlantingDate"
               mask="date"
               :rules="['date']"
-              label="Transplanting date"
+              :label="t('transplantingDate')"
             >
               <template v-slot:append>
                 <q-icon name="mdi-calendar" class="cursor-pointer">
@@ -487,11 +488,11 @@ const additionalFilters = [
                     <q-date
                       v-model="transPlantingDate"
                       today-btn
-                      subtitle="Transplanting date"
+                      :subtitle="t('transplantingDate')"
                       first-day-of-week="1"
                     >
                       <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close" />
+                        <q-btn v-close-popup :label="t('close')" color="primary" flat icon="mdi-close" />
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -502,22 +503,22 @@ const additionalFilters = [
           <div v-if="multipleAssets">
             <div v-for="i in seedCount" :key="i" class="q-pa-md">
               <entity-select
-                :label="`Transplant location for asset ${plantType.name} ${i}`"
+                :label="t('transplantLocationForAsset', { name: plantType.name, i })"
                 entity-type="asset"
                 v-model="transplantLocations[i - 1]"
                 :additional-filters="additionalFilters"
-                :rules="[val => !!val || 'Transplant location is required']"
+                :rules="[val => !!val || t('transplantLocationRequired')]"
               />
             </div>
         </div>
         <div v-else>
             <div class="q-pa-md">
                 <entity-select
-                label="Transplant location"
+                :label="t('transplantLocation')"
                 entity-type="asset"
                 v-model="transplantLocation"
                 :additional-filters="additionalFilters"
-                :rules="[val => !!val || 'Transplant location is required']"
+                :rules="[val => !!val || t('transplantLocationRequired')]"
                 />
             </div>
         </div>
@@ -525,7 +526,7 @@ const additionalFilters = [
         <div class="q-pa-md">
             <q-toggle 
                 v-model="harvest"
-                label="Create harvest log"
+                :label="t('createHarvestLog')"
                 icon="mdi-basket-outline"
                 size="xl"
                 color="green"
@@ -533,18 +534,18 @@ const additionalFilters = [
         </div>
         <div v-if="harvest">
             <div class="q-pa-md">
-                <q-input filled v-model="harvestDate" mask="date" :rules="['date']" label="Harvest date">
+                <q-input filled v-model="harvestDate" mask="date" :rules="['date']" :label="t('harvestDate')">
                     <template v-slot:append>
                         <q-icon name="mdi-calendar" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                             <q-date
                                 v-model="harvestDate"
                                 today-btn
-                                subtitle="Harvest date"
+                                :subtitle="t('harvestDate')"
                                 first-day-of-week="1"
                             >
                             <div class="row items-center justify-end">
-                                <q-btn v-close-popup label="Close" color="primary" flat icon="mdi-close"/>
+                                <q-btn v-close-popup :label="t('close')" color="primary" flat icon="mdi-close"/>
                             </div>
                             </q-date>
                         </q-popup-proxy>
@@ -586,11 +587,11 @@ const additionalFilters = [
 
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
-        <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+        <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
         <q-btn
             type="submit"
             color="primary"
-            label="Record"
+            :label="t('record')"
         />
       </div>
     </q-form>
@@ -603,8 +604,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 import { runUpdate, ensureTaxonomyTerm, normalizeName, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
-
-const UNIT_NAME = "st";
+import { config, t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 export default {
   async onLoad(handle, assetLink) {
@@ -686,7 +686,7 @@ export default {
                         };
                 
 
-                        await runUpdate(assetLink, `Add new seeds`,
+                        await runUpdate(assetLink, translate('addNewSeeds'),
                             (t) => [
                             t.addRecord(newSeedRecord),
                             ]);
@@ -704,7 +704,7 @@ export default {
                 const plantName = `${seasonName} ${asset.attributes.name} ${plantTypeName}`;
 
 
-                if (!requireValue(seedCount > 0, 'Enter a seed count greater than 0.')) {
+                if (!requireValue(seedCount > 0, translate('seedCountGreaterThanZero'))) {
                 return;
                 }
 
@@ -764,7 +764,7 @@ export default {
 
                 // Resolve (or create) the seed unit so we reference a real term
                 // id instead of relying on $relateByName auto-creation.
-                const seedUnitTerm = await ensureTaxonomyTerm(assetLink, UNIT_NAME);
+                const seedUnitTerm = await ensureTaxonomyTerm(assetLink, config.units.seed);
 
                 let seedQuantity;
                 
@@ -824,7 +824,7 @@ export default {
                 const plantingLog = {
                     type: 'log--seeding',
                     attributes: {
-                        name: `Planted ${seedCount} seeds`,
+                        name: translate('plantedSeeds', { count: seedCount }),
                         timestamp: formatRFC3339(new Date()),
                         status: "done",
                         notes: { value: `${notes}` },
@@ -861,7 +861,7 @@ export default {
                         transplantingLogs = plantIDs.map((id, index) => ({
                             type: 'log--transplanting',
                             attributes: {
-                                name: `Transplant ${plantName} ${multipleAssets ? `#${index + 1}` : ''}`,
+                                name: translate('transplantName', { name: `${plantName} ${multipleAssets ? `#${index + 1}` : ''}` }),
                                 timestamp: formatRFC3339(new Date(String(transPlantingDate).replace(/\//g, '-'))),
                                 status: "pending",
                             },
@@ -888,7 +888,7 @@ export default {
                         transplantingLogs = [{
                             type: 'log--transplanting',
                             attributes: {
-                                name: `Transplant ${plantName}`,
+                                name: translate('transplantName', { name: plantName }),
                                 timestamp: formatRFC3339(new Date(String(transPlantingDate).replace(/\//g, '-'))),
                                 status: "pending",
                             },
@@ -914,7 +914,7 @@ export default {
                     transplantingLogs = [{
                         type: 'log--transplanting',
                         attributes: {
-                            name: `Transplant ${plantName}`,
+                            name: translate('transplantName', { name: plantName }),
                             timestamp: formatRFC3339(new Date()),
                             status: "done",
                         },
@@ -952,7 +952,7 @@ export default {
                 harvestLog = {
                     type: 'log--harvest',
                     attributes: {
-                    name: `Harvest ${plantName}`,
+                    name: translate('harvestName', { name: plantName }),
                     timestamp: formatRFC3339(new Date(String(harvestDate).replace(/\//g, '-'))),
                     status: "pending",
                     },
@@ -970,7 +970,7 @@ export default {
 
                 
 
-                await runUpdate(assetLink, `Create ${seedCount} plant(s) from seeds`,
+                await runUpdate(assetLink, translate('createPlantsFromSeeds', { count: seedCount }),
                     (t) => [
                         ...plants.map(plant => t.addRecord(plant)),
                         t.addRecord(seedQuantity),
@@ -978,7 +978,7 @@ export default {
                 );
 
                 if (planting) {
-                    await runUpdate(assetLink, `Plant from seeds`,
+                    await runUpdate(assetLink, translate('plantFromSeeds'),
                     (t) => [
                         t.addRecord(plantingLog),
                     ]);
@@ -987,7 +987,7 @@ export default {
 
                 // Update the entity source with the transplanting logs
                 if (transPlanting) {
-                    await runUpdate(assetLink, `Create transplanting logs`,
+                    await runUpdate(assetLink, translate('createTransplantingLogs'),
                         (t) => [
                             ...transplantingLogs.map(log => t.addRecord(log)),
                         ]
@@ -995,7 +995,7 @@ export default {
                 }
 
                 if (harvest) {
-                    await runUpdate(assetLink, `Create harvest log`,
+                    await runUpdate(assetLink, translate('createHarvestLog'),
                         (t) => [
                             t.addRecord(harvestLog),
                         ]
@@ -1010,7 +1010,7 @@ export default {
         };
         try {
             action.component(({ asset }) =>
-                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Plant plants" ));
+                h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  translate('plantPlants') ));
         } catch (error) {
                 console.error('Error in doActionWorkflow:', error);
         }

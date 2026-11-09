@@ -1,0 +1,330 @@
+// Central configuration + i18n for the jorblad farmOS Asset Link plugins.
+//
+// This is the single source of truth for the tunable constants that used to be
+// scattered (and duplicated) across the individual plugins — unit names,
+// inventory asset / product-type names, the default harvest product name, the
+// weather observation types, the "is this a greenhouse / gram weight" sentinels,
+// and so on — plus a small bilingual label map for the user-facing UI text.
+//
+// It is BOTH:
+//   - an Asset Link plugin (the default export's onLoad provides the library),
+//     so the other plugins can consume it via:
+//       import { config, t } from 'plugin-library:org.jorblad.farmos_asset_link.config';
+//   - a plain ESM module (the named exports), so unit tests can import it
+//     directly without a running Asset Link (the same dual nature as
+//     SharedFarmOS.alink.js).
+//
+// i18n note: Quasar's own i18n / vue-i18n is NOT wired into the Asset Link
+// build (only Quasar's QLocale date/number formatting is present, and we have
+// no handle to the Quasar app instance), so we use this tiny self-contained
+// label map + `t()` helper instead. `config.locale` selects the active
+// language; missing keys fall back to `config.fallbackLocale` (en) and then to
+// the key itself, so the app never shows a blank label.
+
+export const config = {
+  // Active UI language. The farm is Swedish, so sv is the default. Flip this to
+  // 'en' to run the UI in English; every visible string has an en fallback.
+  locale: 'sv',
+  // Used when a key is missing in `locale`.
+  fallbackLocale: 'en',
+
+  // --- Tunable constants (the "truly configurable" set) -----------------------
+
+  // Animal-type substrings (matched case-insensitively as a substring of the
+  // taxonomy term name) that enable a given harvest action.
+  animalTypeMatches: {
+    egg: ['chicken', 'kyckling'],
+    sheep: ['sheep', 'får'],
+  },
+
+  // Quantity unit names used when creating taxonomy terms. Keep these EXACT:
+  // farmOS matches units by name, and e.g. 'st' vs 'St' would create duplicate
+  // terms. 'egg(s)' (with the parentheses) is the egg-count unit's literal name.
+  units: {
+    seed: 'st',
+    egg: 'egg(s)',
+    catch: 'St',
+  },
+
+  // Inventory asset + product-type names created on first use (catch/mouse trap).
+  inventoryAssets: {
+    catch: 'Fångade möss',
+  },
+  productTypes: {
+    catch: 'Catch',
+  },
+
+  // Default product name when a harvest has no crop/variety to name it after.
+  defaultHarvestProductName: 'Skörd',
+
+  // Max entries pulled from the search API before giving up (a perf guard used
+  // by the plant-from-seed type-ahead selectors).
+  maxDesiredSearchEntries: 200,
+
+  // Sentinel unit name whose presence flips a harvest measure from 'count' to
+  // 'weight' (e.g. wool weighed in grams vs. counted in pieces).
+  weightUnitSentinel: 'gram',
+
+  // Asset structure_type that counts as a greenhouse for the planting predicates.
+  structureTypeGreenhouse: 'greenhouse',
+
+  // Weather observation types. `unit` / `measure` / `suffix` are farmOS-technical
+  // values (must stay as-is); `labelKey` resolves to a localized label via t().
+  observationTypes: [
+    { labelKey: 'obsRainfall',    measure: 'length',      unit: 'mm',  suffix: 'mm' },
+    { labelKey: 'obsTemperature', measure: 'temperature', unit: '°C', suffix: '°C' },
+    { labelKey: 'obsWindSpeed',   measure: 'rate',        unit: 'm/s', suffix: 'm/s' },
+    { labelKey: 'obsHumidity',    measure: 'ratio',       unit: '%',   suffix: '%' },
+  ],
+
+  // --- Bilingual UI label maps ------------------------------------------------
+  // Keys are stable identifiers (English-ish, for readability). Values are the
+  // user-facing strings. Add a key to BOTH maps; t() falls back to en then key.
+  labels: {
+    sv: {
+      // Generic
+      cancel: 'Avbryt',
+      record: 'Spara',
+
+      // Dialog headings
+      resetTrapHeading: 'Återställ fälla {name}?',
+      eggHeading: 'Hur många ägg skördade du från {name}?',
+      woolHeading: 'Hur mycket ull skördade du från {name}?',
+      seedsBoughtHeading: 'Hur många frön köpte du?',
+      totalCost: 'Total kostnad',
+      harvestPlantHeading: 'Hur mycket skördade du från {name}?',
+      harvestLogHeading: 'Hur mycket skördade du?',
+      plantingHeading: 'Plantering',
+      weatherHeading: 'Registrera en väderobservation',
+
+      // Field / select labels
+      selectAction: 'Välj åtgärd',
+      observationType: 'Observationstyp',
+      valueLabel: 'Värde ({suffix})',
+      measurement: 'Mängd',
+      unit: 'Enhet',
+      product: 'Produkt',
+      productOptional: 'Produkt (valfritt)',
+      seller: 'Säljare',
+      invoiceNumber: 'Fakturanummer',
+      lotNumber: 'Partinummer',
+      transplantLocation: 'Omplanteringsplats',
+      transplantLocationForAsset: 'Omplanteringsplats för tillgång {name} {i}',
+      seedsPlantingCount: 'Hur många frön/växter planterar du?',
+      season: 'Säsong',
+      createMultipleAssets: 'Skapa flera tillgångar',
+      createPlantingLog: 'Skapa planteringslogg',
+      seedAsset: 'Frötillgång',
+      species: 'Art',
+      notes: 'Anteckningar',
+      createTransplantingLog: 'Skapa omplanteringslogg',
+      transplantingDate: 'Omplanteringsdatum',
+      close: 'Stäng',
+      createHarvestLog: 'Skapa skördelogg',
+      harvestDate: 'Skördedatum',
+
+      // Validation rules / messages
+      seedCountRequired: 'Fröantal måste vara större än 0',
+      seasonRequired: 'Säsong krävs',
+      seedRequired: 'Frö krävs',
+      speciesRequired: 'Art krävs',
+      transplantLocationRequired: 'Omplanteringsplats krävs',
+      selectUnitBeforeHarvest: 'Välj en enhet innan du registrerar skörden.',
+      harvestQtyGreaterThanZero: 'Ange en skördemängd större än 0.',
+      seedCountGreaterThanZero: 'Ange ett fröantal större än 0.',
+      transplantDestRequired: 'Välj en destinationsplats innan du omplanterar.',
+      measurementValueRequired: 'Ange ett mätvärde innan du registrerar.',
+
+      // Tooltip
+      disableToggleTransplant: 'Inaktivera denna växling om du omplanterar direkt.',
+
+      // Action button labels (asset-action chips)
+      recordHarvest: 'Registrera skörd',
+      buyNewSeeds: 'Köp nya frön',
+      water: 'Vattna',
+      recordReset: 'Registrera återställning',
+      harvest: 'Skörda',
+      transplantPlant: 'Omplantera växt',
+      plantPlants: 'Plantera',
+
+      // Reset-trap action options
+      resetTrap: 'Återställ fälla',
+      emptyTrap: 'Töm fälla',
+      putTogetherAndEmptyTrap: 'Sätt ihop och töm fälla',
+
+      // Reset-trap action names (used in the log title)
+      resetAction: 'Återställ',
+      emptyAction: 'Töm',
+      putTogetherAndEmptyAction: 'Sätt ihop och töm',
+
+      // Observation type labels
+      obsRainfall: 'Nederbörd',
+      obsTemperature: 'Temperatur',
+      obsWindSpeed: 'Vindhastighet',
+      obsHumidity: 'Luftfuktighet',
+
+      // Log names / runUpdate labels (static parts; {placeholders} are filled in)
+      harvestedFrom: 'Skördade {count} från {name}',
+      recordEggHarvestFor: 'Registrera äggskörd för {name}',
+      recordWoolHarvestFor: 'Registrera ullskörd för {name}',
+      recordHarvestFor: 'Registrera skörd för {name}',
+      recordHarvest: 'Registrera skörd',
+      boughtSeeds: 'Köpte {count} frön',
+      buyNewSeedsLabel: 'Köp nya frön',
+      waterName: 'Vattna {name}',
+      recordWaterFor: 'Registrera vattning för {name}',
+      recordResetFor: 'Registrera återställning {name}',
+      measuredObs: 'Mätte {value} {unit} {label}',
+      recordObs: 'Registrera {label} observation',
+      transplantName: 'Omplantera {name}',
+      transplantFor: 'Omplantera {name}',
+      plantedSeeds: 'Planterade {count} frön',
+      addNewSeeds: 'Lägg till nya frön',
+      createPlantsFromSeeds: 'Skapa {count} växt(er) från frön',
+      plantFromSeeds: 'Plantera från frön',
+      createTransplantingLogs: 'Skapa omplanteringsloggar',
+      createHarvestLog: 'Skapa skördelogg',
+      harvestName: 'Skörda {name}',
+
+      // Warnings (notify)
+      seedsLedgerDisabled: 'Frön: farm_ledger-modulen är inte aktiverad, så "{action}" är inaktiverad.',
+      seedsLedgerDisabledCaption: 'Aktivera farm_ledger i farmOS för att registrera fröinköp med pris.',
+    },
+
+    en: {
+      // Generic
+      cancel: 'Cancel',
+      record: 'Record',
+
+      // Dialog headings
+      resetTrapHeading: 'Reset trap {name}?',
+      eggHeading: 'How many eggs did you harvest from {name}?',
+      woolHeading: 'How much wool did you harvest from {name}?',
+      seedsBoughtHeading: 'How many seeds did you buy?',
+      totalCost: 'Total cost',
+      harvestPlantHeading: 'How much did you harvest from {name}?',
+      harvestLogHeading: 'How much did you harvest?',
+      plantingHeading: 'Planting',
+      weatherHeading: 'Record a weather observation',
+
+      // Field / select labels
+      selectAction: 'Select Action',
+      observationType: 'Observation type',
+      valueLabel: 'Value ({suffix})',
+      measurement: 'Measurement',
+      unit: 'Unit',
+      product: 'Product',
+      productOptional: 'Product (optional)',
+      seller: 'Seller',
+      invoiceNumber: 'Invoice number',
+      lotNumber: 'Lot number',
+      transplantLocation: 'Transplant location',
+      transplantLocationForAsset: 'Transplant location for asset {name} {i}',
+      seedsPlantingCount: 'How many seeds/plants are you planting?',
+      season: 'Season',
+      createMultipleAssets: 'Create multiple assets',
+      createPlantingLog: 'Create planting log',
+      seedAsset: 'Seed asset',
+      species: 'Species',
+      notes: 'Notes',
+      createTransplantingLog: 'Create transplanting log',
+      transplantingDate: 'Transplanting date',
+      close: 'Close',
+      createHarvestLog: 'Create harvest log',
+      harvestDate: 'Harvest date',
+
+      // Validation rules / messages
+      seedCountRequired: 'Seed Count is required to be more than 0',
+      seasonRequired: 'Season is required',
+      seedRequired: 'Seed is required',
+      speciesRequired: 'Species is required',
+      transplantLocationRequired: 'Transplant location is required',
+      selectUnitBeforeHarvest: 'Select a unit before recording the harvest.',
+      harvestQtyGreaterThanZero: 'Enter a harvest quantity greater than 0.',
+      seedCountGreaterThanZero: 'Enter a seed count greater than 0.',
+      transplantDestRequired: 'Select a destination location before transplanting.',
+      measurementValueRequired: 'Enter a measurement value before recording.',
+
+      // Tooltip
+      disableToggleTransplant: 'Disable this toggle if you are directly transplanting.',
+
+      // Action button labels (asset-action chips)
+      recordHarvest: 'Record Harvest',
+      buyNewSeeds: 'Buy new seeds',
+      water: 'Water',
+      recordReset: 'Record Reset',
+      harvest: 'Harvest',
+      transplantPlant: 'Transplant plant',
+      plantPlants: 'Plant plants',
+
+      // Reset-trap action options
+      resetTrap: 'Reset trap',
+      emptyTrap: 'Empty trap',
+      putTogetherAndEmptyTrap: 'Put together and empty trap',
+
+      // Reset-trap action names (used in the log title)
+      resetAction: 'Reset',
+      emptyAction: 'Empty',
+      putTogetherAndEmptyAction: 'Put together and empty',
+
+      // Observation type labels
+      obsRainfall: 'Rainfall',
+      obsTemperature: 'Temperature',
+      obsWindSpeed: 'Wind speed',
+      obsHumidity: 'Humidity',
+
+      // Log names / runUpdate labels
+      harvestedFrom: 'Harvested {count} from {name}',
+      recordEggHarvestFor: 'Record egg harvest for {name}',
+      recordWoolHarvestFor: 'Record wool harvest for {name}',
+      recordHarvestFor: 'Record harvest for {name}',
+      recordHarvest: 'Record harvest',
+      boughtSeeds: 'Bought {count} seeds',
+      buyNewSeedsLabel: 'Buy new seeds',
+      waterName: 'Water {name}',
+      recordWaterFor: 'Record water for {name}',
+      recordResetFor: 'Record reset {name}',
+      measuredObs: 'Measured {value} {unit} {label}',
+      recordObs: 'Record {label} observation',
+      transplantName: 'Transplant {name}',
+      transplantFor: 'Transplant {name}',
+      plantedSeeds: 'Planted {count} seeds',
+      addNewSeeds: 'Add new seeds',
+      createPlantsFromSeeds: 'Create {count} plant(s) from seeds',
+      plantFromSeeds: 'Plant from seeds',
+      createTransplantingLogs: 'Create transplanting logs',
+      createHarvestLog: 'Create harvest log',
+      harvestName: 'Harvest {name}',
+
+      // Warnings (notify)
+      seedsLedgerDisabled: 'Seeds: the farm_ledger module is not enabled, so "{action}" is disabled.',
+      seedsLedgerDisabledCaption: 'Enable farm_ledger in farmOS to record seed purchases with price.',
+    },
+  },
+};
+
+// Translate `key` into the active locale, falling back to `fallbackLocale` and
+// finally to the key itself. `vars` is an optional `{ placeholder: value }` map
+// substituted into `{placeholder}` slots in the string.
+export function t(key, vars) {
+  const table = config.labels[config.locale] || {};
+  const fallback = config.labels[config.fallbackLocale] || {};
+  let str = table[key];
+  if (str == null) str = fallback[key];
+  if (str == null) str = key;
+  if (vars && typeof str === 'string') {
+    str = str.replace(/\{(\w+)\}/g, (m, k) =>
+      Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m);
+  }
+  return str;
+}
+
+// Provide the config + translator as an Asset Link library so the other plugins
+// can import them via plugin-library:org.jorblad.farmos_asset_link.config.
+export default class Config {
+  static onLoad(handle) {
+    handle.provideLibrary('org.jorblad.farmos_asset_link.config', (lib) => {
+      lib.provides({ config, t });
+    });
+  }
+}

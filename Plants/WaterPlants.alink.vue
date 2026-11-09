@@ -1,6 +1,7 @@
 <script setup>
 import { inject, ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import { t } from 'plugin-library:org.jorblad.farmos_asset_link.config'
 const assetLink = inject('assetLink');
 const props = defineProps({
   asset: {
@@ -58,10 +59,10 @@ const onSubmit = () => {
         </div>
 
       <div class="q-pa-sm q-gutter-sm row justify-end">
-        <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+        <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
         <q-btn
           color="primary"
-          label="Record"
+          :label="t('record')"
           @click="onSubmit"
         />
       </div>
@@ -75,6 +76,7 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 import { runUpdate } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
+import { config, t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 
 export default {
@@ -90,7 +92,7 @@ export default {
 
       action.showIf(({ asset }) => asset.attributes.status !== 'archived'
             // TODO: Implement a better predicate here...
-            && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === 'greenhouse') || asset.type === 'asset--plant' ));
+            && (asset.type === 'asset--land' || (asset.type === 'asset--structure' && asset.attributes.structure_type === config.structureTypeGreenhouse) || asset.type === 'asset--plant' ));
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
@@ -101,7 +103,7 @@ export default {
         const waterLog = {
           type: 'log--activity',
           attributes: {
-            name: `Water ${asset.attributes.name}`,
+            name: translate('waterName', { name: asset.attributes.name }),
             timestamp: formatRFC3339(new Date()),
             status: "done",
           },
@@ -129,7 +131,7 @@ export default {
           },
         };
 
-        await runUpdate(assetLink, `Record water for ${asset.attributes.name}`,
+        await runUpdate(assetLink, translate('recordWaterFor', { name: asset.attributes.name }),
             (t) => [
               t.addRecord(waterLog),
             ],
@@ -137,7 +139,7 @@ export default {
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Water" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  translate('water') ));
     });
 
   }

@@ -18,6 +18,18 @@ supplement that tells you what will silently bite you.
 - All shared code lives in **`SharedFarmOS.alink.js`**. Plugins are
   `.alink.vue` files. There is **no relative importing between plugins** —
   use `plugin-library:org.jorblad.farmos_asset_link.helpers`.
+- **Tunable constants + UI labels live in `config.alink.js`** (library
+  `org.jorblad.farmos_asset_link.config`, exports `config` and `t(key, vars)`).
+  This is the single source of truth for unit names, inventory asset / product
+  names, the default harvest product name, observation types, and every
+  user-facing string. **Do not hardcode those in a plugin** — read
+  `config.X` and render text via `t('key', vars)`. `config.locale` defaults to
+  `sv` with `en` as fallback. (Quasar i18n / vue-i18n is NOT wired into Asset
+  Link, so we use this tiny custom map instead.)
+- `SharedFarmOS.alink.js`'s `AssetLogsPanel` strings (`Klara loggar:` /
+  `Väntande loggar:` …) are the **one exception**: that file is imported
+  directly by the unit tests, which can't resolve `plugin-library:` imports, so
+  its four strings are hardcoded Swedish on purpose.
 - farmOS 4.x only has `quantity--material` (+ `quantity--price`). Assets
   **require a type term** (`product_type`, `plant_type`, …).
 - Orbit record types are **always** `taxonomy_term--<vocab>`, never the bare
@@ -218,6 +230,11 @@ pushes to `main`):
 - `ci.yml` → `npm run validate` + `npm test` (unit).
 - `e2e.yml` → Playwright against a real farmOS (same `jorblad/farmos-k8s` image
   used locally) — `api.farmos.spec.js` (JSON:API contract) + `ui.assetlink.spec.js`
+  (boot/auth smoke) + `plugins-load.spec.js` (every plugin in
+  `jorblads-plugins.repo.json` is served, fetched, and executes without errors;
+  this catches the seed-drift regression where the server-side default-plugin
+  list no longer matches the manifest, and the Service-Worker `models.json` 403
+  gotcha — see #1).
   (boot/auth smoke).
 
 **New work goes in a PR, not directly on `main`:**

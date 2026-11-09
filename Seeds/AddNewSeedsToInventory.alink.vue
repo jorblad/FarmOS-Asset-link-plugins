@@ -2,6 +2,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import { t } from 'plugin-library:org.jorblad.farmos_asset_link.config'
 
 const props = defineProps({
   asset: {
@@ -30,7 +31,7 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-        <h5>How many seeds did you buy?</h5>
+        <h5>{{ t('seedsBoughtHeading') }}</h5>
         <div class="q-pa-md">
             <q-slider
                 v-model="seedCount"
@@ -45,7 +46,7 @@ const onSubmit = () => {
                 type="number"
                 filled
             />
-            <h5>Total cost</h5>
+            <h5>{{ t('totalCost') }}</h5>
             <q-slider
                 v-model="seedCost"
                 :min="0"
@@ -66,30 +67,30 @@ const onSubmit = () => {
             <q-input
                 v-model="seller"
                 filled
-                label="Seller"
+                :label="t('seller')"
                 />
         </div>
         <div class="q-pa-md">
             <q-input
                 v-model="invoice_number"
                 filled
-                label="Invoice number"
+                :label="t('invoiceNumber')"
                 />
         </div>
         <div class="q-pa-md">
             <q-input
                 v-model="lot_number"
                 filled
-                label="Lot number"
+                :label="t('lotNumber')"
                 />
         </div>
       
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
-        <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+        <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
         <q-btn
           color="primary"
-          label="Record"
+          :label="t('record')"
           @click="onSubmit"
           :disabled="seedCount <= 0"
         />
@@ -103,8 +104,7 @@ import { h } from 'vue';
 import { QBtn } from 'quasar';
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 import { runUpdate, ensureTaxonomyTerm, notify, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
-
-const UNIT_NAME = "st";
+import { config, t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 export default {
   async onLoad(handle, assetLink) {
@@ -121,8 +121,8 @@ export default {
       farmLedgerEnabled = false;
       notify({
         type: 'warning',
-        message: 'Seeds: the farm_ledger module is not enabled, so "Buy new seeds" is disabled.',
-        caption: 'Enable farm_ledger in farmOS to record seed purchases with price.',
+        message: translate('seedsLedgerDisabled', { action: translate('buyNewSeeds') }),
+        caption: translate('seedsLedgerDisabledCaption'),
       });
     }
 
@@ -143,14 +143,14 @@ export default {
         const lot_number = dialogResult.lot_number;
         const seedCost = dialogResult.seedCost;
 
-        if (!requireValue(seedCount > 0, 'Enter a seed count greater than 0.')) {
+        if (!requireValue(seedCount > 0, translate('seedCountGreaterThanZero'))) {
           return;
         }
 
         // Resolve (or create) the "st" unit so we reference a real term id
         // instead of relying on $relateByName auto-creation (which can create
         // duplicate terms for e.g. "st" vs "St").
-        const unitTerm = await ensureTaxonomyTerm(assetLink, UNIT_NAME);
+        const unitTerm = await ensureTaxonomyTerm(assetLink, config.units.seed);
 
         const seedQuantity = {
           type: 'quantity--price',
@@ -187,7 +187,7 @@ export default {
         const purchaseLog = {
           type: 'log--purchase',
           attributes: {
-            name: `Bought ${seedCount} seeds`,
+            name: translate('boughtSeeds', { count: seedCount }),
             timestamp: formatRFC3339(new Date()),
             status: "done",
             seller: `${seller}`,
@@ -214,7 +214,7 @@ export default {
           },
         };
 
-        await runUpdate(assetLink, `Buy new seeds`,
+        await runUpdate(assetLink, translate('buyNewSeedsLabel'),
             (t) => [
               t.addRecord(seedQuantity),
               t.addRecord(purchaseLog),
@@ -223,7 +223,7 @@ export default {
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Buy new seeds" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  translate('buyNewSeeds') ));
     });
   }
 }

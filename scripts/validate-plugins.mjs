@@ -61,8 +61,8 @@ try {
   errors.push(`repo.json: ${e.message}`);
 }
 
-// Syntax-check the shared helper library (its runtime imports are not resolved here).
-for (const f of ['SharedFarmOS.alink.js']) {
+// Syntax-check the shared helper libraries (their runtime imports are not resolved here).
+for (const f of ['config.alink.js', 'SharedFarmOS.alink.js']) {
   try {
     execSync(`node --check ${f}`, { cwd: root, stdio: 'pipe' });
   } catch {

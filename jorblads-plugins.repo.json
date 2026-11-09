@@ -1,6 +1,9 @@
 {
     "plugins": [
         {
+            "url": "config.alink.js"
+        },
+        {
             "url": "SharedFarmOS.alink.js"
         },
         {

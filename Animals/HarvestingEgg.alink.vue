@@ -1,6 +1,7 @@
 <script setup>
 import { inject, ref } from 'vue';
 import { useDialogPluginComponent } from 'quasar'
+import { t } from 'plugin-library:org.jorblad.farmos_asset_link.config'
 const assetLink = inject('assetLink');
 const props = defineProps({
   asset: {
@@ -29,7 +30,7 @@ const onSubmit = () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin q-gutter-md" style="width: 700px; max-width: 80vw;">
-      <h4>How many eggs did you harvest from {{ props.asset.attributes.name }}?</h4>
+      <h4>{{ t('eggHeading', { name: props.asset.attributes.name }) }}</h4>
       <div class="q-pa-md">
       <q-slider
         v-model="harvestCount"
@@ -76,10 +77,10 @@ const onSubmit = () => {
         </div>
       
       <div class="q-pa-sm q-gutter-sm row justify-end">
-        <q-btn color="secondary" label="Cancel" @click="onDialogCancel" />
+        <q-btn color="secondary" :label="t('cancel')" @click="onDialogCancel" />
         <q-btn
           color="primary"
-          label="Record"
+          :label="t('record')"
           @click="onSubmit"
           :disabled="harvestCount <= 0"
         />
@@ -94,22 +95,20 @@ import { QBtn } from 'quasar';
 
 import { formatRFC3339, uuidv4 } from "assetlink-plugin-api";
 import { ensureTaxonomyTerm, runUpdate, requireValue } from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
-
-const UNIT_NAME = "egg(s)";
+import { config, t as translate } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 
 export default {
   async onLoad(handle, assetLink) {
     await assetLink.booted;
 
-    const eggUnitTerm = await ensureTaxonomyTerm(assetLink, UNIT_NAME);
+    const eggUnitTerm = await ensureTaxonomyTerm(assetLink, config.units.egg);
 
 
 
     // Animal types (by name, matched case-insensitively as a substring) for which
-    // the egg harvest action is offered. Edit this list to suit your flock, e.g.
-    // add 'kyckling' for Swedish, or 'duck' for ducks.
-    const EGG_ANIMAL_TYPE_MATCHES = ['chicken', 'kyckling'];
+    // the egg harvest action is offered. Configurable in config.animalTypeMatches.egg.
+    const EGG_ANIMAL_TYPE_MATCHES = config.animalTypeMatches.egg;
 
     handle.defineSlot('se.jorblad.farmos_asset_link.actions.v0.harvestEgg', action => {
 
@@ -154,12 +153,12 @@ export default {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
         const harvestCount = dialogResult.harvestCount;
 
-        if (!requireValue(eggUnitTerm, 'Select a unit before recording the harvest.')) {
+        if (!requireValue(eggUnitTerm, translate('selectUnitBeforeHarvest'))) {
           return;
         }
 
 
-        if (!requireValue(harvestCount > 0, 'Enter a harvest quantity greater than 0.')) {
+        if (!requireValue(harvestCount > 0, translate('harvestQtyGreaterThanZero'))) {
           return;
         }
 
@@ -189,7 +188,7 @@ export default {
         const harvestLog = {
           type: 'log--harvest',
           attributes: {
-            name: `Harvested ${harvestCount} from ${asset.attributes.name}`,
+            name: translate('harvestedFrom', { count: harvestCount, name: asset.attributes.name }),
             timestamp: formatRFC3339(new Date()),
             status: "done",
           },
@@ -213,7 +212,7 @@ export default {
           },
         };
 
-        await runUpdate(assetLink, `Record egg harvest for ${asset.attributes.name}`,
+        await runUpdate(assetLink, translate('recordEggHarvestFor', { name: asset.attributes.name }),
             (t) => [
               t.addRecord(harvestQuantity),
               t.addRecord(harvestLog),
@@ -222,7 +221,7 @@ export default {
       };
 
       action.component(({ asset }) =>
-        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  "Record Harvest" ));
+        h(QBtn, { block: true, color: 'secondary', onClick: () => doActionWorkflow(asset), 'no-caps': true },  translate('recordHarvest') ));
     });
 
   }

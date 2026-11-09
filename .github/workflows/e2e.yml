@@ -8,6 +8,9 @@ name: E2E
 #   - api.farmos.spec.js  : JSON:API contract the plugins depend on (assets,
 #                           logs, quantities with measures, inventory adjust).
 #   - ui.assetlink.spec.js: Asset Link SPA boots and authenticates via farmOS.
+#   - plugins-load.spec.js: every plugin in jorblads-plugins.repo.json is served,
+#                           fetched, and executes without errors (guards against
+#                           seed drift + the Service-Worker models.json 403 gotcha).
 on:
   push:
     branches: [main]
