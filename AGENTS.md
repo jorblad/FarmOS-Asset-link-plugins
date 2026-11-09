@@ -142,7 +142,15 @@ These differ from older farmOS docs and will 422 / fail silently if ignored
 - JSON:API is at **`/api`**, not `/jsonapi`.
 - Quantities: **`quantity--material`** (with `measure`, `value` as
   `{decimal}`, a `units` reference, optional `inventory_adjustment` +
-  `inventory_asset`). **No `quantity--standard`** exists here.
+  `inventory_asset`) and **`quantity--price`** are what the plugins create.
+- **`farm_quantity_standard` must stay enabled** (it is in `setup-farmos.sh`'s
+  `MODULES`). Even though the plugins never *create* `quantity--standard`, the
+  Asset Link **asset page** calls `_computeCurrentAssetInventory`, which does
+  `getModel('quantity--standard')`. If that module is off, every asset page
+  throws `Schema: Model 'quantity--standard' not defined` and renders empty
+  (no action chips at all) — which silently breaks any e2e that drives
+  `/alink/asset/:id` (see gotcha #11). It is a farmOS submodule, off by default
+  on a truly fresh install, so `setup-farmos.sh` enables it explicitly.
 - Assets require their **type term** (`asset--product` → `product_type`,
   `asset--plant` → `plant_type`, etc.) set at creation.
 - **Assets have no `status` attribute** in this build — do not send one (422).

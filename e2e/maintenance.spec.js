@@ -79,27 +79,8 @@ test.describe('Maintenance log plugin', () => {
     await page.click('#edit-submit');
     await page.waitForURL('**/alink/**', { timeout: 20000 });
 
-    // Diagnostics capture (cheap; only printed on failure below).
-    const consoleLines = [];
-    page.on('console', (msg) => consoleLines.push(`${msg.type()}: ${msg.text()}`));
-    page.on('pageerror', (err) => consoleLines.push(`PAGEERROR: ${err.name}: ${err.message}`));
-
     // --- Navigate to the equipment asset page and locate the action --------
-    let maintBtn;
-    try {
-      maintBtn = await gotoAssetAndLocateAction(page, equipId, 'Underhåll');
-    } catch (e) {
-      console.log('=== MAINTENANCE DIAGNOSTICS (button not found) ===');
-      console.log('URL:', page.url());
-      const buttons = await page.locator('button').allInnerTexts().catch(() => []);
-      console.log('BUTTONS ON PAGE:', JSON.stringify(buttons));
-      console.log('BODY (first 800 chars):', (await page.locator('body').innerText().catch(() => '')).slice(0, 800));
-      console.log('ASSET VIA API:', JSON.stringify(
-        (await apiCall(request, 'GET', `/api/asset/equipment/${equipId}`)).json?.data?.attributes || 'NOT FOUND',
-      ));
-      console.log('CONSOLE (last 30):\n' + consoleLines.slice(-30).join('\n'));
-      throw e;
-    }
+    const maintBtn = await gotoAssetAndLocateAction(page, equipId, 'Underhåll');
 
     // --- Act: open the dialog, enter a description, save -------------------
     await maintBtn.click();
