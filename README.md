@@ -59,6 +59,18 @@ Emptying a trap, either on its own or while putting it back together, increments
 
 A page for recording a weather observation: rainfall (mm), temperature (°C), wind speed (m/s), humidity (%), air pressure (hPa) and soil moisture (%). Each maps to a farmOS quantity measure + unit and is saved as an observation log. The available observation types live in `config.observationTypes` (see "Customizing configuration" below).
 
+## Logs
+
+### Done and pending logs
+
+A toolbar button (sv: "Loggar", en: "Logs", visible on every page including the
+start page) opens the **`/jorblad-logs`** page, which lists the farm's done
+("Klara loggar") and pending ("Väntande loggar") logs together. Unlike the
+start page's built-in Tasks view (which groups by upcoming / late / recent),
+this page mirrors the asset-page done/pending panels but across the whole farm.
+It is implemented as an Asset Link route plus a `toolbar-item` slot
+(`HomeAssetLogs.alink.vue`).
+
 ## Customizing configuration (per-instance config)
 
 Every tunable constant and user-facing string lives in **`config.alink.js`**:
