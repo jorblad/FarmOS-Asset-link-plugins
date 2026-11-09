@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { apiCall, createTerm, createAsset } from './helpers.js';
+import { apiCall, createTerm, createAsset, gotoAssetAndLocateAction } from './helpers.js';
 
 // End-to-end test for the Milking log plugin (Animals/MilkingLog.alink.vue).
 //
@@ -58,18 +58,11 @@ test.describe('Milking log plugin', () => {
     await page.click('#edit-submit');
     await page.waitForURL('**/alink/**', { timeout: 20000 });
 
-    // --- Navigate to the cow's asset page -------------------------------------
+    // --- Navigate to the cow's asset page and locate the milking action ------
     // The asset route uses the numeric drupal_internal__id (see RelatedEquipment).
-    await page.goto(`/alink/asset/${cowId}`, { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.q-toolbar__title')).toHaveText('Asset Link', {
-      timeout: 20000,
-    });
-
-    // The milking action chip should appear for a cow (animal_type contains "cow").
-    const milkBtn = page.getByRole('button', { name: 'Mjölka' });
-    await expect(milkBtn, 'milking action visible for a cow').toBeVisible({
-      timeout: 60000,
-    });
+    // The action chip only renders once animal_type is in the cache, which is
+    // racy under emulation — gotoAssetAndLocateAction retries across reloads.
+    const milkBtn = await gotoAssetAndLocateAction(page, cowId, 'Mjölka');
 
     // --- Act: open the dialog, enter a volume, save ---------------------------
     await milkBtn.click();
