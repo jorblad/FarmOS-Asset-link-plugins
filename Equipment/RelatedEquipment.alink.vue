@@ -1,5 +1,6 @@
 <script setup>
 import { ref, inject, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { t } from 'plugin-library:org.jorblad.farmos_asset_link.config';
 
 // Rendered as an asset-page panel (see the `equipment_related` slot defined in
@@ -10,6 +11,7 @@ const props = defineProps({
 });
 
 const assetLink = inject('assetLink');
+const router = useRouter();
 
 const related = ref([]);
 const loading = ref(false);
@@ -39,18 +41,12 @@ const resolve = async () => {
 onMounted(resolve);
 watch(() => props.asset && props.asset.id, resolve);
 
-// Best-effort navigation to another equipment asset. The exact Asset Link
-// navigation API / route shape should be confirmed against the running app; we
-// degrade gracefully (just don't navigate) if it isn't what we expect.
+// Navigate to another equipment asset via Asset Link's router (the same API the
+// built-in plugins use: `router.push('/asset/<id>')`).
 const open = (rel) => {
   try {
-    if (assetLink.ui && typeof assetLink.ui.goToAsset === 'function') {
-      assetLink.ui.goToAsset(rel);
-      return;
-    }
-    if (assetLink.ui && assetLink.ui.router) {
-      assetLink.ui.router.push(`/asset/${rel.id}`);
-    }
+    const ref = rel.attributes?.drupal_internal__id || rel.id;
+    router.push(`/asset/${ref}`);
   } catch (e) {
     console.warn('RelatedEquipment: could not navigate to', rel && rel.id, e);
   }

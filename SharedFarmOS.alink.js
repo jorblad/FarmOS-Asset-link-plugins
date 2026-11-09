@@ -276,6 +276,24 @@ export function usePhotoCapture() {
 // AssetLogsPanel.js
 // ---------------------------------------------------------------------------
 
+// Run an async mapper over `items` with at most `limit` items in flight at
+// once. Resolves to an array of the per-item results in input order. Individual
+// rejections should be handled by the mapper itself (so one failure can't
+// blank the whole batch).
+async function mapWithConcurrency(items, limit, mapper) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  const worker = async () => {
+    while (cursor < items.length) {
+      const i = cursor++;
+      results[i] = await mapper(items[i], i);
+    }
+  };
+  const workers = Array.from({ length: Math.min(limit, items.length) }, worker);
+  await Promise.all(workers);
+  return results;
+}
+
 // Shared, reusable panel that lists asset logs filtered by status.
 // Used on the asset page (with `:asset`) and on the home page (without it,
 // i.e. `:asset="null"`, showing logs across the whole farm).
@@ -300,20 +318,37 @@ export const AssetLogsPanel = {
     const resolveLogs = async () => {
       const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
-      const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
-        const base = q.findRecords(`log--${logType}`)
-          .filter({ attribute: 'status', op: isDone ? 'equal' : '<>', value: 'done' });
-        if (props.asset) {
-          base.filter({
-            relation: 'asset.id',
-            op: 'some',
-            records: [{ type: props.asset.type, id: props.asset.id }],
-          });
-        }
-        return base.sort(isDone ? 'timestamp' : '-timestamp');
-      }));
+      // Query each log type in its own call. A single compound query
+      // (`logTypes.map(...)`) only ends up firing one of the sub-queries in this
+      // Asset Link build, so the panel would only ever show one log type's
+      // (usually empty) results. Querying per type is robust and a failing type
+      // can't blank the whole panel.
+      //
+      // The queries are run sequentially (rather than a single Promise.all of all
+      // types) because firing every log type at once can overwhelm a
+      // slow/constrained farm instance and trip Orbit's per-request fetch
+      // timeout, which would leave the panel empty. On a normal farm each typed
+      // query is a fast round-trip, so running them one at a time is still
+      // sub-second; on a slow instance this stays safely under the timeout
+      // instead of hanging forever.
+      const settled = await mapWithConcurrency(logTypes, 1, logType =>
+        assetLink.entitySource.query(q => {
+          let base = q.findRecords(`log--${logType}`)
+            .filter({ attribute: 'status', op: isDone ? 'equal' : '<>', value: 'done' });
+          if (props.asset) {
+            base = base.filter({
+              relation: 'asset.id',
+              op: 'some',
+              records: [{ type: props.asset.type, id: props.asset.id }],
+            });
+          }
+          return base.sort(isDone ? 'timestamp' : '-timestamp');
+        })
+          .then(r => r.flatMap(x => x))
+          .catch(() => []),
+      );
 
-      logs.value = results.flatMap(l => l)
+      logs.value = settled.flat()
         .sort((a, b) => parseJSONDate(a.attributes.timestamp) - parseJSONDate(b.attributes.timestamp));
     };
 
