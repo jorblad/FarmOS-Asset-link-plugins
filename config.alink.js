@@ -101,6 +101,7 @@ export const config = {
       harvestLogHeading: 'Hur mycket skördade du?',
       plantingHeading: 'Plantering',
       weatherHeading: 'Registrera en väderobservation',
+      maintenanceHeading: 'Beskriv underhållet för {name}',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -136,6 +137,7 @@ export const config = {
       transplantLocationRequired: 'Omplanteringsplats krävs',
       selectUnitBeforeHarvest: 'Välj en enhet innan du registrerar skörden.',
       harvestQtyGreaterThanZero: 'Ange en skördemängd större än 0.',
+      maintenanceDescriptionRequired: 'Ange en beskrivning av underhållet.',
       seedCountGreaterThanZero: 'Ange ett fröantal större än 0.',
       transplantDestRequired: 'Välj en destinationsplats innan du omplanterar.',
       measurementValueRequired: 'Ange ett mätvärde innan du registrerar.',
@@ -151,6 +153,7 @@ export const config = {
       harvest: 'Skörda',
       transplantPlant: 'Omplantera växt',
       plantPlants: 'Plantera',
+      recordMaintenance: 'Underhåll',
 
       // Reset-trap action options
       resetTrap: 'Återställ fälla',
@@ -197,6 +200,8 @@ export const config = {
       createTransplantingLogs: 'Skapa omplanteringsloggar',
       createHarvestLog: 'Skapa skördelogg',
       harvestName: 'Skörda {name}',
+      maintenanceName: 'Underhåll: {name}',
+      recordMaintenanceFor: 'Registrera underhåll för {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Frön: farm_ledger-modulen är inte aktiverad, så "{action}" är inaktiverad.',
@@ -218,6 +223,7 @@ export const config = {
       harvestLogHeading: 'How much did you harvest?',
       plantingHeading: 'Planting',
       weatherHeading: 'Record a weather observation',
+      maintenanceHeading: 'Describe the maintenance for {name}',
 
       // Field / select labels
       selectAction: 'Select Action',
@@ -253,6 +259,7 @@ export const config = {
       transplantLocationRequired: 'Transplant location is required',
       selectUnitBeforeHarvest: 'Select a unit before recording the harvest.',
       harvestQtyGreaterThanZero: 'Enter a harvest quantity greater than 0.',
+      maintenanceDescriptionRequired: 'Enter a description of the maintenance.',
       seedCountGreaterThanZero: 'Enter a seed count greater than 0.',
       transplantDestRequired: 'Select a destination location before transplanting.',
       measurementValueRequired: 'Enter a measurement value before recording.',
@@ -268,6 +275,7 @@ export const config = {
       harvest: 'Harvest',
       transplantPlant: 'Transplant plant',
       plantPlants: 'Plant plants',
+      recordMaintenance: 'Maintenance',
 
       // Reset-trap action options
       resetTrap: 'Reset trap',
@@ -314,6 +322,8 @@ export const config = {
       createTransplantingLogs: 'Create transplanting logs',
       createHarvestLog: 'Create harvest log',
       harvestName: 'Harvest {name}',
+      maintenanceName: 'Maintenance: {name}',
+      recordMaintenanceFor: 'Record maintenance for {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Seeds: the farm_ledger module is not enabled, so "{action}" is disabled.',

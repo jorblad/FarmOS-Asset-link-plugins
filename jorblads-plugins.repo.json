@@ -37,6 +37,9 @@
             "url": "Equipment/RelatedEquipment.alink.vue"
         },
         {
+            "url": "Equipment/MaintenanceLog.alink.vue"
+        },
+        {
             "url": "Seeds/AddNewSeedsToInventory.alink.vue"
         }
     ]
