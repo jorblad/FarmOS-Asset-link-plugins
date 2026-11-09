@@ -13,7 +13,7 @@
 //     directly without a running Asset Link.
 import { QTree } from 'quasar';
 import { uuidv4, parseJSONDate } from 'assetlink-plugin-api';
-import { ref, computed, inject, onMounted, onUnmounted, h, watch } from 'vue';
+import { ref, computed, inject, onMounted, onUnmounted, h, watch, getCurrentInstance } from 'vue';
 
 // Asset Link installs Quasar with only the Dialog + Loading plugins, and the
 // Notify/Dialog *static* methods (Notify.create / Dialog.create) are only attached
@@ -305,13 +305,28 @@ export const AssetLogsPanel = {
   },
   setup(props) {
     const assetLink = inject('assetLink');
+    // The router is installed on the Asset Link app globally, so grab it from the
+    // component instance rather than importing 'vue-router' (which isn't a
+    // resolvable bare specifier for this shared library module — importing it
+    // would break the whole plugin suite that depends on SharedFarmOS).
+    const instance = getCurrentInstance();
+    const router = instance?.proxy?.$router || instance?.appContext?.config?.globalProperties?.$router;
+
     const logs = ref([]);
 
     const logNodes = computed(() => logs.value.map(log => ({
       id: log.id,
       log,
-      selectable: false,
+      selectable: true,
     })));
+
+    // Open a log when its row is clicked (mirrors the built-in Tasks page).
+    const openLog = (nodeKey) => {
+      const log = logs.value.find(l => l.id === nodeKey);
+      if (!log || !router) return;
+      const ref = log.attributes?.drupal_internal__id || log.id;
+      router.push(`/log/${ref}`);
+    };
 
     const isDone = props.status === 'done';
 
@@ -381,6 +396,7 @@ export const AssetLogsPanel = {
           selected: null,
           'no-nodes-label': isDone ? 'Inga klara loggar' : 'Inga väntande loggar',
           class: 'q-ml-md',
+          'onUpdate:selected': openLog,
         }, {
           // Render the log name directly. `entitySource.query` returns raw
           // JSON:API records (not hydrated Orbit models), and the global
@@ -390,7 +406,7 @@ export const AssetLogsPanel = {
           'default-header': (prop) => {
             const log = prop.node.log;
             const name = (log && log.attributes && log.attributes.name) || (log && log.id) || '';
-            return h('div', { class: 'q-pl-xs text-body2' }, name);
+            return h('div', { class: 'q-pl-xs text-body2 cursor-pointer' }, name);
           },
         }),
       ]),
