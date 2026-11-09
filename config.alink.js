@@ -101,8 +101,6 @@ export const config = {
       harvestLogHeading: 'Hur mycket skördade du?',
       plantingHeading: 'Plantering',
       weatherHeading: 'Registrera en väderobservation',
-      homeLogsHeading: 'Klara och väntande loggar',
-      homeLogs: 'Loggar',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -220,8 +218,6 @@ export const config = {
       harvestLogHeading: 'How much did you harvest?',
       plantingHeading: 'Planting',
       weatherHeading: 'Record a weather observation',
-      homeLogsHeading: 'Done and pending logs',
-      homeLogs: 'Logs',
 
       // Field / select labels
       selectAction: 'Select Action',

@@ -38,9 +38,6 @@
         },
         {
             "url": "Seeds/AddNewSeedsToInventory.alink.vue"
-        },
-        {
-            "url": "HomeAssetLogs.alink.vue"
         }
     ]
 }
