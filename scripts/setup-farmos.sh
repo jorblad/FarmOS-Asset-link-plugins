@@ -20,6 +20,7 @@ MODULES=(
   farm_equipment farm_material farm_product farm_group farm_sensor farm_compost
   farm_activity farm_harvest farm_observation farm_seeding farm_transplanting
   farm_input farm_birth farm_maintenance
+  farm_quantity_standard
   farm_plant_type farm_animal_type farm_season
   farm_inventory farm_quick farm_api farm_api_default_consumer
   farm_ledger farmos_asset_link

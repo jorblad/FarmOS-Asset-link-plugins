@@ -5,8 +5,13 @@ Nothing here is implemented yet — use this as a working list.
 
 ## New plugins (farmOS domain, fit the farm)
 
-- **Milking log** — record milk volume → increment a `Mjölk` (milk) product
-  inventory. Near-duplicate of the egg/wool harvest flow; low effort.
+- **Milking log** — **DONE** (`Animals/MilkingLog.alink.vue`): records a milk
+  volume (litres) and increments a shared `Mjölk` product inventory
+  (`quantity--material`, measure `volume`, `inventory_adjustment: 'increment'`
+  against the `Mjölk` product, referenced by a harvest log). Shown for animals
+  whose type name contains "cow"/"ko" or "goat"/"get". Configurable via
+  `config.milk` + `config.animalTypeMatches.milk` + `config.units.milk`.
+  Verified end-to-end with `e2e/milking.spec.js`.
 - **Feeding log** — record feed given to animals, decrementing a feed material
   inventory. Common daily task.
 - **Animal exit / butchering / sale** — archive an animal asset
