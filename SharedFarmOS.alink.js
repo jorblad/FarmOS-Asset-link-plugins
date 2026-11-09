@@ -13,7 +13,7 @@
 //     directly without a running Asset Link.
 import { QTree } from 'quasar';
 import { uuidv4, parseJSONDate } from 'assetlink-plugin-api';
-import { ref, computed, inject, onMounted, onUnmounted, h, watch } from 'vue';
+import { ref, computed, inject, onMounted, onUnmounted, h, watch, getCurrentInstance } from 'vue';
 
 // Asset Link installs Quasar with only the Dialog + Loading plugins, and the
 // Notify/Dialog *static* methods (Notify.create / Dialog.create) are only attached
@@ -276,6 +276,24 @@ export function usePhotoCapture() {
 // AssetLogsPanel.js
 // ---------------------------------------------------------------------------
 
+// Run an async mapper over `items` with at most `limit` items in flight at
+// once. Resolves to an array of the per-item results in input order. Individual
+// rejections should be handled by the mapper itself (so one failure can't
+// blank the whole batch).
+async function mapWithConcurrency(items, limit, mapper) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  const worker = async () => {
+    while (cursor < items.length) {
+      const i = cursor++;
+      results[i] = await mapper(items[i], i);
+    }
+  };
+  const workers = Array.from({ length: Math.min(limit, items.length) }, worker);
+  await Promise.all(workers);
+  return results;
+}
+
 // Shared, reusable panel that lists asset logs filtered by status.
 // Used on the asset page (with `:asset`) and on the home page (without it,
 // i.e. `:asset="null"`, showing logs across the whole farm).
@@ -287,33 +305,65 @@ export const AssetLogsPanel = {
   },
   setup(props) {
     const assetLink = inject('assetLink');
+    // The router is installed on the Asset Link app globally, so grab it from the
+    // component instance rather than importing 'vue-router' (which isn't a
+    // resolvable bare specifier for this shared library module — importing it
+    // would break the whole plugin suite that depends on SharedFarmOS).
+    const instance = getCurrentInstance();
+    const router = instance?.proxy?.$router || instance?.appContext?.config?.globalProperties?.$router;
+
     const logs = ref([]);
 
     const logNodes = computed(() => logs.value.map(log => ({
       id: log.id,
       log,
-      selectable: false,
+      selectable: true,
     })));
+
+    // Open a log when its row is clicked (mirrors the built-in Tasks page).
+    const openLog = (nodeKey) => {
+      const log = logs.value.find(l => l.id === nodeKey);
+      if (!log || !router) return;
+      const ref = log.attributes?.drupal_internal__id || log.id;
+      router.push(`/log/${ref}`);
+    };
 
     const isDone = props.status === 'done';
 
     const resolveLogs = async () => {
       const logTypes = (await assetLink.getLogTypes()).map(t => t.attributes.drupal_internal__id);
 
-      const results = await assetLink.entitySource.query(q => logTypes.map(logType => {
-        const base = q.findRecords(`log--${logType}`)
-          .filter({ attribute: 'status', op: isDone ? 'equal' : '<>', value: 'done' });
-        if (props.asset) {
-          base.filter({
-            relation: 'asset.id',
-            op: 'some',
-            records: [{ type: props.asset.type, id: props.asset.id }],
-          });
-        }
-        return base.sort(isDone ? 'timestamp' : '-timestamp');
-      }));
+      // Query each log type in its own call. A single compound query
+      // (`logTypes.map(...)`) only ends up firing one of the sub-queries in this
+      // Asset Link build, so the panel would only ever show one log type's
+      // (usually empty) results. Querying per type is robust and a failing type
+      // can't blank the whole panel.
+      //
+      // The queries are run sequentially (rather than a single Promise.all of all
+      // types) because firing every log type at once can overwhelm a
+      // slow/constrained farm instance and trip Orbit's per-request fetch
+      // timeout, which would leave the panel empty. On a normal farm each typed
+      // query is a fast round-trip, so running them one at a time is still
+      // sub-second; on a slow instance this stays safely under the timeout
+      // instead of hanging forever.
+      const settled = await mapWithConcurrency(logTypes, 1, logType =>
+        assetLink.entitySource.query(q => {
+          let base = q.findRecords(`log--${logType}`)
+            .filter({ attribute: 'status', op: isDone ? 'equal' : '<>', value: 'done' });
+          if (props.asset) {
+            base = base.filter({
+              relation: 'asset.id',
+              op: 'some',
+              records: [{ type: props.asset.type, id: props.asset.id }],
+            });
+          }
+          return base.sort(isDone ? 'timestamp' : '-timestamp');
+        })
+          .then(r => r.flatMap(x => x))
+          .catch(() => []),
+      );
 
-      logs.value = results.flatMap(l => l)
+      logs.value = settled.flat()
         .sort((a, b) => parseJSONDate(a.attributes.timestamp) - parseJSONDate(b.attributes.timestamp));
     };
 
@@ -346,8 +396,18 @@ export const AssetLogsPanel = {
           selected: null,
           'no-nodes-label': isDone ? 'Inga klara loggar' : 'Inga väntande loggar',
           class: 'q-ml-md',
+          'onUpdate:selected': openLog,
         }, {
-          'default-header': (prop) => h('entity-name', { entity: prop.node.log }),
+          // Render the log name directly. `entitySource.query` returns raw
+          // JSON:API records (not hydrated Orbit models), and the global
+          // `entity-name` component can't derive a display name from that shape,
+          // so it renders empty. The record always carries `attributes.name`,
+          // so we use it directly. Fall back to the id if a name is missing.
+          'default-header': (prop) => {
+            const log = prop.node.log;
+            const name = (log && log.attributes && log.attributes.name) || (log && log.id) || '';
+            return h('div', { class: 'q-pl-xs text-body2 cursor-pointer' }, name);
+          },
         }),
       ]),
     ]);

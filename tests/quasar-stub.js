@@ -31,12 +31,37 @@ export const Dialog = {
 export const QTree = {
   name: 'QTree',
   props: ['nodes', 'nodeKey', 'selected', 'noNodesLabel', 'class'],
-  setup(_, { slots }) {
+  setup(props, { slots }) {
+    const nodes = props.nodes || [];
     return () =>
       h(
         'div',
         { class: 'q-tree-stub' },
-        slots.default ? slots.default({ node: { log: {} }, label: '' }) : null,
+        nodes.length === 0
+          ? h('div', { class: 'q-tree__no-nodes' }, props.noNodesLabel || 'No nodes')
+          : nodes.map((node) =>
+              h(
+                'div',
+                { class: 'q-tree__node' },
+                slots['default-header'] ? slots['default-header']({ node }) : null,
+              ),
+            ),
+      );
+  },
+};
+
+// Stand-in for the runtime-provided `entity-name` component (Asset Link registers
+// it globally, so in tests it arrives as the string tag 'entity-name'). Renders
+// something stable so tests can assert that log nodes actually rendered.
+export const EntityName = {
+  name: 'entity-name',
+  props: ['entity'],
+  setup(props) {
+    return () =>
+      h(
+        'span',
+        { class: 'entity-name-stub' },
+        props.entity?.attributes?.name || props.entity?.id || props.entity?.type || 'entity',
       );
   },
 };

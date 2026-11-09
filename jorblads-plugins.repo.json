@@ -34,6 +34,9 @@
             "url": "Mousetraps/resetTrap.alink.vue"
         },
         {
+            "url": "Equipment/RelatedEquipment.alink.vue"
+        },
+        {
             "url": "Seeds/AddNewSeedsToInventory.alink.vue"
         }
     ]

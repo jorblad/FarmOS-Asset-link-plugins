@@ -222,6 +222,33 @@ Desktop locally), so `rm` of a root-owned file fails with `EPERM` — and
 **How to avoid:** never rely on `rm` (or any non-essential command) succeeding
 inside a container under `set -e`; append `|| true` for cleanups.
 
+### 10. A single `repo.json` URL is NOT a valid default-plugin entry
+
+**Symptom:** you add `jorblads-plugins.repo.json` as one entry in farmOS's
+Asset Link default-plugin configuration (the `asset_link_default_plugin`
+entities) expecting it to pull in all 14 plugins — but **none** of them load
+(verified empirically: with only the repo.json registered, Asset Link fetches
+the repo.json `200` and then tries to evaluate it as a single plugin module, so
+`0` plugin files are ever fetched).
+
+**Root cause:** each `asset_link_default_plugin` entity is treated as **one
+plugin URL**, not a nested repository. Asset Link only expands a `repo.json`
+when it is loaded as a *plugin list* (the server-side
+`default-plugins.repo.json` itself, or a client-side "add plugin repository"
+in Manage Plugins). An entry *inside* the default list that happens to point at
+another `repo.json` is just another (broken) plugin file.
+
+**How to avoid:**
+- **Register each plugin separately** — one `asset_link_default_plugin` entity
+  per plugin URL. `scripts/setup-farmos.sh` does this for you by expanding
+  `jorblads-plugins.repo.json` into one entity per plugin. If you seed by hand,
+  create one entity per URL in the manifest.
+- For a one-shot client-side load (won't survive a browser-storage wipe), you
+  *can* paste the `repo.json` URL into Asset Link's **Manage Plugins → add a
+  plugin repository** — that path expands it. But the server-seeded defaults
+  are per-plugin only.
+- See `README.md` → "Registering plugins in farmOS" for the same guidance.
+
 ## Workflow (PRs + CI)
 
 CI is set up in `.github/workflows/` and runs on **every pull request** (and on
