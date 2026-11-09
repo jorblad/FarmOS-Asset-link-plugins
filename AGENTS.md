@@ -235,7 +235,6 @@ pushes to `main`):
   this catches the seed-drift regression where the server-side default-plugin
   list no longer matches the manifest, and the Service-Worker `models.json` 403
   gotcha — see #1).
-  (boot/auth smoke).
 
 **New work goes in a PR, not directly on `main`:**
 

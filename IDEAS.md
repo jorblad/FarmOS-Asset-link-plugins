@@ -4,6 +4,7 @@ Collected plugin and cross-cutting ideas for the FarmOS Asset-link plugins repo.
 Nothing here is implemented yet — use this as a working list.
 
 ## New plugins (farmOS domain, fit the farm)
+
 - **Milking log** — record milk volume → increment a `Mjölk` (milk) product
   inventory. Near-duplicate of the egg/wool harvest flow; low effort.
 - **Feeding log** — record feed given to animals, decrementing a feed material
@@ -23,13 +24,17 @@ Nothing here is implemented yet — use this as a working list.
   via observation logs (growth tracking). Natural sibling to ObserveWeather.
 
 ## Cross-cutting / tooling
-- **`config.js` module** — centralize the tunables currently scattered around:
-  `EGG_ANIMAL_TYPE_MATCHES`, unit names (`St`, `mm`, `st`, `°C`, …), inventory
-  asset names, default harvest product name. Single file instead of constants
-  buried in each plugin. (This is the "truly configurable" version of #15.)
-- **i18n / Swedish labels** — the farm is Swedish but most UI labels are
-  English ("Reset trap", "Record Harvest", "Water"). A label map or Quasar i18n
-  would make the app feel native.
+
+- **`config.js` module** — **DONE**: implemented as `config.alink.js` (library
+  `org.jorblad.farmos_asset_link.config`, exports `config` + `t(key, vars)`). It
+  centralizes the tunables previously scattered across plugins — unit names
+  (`St`, `mm`, `st`, `°C`, …), inventory asset / product names, default harvest
+  product name, observation types, and every user-facing string. Merged in PR #35.
+- **i18n / Swedish labels** — **DONE**: `config.alink.js` ships a tiny custom
+  label map (`config.locale` defaults to `sv` with `en` fallback) and a `t()`
+  helper; plugins now render Swedish UI via `t('key', vars)` instead of hardcoded
+  English. (Quasar i18n / vue-i18n is NOT wired into Asset Link, so the custom map
+  is used instead.) Merged in PR #35.
 - **Hide `TestMap` from production** — it's a dev/debug utility; keep it in the
   repo but out of the shipped `repo.json`, or gate it behind a debug flag.
 - **Make the egg/wool/sheep animal-type predicates configurable at runtime** —
@@ -42,12 +47,14 @@ Nothing here is implemented yet — use this as a working list.
   the start page and adjust if needed.
 
 ## Verification TODO (not yet confirmed at runtime)
+
 - Relative sibling imports (`../usePhotoCapture.js`, `../useFarmOS.js`,
   `../AssetLogsPanel.js`) — confirmed to compile, but not yet verified to load
   in the running app. Load the photo-dialog plugins and the shared-helper
   plugins once to confirm.
 
 ## E2E test harness (DONE)
+
 - A Playwright suite now drives a real farmOS dev instance (the
   `jorblad/farmos-k8s:v4.0.9.2` image) — see `docker-compose.yml`,
   `scripts/setup-farmos.sh`, `playwright.config.js`, `e2e/`.
@@ -55,6 +62,13 @@ Nothing here is implemented yet — use this as a working list.
     plant/product assets, `quantity--material` with measures, inventory
     adjustment, observation/harvest logs).
   - `e2e/ui.assetlink.spec.js`: Asset Link SPA boots and authenticates via farmOS.
+  - `e2e/plugins-load.spec.js`: smoke test that **every** plugin in
+    `jorblads-plugins.repo.json` is served 200, fetched by the browser, and
+    executes without errors — guards against server-side default-plugin seed
+    drift and the Service-Worker `models.json` 403 gotcha (AGENTS.md #1). It also
+    asserts the app reaches "Online" and that a config-consumer version marker
+    appears (proves the shared `config.alink.js` `plugin-library:` dependency
+    resolved).
 - CI: `.github/workflows/e2e.yml` spins up farmOS in CI (x86 → native, fast) and
   runs the suite.
 - Key farmOS 4.x findings captured in README: API base is `/api` (farm_api), not
