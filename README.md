@@ -57,7 +57,66 @@ Emptying a trap, either on its own or while putting it back together, increments
 
 ### Observe weather
 
-A page for recording a weather observation: rainfall (mm), temperature (°C), wind speed (m/s) and humidity (%). Each maps to a farmOS quantity measure + unit and is saved as an observation log.
+A page for recording a weather observation: rainfall (mm), temperature (°C), wind speed (m/s), humidity (%), air pressure (hPa) and soil moisture (%). Each maps to a farmOS quantity measure + unit and is saved as an observation log. The available observation types live in `config.observationTypes` (see "Customizing configuration" below).
+
+## Customizing configuration (per-instance config)
+
+Every tunable constant and user-facing string lives in **`config.alink.js`**:
+unit names, inventory/product names, the default harvest product name, the
+weather observation types (`config.observationTypes`), the animal-type
+predicates (`config.animalTypeMatches`), and the bilingual label map used by
+`t(key, vars)`. It is both an Asset Link plugin (consumed via
+`plugin-library:org.jorblad.farmos_asset_link.config`) and a plain ESM module the
+unit tests import directly.
+
+### Why a file, not a runtime settings screen?
+
+A settings screen inside Asset Link would store the values in the **browser**
+(localStorage / IndexedDB), so they would be **per-device**, not per farmOS
+instance. For instance-wide settings the right layer is this single source file,
+edited once per deployment. (Per-device overrides are therefore intentionally
+not supported — if you need them, see the override-plugin caveat below.)
+
+### Running your own config without editing the plugins
+
+1. **Fork this repo (or keep a branch off `main`).** Edit `config.alink.js` to
+   suit your farm — rename units, change the default harvest product, add
+   observation types, or adjust the animal-type substrings. Nothing else needs
+   to change; `config.alink.js` is listed first in `jorblads-plugins.repo.json`
+   and every plugin reads it through the shared `config`/`t` imports.
+2. **Serve your fork.** Either point your farmOS default-plugin configuration at
+   your fork's `jorblads-plugins.repo.json` (see "Registering plugins in farmOS"
+   below), or run your own dev server (`npm run dev`) and point Asset Link at
+   `http://<host>:5173/jorblads-plugins.repo.json`.
+3. **Keep in sync.** Merge upstream `main` periodically. The only file you
+   routinely diverge on is `config.alink.js`, so conflicts are easy to resolve.
+
+> **Override-plugin caveat.** An alternative is to leave the upstream plugins
+> untouched and add a *separate* plugin that provides a second
+> `org.jorblad.farmos_asset_link.config` library on top. That requires a code
+> change to the plugins so they *merge* such overrides (not just read the base
+> config), and is **not** implemented today. The fork/branch approach above is
+> the supported one.
+
+### Registering plugins in farmOS
+
+The farmOS **default-plugin configuration** (`asset_link_default_plugin`
+entities, served from `/alink/backend/default-plugins.repo.json`) loads plugins
+automatically on every boot and survives clearing browser storage. Each entity is
+a **single plugin URL** — it is *not* expanded. In practice:
+
+- **You must register each plugin separately.** Adding the single
+  `jorblads-plugins.repo.json` URL as one default-plugin entry does **not** load
+  all the plugins: Asset Link fetches the repo.json and then tries to evaluate it
+  as a single plugin file, so **zero** plugins end up loading (verified
+  empirically against the dev instance).
+- `jorblads-plugins.repo.json` is the *manifest* of what should be registered;
+  `scripts/setup-farmos.sh` expands it into one `asset_link_default_plugin`
+  entity per plugin for you. If you are not using that script, add each plugin
+  URL from the manifest as its own entity (or use Asset Link's "Manage Plugins"
+  → add a *plugin repository*, which is a client-side list that *does* expand a
+  repo.json — but that will not survive a browser-storage wipe the way the
+  server-seeded defaults do).
 
 ## Development
 

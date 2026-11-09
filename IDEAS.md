@@ -39,11 +39,21 @@ Nothing here is implemented yet — use this as a working list.
   in the repo but is NOT listed in `jorblads-plugins.repo.json`, so it never ships.
   Confirmed via grep; no further action needed.
 - **Make the egg/wool/sheep animal-type predicates configurable at runtime** —
-  **PENDING / needs decision**: the substrings are already centralized in
-  `config.animalTypeMatches` (editable in one place, no code duplication), but a
-  true *runtime* UI (settings screen or a farmOS taxonomy picker) is not built
-  yet. Open question: is centralizing in config enough, or do you want an
-  in-app editor?
+  **DEFERRED (decided)**: the substrings are already centralized in
+  `config.animalTypeMatches` (editable in one place, no code duplication). A
+  runtime settings screen was considered but **rejected** — it would store
+  values in the browser, making them *per-device*, whereas these are
+  instance-wide settings. Instead, per-instance customization is done by
+  forking/branching and editing `config.alink.js` (documented in README →
+  "Customizing configuration (per-instance config)"). A runtime editor remains
+  an option only if per-device overrides are ever actually wanted.
+- **Single `repo.json` for default-plugin registration?** — **ANSWERED (no)**:
+  verified empirically that adding the single `jorblads-plugins.repo.json` URL
+  as one farmOS `asset_link_default_plugin` entry does **not** load the plugins
+  (Asset Link treats each default-plugin entry as one plugin file, not a nested
+  repo). You must register each plugin separately; `scripts/setup-farmos.sh`
+  expands the manifest into one entity per plugin. Documented in README →
+  "Registering plugins in farmOS" and AGENTS.md #10.
 - **ObserveWeather measures** — **DONE (verify)**: added `obsAirPressure`
   (`measure: 'pressure'`) and `obsSoilMoisture` (`measure: 'ratio'`) to
   `config.observationTypes` + labels. The `measure` enum values must be
