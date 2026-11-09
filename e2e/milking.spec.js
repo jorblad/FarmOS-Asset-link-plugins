@@ -89,7 +89,15 @@ test.describe('Milking log plugin', () => {
     await expect
       .poll(
         async () => {
-          const res = await apiCall(request, 'GET', '/api/log/harvest');
+          // The emulated farmOS dev instance occasionally resets the API
+          // connection (ECONNRESET) under load; treat a transient fetch failure
+          // as "not found yet" and let the poll retry rather than aborting.
+          let res;
+          try {
+            res = await apiCall(request, 'GET', '/api/log/harvest');
+          } catch {
+            return false;
+          }
           const logs = res.json?.data || [];
           return logs.some((l) => l.attributes.name === expectedLogName);
         },
@@ -109,11 +117,17 @@ test.describe('Milking log plugin', () => {
     await expect
       .poll(
         async () => {
-          const res = await apiCall(
-            request,
-            'GET',
-            '/api/quantity/material?filter%5Bqm%5D%5Bcondition%5D%5Bpath%5D=measure&filter%5Bqm%5D%5Bcondition%5D%5Bvalue%5D=volume&filter%5Bia%5D%5Bcondition%5D%5Bpath%5D=inventory_adjustment&filter%5Bia%5D%5Bcondition%5D%5Bvalue%5D=increment',
-          );
+          // Same ECONNRESET tolerance as the harvest-log poll above.
+          let res;
+          try {
+            res = await apiCall(
+              request,
+              'GET',
+              '/api/quantity/material?filter%5Bqm%5D%5Bcondition%5D%5Bpath%5D=measure&filter%5Bqm%5D%5Bcondition%5D%5Bvalue%5D=volume&filter%5Bia%5D%5Bcondition%5D%5Bpath%5D=inventory_adjustment&filter%5Bia%5D%5Bcondition%5D%5Bvalue%5D=increment',
+            );
+          } catch {
+            return false;
+          }
           const quantities = res.json?.data || [];
           return quantities.find(
             (q) =>
