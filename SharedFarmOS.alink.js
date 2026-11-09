@@ -382,7 +382,16 @@ export const AssetLogsPanel = {
           'no-nodes-label': isDone ? 'Inga klara loggar' : 'Inga väntande loggar',
           class: 'q-ml-md',
         }, {
-          'default-header': (prop) => h('entity-name', { entity: prop.node.log }),
+          // Render the log name directly. `entitySource.query` returns raw
+          // JSON:API records (not hydrated Orbit models), and the global
+          // `entity-name` component can't derive a display name from that shape,
+          // so it renders empty. The record always carries `attributes.name`,
+          // so we use it directly. Fall back to the id if a name is missing.
+          'default-header': (prop) => {
+            const log = prop.node.log;
+            const name = (log && log.attributes && log.attributes.name) || (log && log.id) || '';
+            return h('div', { class: 'q-pl-xs text-body2' }, name);
+          },
         }),
       ]),
     ]);
