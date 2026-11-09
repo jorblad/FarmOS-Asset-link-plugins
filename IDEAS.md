@@ -59,10 +59,15 @@ Nothing here is implemented yet — use this as a working list.
   `config.observationTypes` + labels. The `measure` enum values must be
   confirmed against the running farmOS (esp. `'pressure'`) — that's the exact
   "double-check farmOS accepts the measure enum" caveat from the original idea.
-- **Home-page Done/Pending slot id** — **IN PROGRESS**: `HomeAssetLogs.alink.vue`
-  is now registered in `jorblads-plugins.repo.json` (it renders the done +
-  pending `AssetLogsPanel`s into the `slots.v0.home` slot). Needs a visual check
-  that the `home` slot id actually renders on the start page; adjust the id if not.
+- **Home-page Done/Pending slot id** — **DONE (redesigned)**: verified that
+  Asset Link has **no** home/start-page `page-slot` — the start page is the
+  route-based `tasks_page` (a built-in plugin) which does not consume plugin
+  page-slots, so the original `slots.v0.home` guess never rendered. `HomeAssetLogs`
+  is now a **route** (`/jorblad-logs`, rendering the done + pending
+  `AssetLogsPanel`s across the farm) plus a **toolbar button** (sv: "Loggar")
+  that is visible on every page, including the start page, and navigates to it.
+  Verified in-browser: route renders both panels, button navigates. The
+  `homeLogsHeading` / `homeLogs` labels were added to `config.alink.js`.
 - **Related-equipment panel** — **DONE**: new `Equipment/RelatedEquipment.alink.vue`
   renders a `page-slot` on any `asset--equipment` page listing the first ~10 other
   equipment assets (clickable to navigate). Registered in `repo.json`.
