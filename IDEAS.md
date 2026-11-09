@@ -12,8 +12,11 @@ Nothing here is implemented yet — use this as a working list.
   whose type name contains "cow"/"ko" or "goat"/"get". Configurable via
   `config.milk` + `config.animalTypeMatches.milk` + `config.units.milk`.
   Verified end-to-end with `e2e/milking.spec.js`.
-- **Feeding log** — record feed given to animals, decrementing a feed material
-  inventory. Common daily task.
+- **Feeding log** — **DONE** (`Animals/FeedAnimals.alink.vue`): records feed
+  given to animals and decrements a shared `Foder` material inventory via a
+  `log--input` with a `quantity--material` (`inventory_adjustment: 'decrement'`).
+  Shown for all animals. Configurable via `config.feed` (material name/type,
+  unit→measure map). Verified end-to-end with `e2e/feeding.spec.js`.
 - **Animal exit / butchering / sale** — archive an animal asset
   (`status: 'archived'`/`deceased`) and optionally create a meat product
   inventory. Closes a real lifecycle gap (animals are only "harvested" for
