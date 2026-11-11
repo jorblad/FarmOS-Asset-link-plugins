@@ -65,7 +65,7 @@ and writes a single `log--birth` referencing all the newborns, with optional
 notes. `config.birth` holds the log type and default litter size; labels are
 localized via sv/en.
 
-## Feeding log
+### Feeding log
 
 Records feed given to an animal and decrements a shared `Foder` (feed) material
 inventory. The feed material and its `material_type` term are created on first use
