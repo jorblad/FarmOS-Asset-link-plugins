@@ -62,6 +62,13 @@ export const config = {
   // adjustment. `units` maps a unit term name to the farmOS quantity measure it
   // implies; the dialog lets the user pick one.
   weight: {
+    units: {
+      kg: 'weight',
+      g: 'weight',
+      hg: 'weight',
+    },
+  },
+
   // Feeding: feed given to animals decrements a shared `Foder` (feed) material
   // inventory. `materialName` is the material asset's name; `materialType` is the
   // `material_type` taxonomy term created (if missing) when first ensured.
