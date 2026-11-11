@@ -81,7 +81,10 @@ export default {
       action.type('asset-action');
 
       action.showIf(({ asset }) => {
-        if (asset.attributes.status === 'archived') {
+        // farmOS 4.x animals have no `status` attribute — they use the `archived`
+        // boolean. Keep both checks so archived assets of either kind are hidden
+        // (land/structure use `status`; animals use `archived`).
+        if (asset.attributes.archived === true || asset.attributes.status === 'archived') {
           return false;
         }
 

@@ -108,7 +108,9 @@ export default {
       action.type('asset-action');
 
       action.showIf(({ asset }) => {
-        if (asset.attributes.status === 'archived') {
+        // farmOS 4.x animals have no `status` attribute — they use the `archived`
+        // boolean. Keep both checks for safety (matching the Milking action).
+        if (asset.attributes.archived === true || asset.attributes.status === 'archived') {
           return false;
         }
 

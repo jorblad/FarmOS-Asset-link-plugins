@@ -78,7 +78,7 @@ export default {
       action.type('asset-action');
 
       action.showIf(({ asset }) =>
-        asset.attributes.status !== 'archived' && asset.type === 'asset--animal');
+        asset.attributes.archived !== true && asset.type === 'asset--animal');
 
       const doActionWorkflow = async (asset) => {
         const dialogResult = await assetLink.ui.dialog.custom(handle.thisPlugin, { asset });
