@@ -43,6 +43,18 @@ referenced by an input log (`log--input`). Shown for all animals; the dialog let
 you pick the amount and the unit (each unit maps to a measure via
 `config.compost.units`).
 
+### Animal exit / butchering / sale
+
+A per-animal action (`Animals/ExitAnimal.alink.vue`) shown for all non-archived
+animals. It archives the animal (by setting the `archived` boolean — farmOS 4.x
+assets have no `status` attribute, so a plain PATCH of `archived: true` returns
+200) and optionally records a meat weight that increments a shared `Kött` (meat)
+product inventory via a `quantity--material` with `inventory_adjustment:
+'increment'`. Always writes an exit `log--activity` referencing the animal, with
+optional notes. The dialog offers an archive toggle (on by default), a meat-weight
+input + unit dropdown, and a notes field; each unit maps to a measure via
+`config.exit.units`.
+
 ## Feeding log
 
 Records feed given to an animal and decrements a shared `Foder` (feed) material

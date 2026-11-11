@@ -100,6 +100,23 @@ export const config = {
     },
   },
 
+  // Animal exit (butchering / sale): archive an animal and optionally record a
+  // meat weight that increments a shared `Kött` (meat) product inventory.
+  // `meatProductName`/`meatProductType` create the product on first use; `units`
+  // maps a unit term name to the farmOS quantity measure it implies. The animal
+  // is archived by setting its `archived` boolean (assets have no `status`
+  // attribute — see AGENTS.md #5), not `status`.
+  exit: {
+    meatProductName: 'Kött',
+    meatProductType: 'Meat',
+    logType: 'log--activity',
+    units: {
+      kg: 'weight',
+      g: 'weight',
+      hg: 'weight',
+    },
+  },
+
   // Inventory asset + product-type names created on first use (catch/mouse trap).
   inventoryAssets: {
     catch: 'Fångade möss',
@@ -166,6 +183,14 @@ export const config = {
       compostHeading: 'Hur mycket gödsel samlade du från {name}?',
       compostUnit: 'Enhet',
       compostQuantityRequired: 'Ange en mängd gödsel större än 0.',
+      exitHeading: 'Vad hände med {name}?',
+      exitArchiveAnimal: 'Arkivera djuret',
+      exitMeatWeight: 'Köttvikt',
+      exitMeatUnit: 'Enhet',
+      exitMeatWeightRequired: 'Ange en köttvikt större än 0.',
+      exitNotes: 'Anteckningar',
+      exitAction: 'Avsluta / slakta / sälj',
+      exitLogName: 'Avslut {name}',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -311,6 +336,14 @@ export const config = {
       compostHeading: 'How much manure did you collect from {name}?',
       compostUnit: 'Unit',
       compostQuantityRequired: 'Enter a manure amount greater than 0.',
+      exitHeading: 'What happened to {name}?',
+      exitArchiveAnimal: 'Archive the animal',
+      exitMeatWeight: 'Meat weight',
+      exitMeatUnit: 'Unit',
+      exitMeatWeightRequired: 'Enter a meat weight greater than 0.',
+      exitNotes: 'Notes',
+      exitAction: 'Exit / butcher / sell',
+      exitLogName: 'Exit {name}',
 
       // Field / select labels
       selectAction: 'Select Action',

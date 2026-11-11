@@ -19,10 +19,15 @@ Nothing here is implemented yet — use this as a working list.
   `log--input` with a `quantity--material` (`inventory_adjustment: 'decrement'`).
   Shown for all animals. Configurable via `config.feed` (material name/type,
   unit→measure map). Verified end-to-end with `e2e/feeding.spec.js`.
-- **Animal exit / butchering / sale** — archive an animal asset
-  (`status: 'archived'`/`deceased`) and optionally create a meat product
-  inventory. Closes a real lifecycle gap (animals are only "harvested" for
-  eggs/wool today).
+- **Animal exit / butchering / sale** — **DONE** (`Animals/ExitAnimal.alink.vue`):
+  a per-animal action that archives the animal (via the `archived` boolean — farmOS
+  4.x assets have no `status` attribute, so a plain PATCH of `archived: true`
+  returns 200; see AGENTS.md #5) and optionally records a meat weight that
+  increments a shared `Kött` (meat) product inventory. Always writes an exit
+  `log--activity` referencing the animal, with optional notes (sent as `{ value }`,
+  the `text_with_summary` shape). Configurable via `config.exit` (meat product
+  name/type + unit→measure map) with sv/en labels. Verified end-to-end with
+  `e2e/animal-exit.spec.js`.
 - **Birth / litter log** — like `PlantPlantsFromSeed` creates N plant assets,
   create a litter of new animal assets from a parent, with a birth log.
 - **Maintenance log on equipment** — **DONE** (PR #46): farmOS has a
