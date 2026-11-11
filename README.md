@@ -198,7 +198,7 @@ All shared code therefore lives in **`SharedFarmOS.alink.js`**, which is both:
 Every plugin consumes it through a single import:
 
 ```js
-import { ensureAsset, ensureTaxonomyTerm, runUpdate, usePhotoCapture, AssetLogsPanel }
+import { ensureAsset, ensureTaxonomyTerm, runUpdate, usePhotoCapture }
   from 'plugin-library:org.jorblad.farmos_asset_link.helpers';
 ```
 
