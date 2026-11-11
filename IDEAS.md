@@ -25,8 +25,11 @@ Nothing here is implemented yet — use this as a working list.
   `asset--equipment`) would be trivial and useful.
 - **Manure / compost** — record manure production → material inventory for
   compost.
-- **Weight / measurement observation** — track animal or asset weight over time
-  via observation logs (growth tracking). Natural sibling to ObserveWeather.
+- **Weight / measurement observation** — **DONE** (`Animals/WeighAnimal.alink.vue`):
+  records an animal's weight as a `quantity--material` (measure `weight`)
+  referenced by an observation log (`log--observation`). Shown for all animals;
+  the dialog offers an amount + unit (mapped to a measure via `config.weight.units`).
+  Verified end-to-end with `e2e/weight.spec.js`.
 
 ## Cross-cutting / tooling
 

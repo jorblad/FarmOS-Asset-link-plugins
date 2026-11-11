@@ -57,6 +57,18 @@ export const config = {
     productType: 'Milk',
   },
 
+  // Weight / measurement: a one-off measurement recorded against an animal (or
+  // any asset) as a `quantity--material` with measure `weight` — NOT an inventory
+  // adjustment. `units` maps a unit term name to the farmOS quantity measure it
+  // implies; the dialog lets the user pick one.
+  weight: {
+    units: {
+      kg: 'weight',
+      g: 'weight',
+      hg: 'weight',
+    },
+  },
+
   // Inventory asset + product-type names created on first use (catch/mouse trap).
   inventoryAssets: {
     catch: 'Fångade möss',
@@ -113,6 +125,9 @@ export const config = {
       plantingHeading: 'Plantering',
       weatherHeading: 'Registrera en väderobservation',
       milkHeading: 'Hur mycket mjölk mjölkade du från {name}?',
+      weightHeading: 'Hur mycket vägde {name}?',
+      weightUnit: 'Enhet',
+      weightQuantityRequired: 'Ange en vikt större än 0.',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -165,6 +180,7 @@ export const config = {
       transplantPlant: 'Omplantera växt',
       plantPlants: 'Plantera',
       recordMilking: 'Mjölka',
+      weigh: 'Väg',
 
       // Reset-trap action options
       resetTrap: 'Återställ fälla',
@@ -213,6 +229,8 @@ export const config = {
       harvestName: 'Skörda {name}',
       milkedFrom: 'Mjölkade {volume} L från {name}',
       recordMilkFor: 'Registrera mjölkning för {name}',
+      weighedAnimal: 'Vägde {name}',
+      recordWeightFor: 'Registrera vägning för {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Frön: farm_ledger-modulen är inte aktiverad, så "{action}" är inaktiverad.',
@@ -235,6 +253,9 @@ export const config = {
       plantingHeading: 'Planting',
       weatherHeading: 'Record a weather observation',
       milkHeading: 'How much milk did you milk from {name}?',
+      weightHeading: 'How much did {name} weigh?',
+      weightUnit: 'Unit',
+      weightQuantityRequired: 'Enter a weight greater than 0.',
 
       // Field / select labels
       selectAction: 'Select Action',
@@ -287,6 +308,7 @@ export const config = {
       transplantPlant: 'Transplant plant',
       plantPlants: 'Plant plants',
       recordMilking: 'Milk',
+      weigh: 'Weigh',
 
       // Reset-trap action options
       resetTrap: 'Reset trap',
@@ -335,6 +357,8 @@ export const config = {
       harvestName: 'Harvest {name}',
       milkedFrom: 'Milked {volume} L from {name}',
       recordMilkFor: 'Record milking for {name}',
+      weighedAnimal: 'Weighed {name}',
+      recordWeightFor: 'Record weighing for {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Seeds: the farm_ledger module is not enabled, so "{action}" is disabled.',

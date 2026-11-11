@@ -25,6 +25,14 @@ a `quantity--material` with `inventory_adjustment: 'increment'` pointing at the
 name contains "cow"/"ko" or "goat"/"get" (configurable via
 `config.animalTypeMatches.milk`).
 
+### Weight / measurement
+
+Records an animal's weight as a `quantity--material` with measure `weight`,
+referenced by an observation log (`log--observation`). Shown for all animals; the
+dialog lets you pick the weight and the unit (each unit maps to a farmOS quantity
+measure via `config.weight.units`). Unlike milking/feeding this is a plain
+measurement — it does not adjust any inventory.
+
 ## Plants
 
 ### Harvesting plants
