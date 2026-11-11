@@ -55,6 +55,16 @@ optional notes. The dialog offers an archive toggle (on by default), a meat-weig
 input + unit dropdown, and a notes field; each unit maps to a measure via
 `config.exit.units`.
 
+### Birth / litter log
+
+A per-animal action (`Animals/BirthLitter.alink.vue`) shown for all non-archived
+animals. It creates a litter of N new `asset--animal` assets from the parent —
+each linked via the has-many `parent` relationship and sharing the chosen
+`animal_type` (defaulting to the parent's own type, overridable in the dialog) —
+and writes a single `log--birth` referencing all the newborns, with optional
+notes. `config.birth` holds the log type and default litter size; labels are
+localized via sv/en.
+
 ## Feeding log
 
 Records feed given to an animal and decrements a shared `Foder` (feed) material

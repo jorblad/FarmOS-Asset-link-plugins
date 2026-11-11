@@ -28,8 +28,13 @@ Nothing here is implemented yet — use this as a working list.
   the `text_with_summary` shape). Configurable via `config.exit` (meat product
   name/type + unit→measure map) with sv/en labels. Verified end-to-end with
   `e2e/animal-exit.spec.js`.
-- **Birth / litter log** — like `PlantPlantsFromSeed` creates N plant assets,
-  create a litter of new animal assets from a parent, with a birth log.
+- **Birth / litter log** — **DONE** (`Animals/BirthLitter.alink.vue`): a
+  per-animal action that creates a litter of N new `asset--animal` assets from a
+  parent (each linked via the has-many `parent` relationship, sharing the chosen
+  `animal_type`, defaulting to the parent's own type) and writes a single
+  `log--birth` referencing all the newborns. Notes are sent as `{ value }`
+  (text_with_summary). Configurable via `config.birth` with sv/en labels.
+  Verified end-to-end with `e2e/birth-litter.spec.js`.
 - **Maintenance log on equipment** — **DONE** (PR #46): farmOS has a
   `maintenance` log type; a quick action on `asset--equipment` /
   `asset--structure` assets opens a dialog for a free-text description and
