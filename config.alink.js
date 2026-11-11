@@ -57,6 +57,18 @@ export const config = {
     productType: 'Milk',
   },
 
+  // Weight / measurement: a one-off measurement recorded against an animal (or
+  // any asset) as a `quantity--material` with measure `weight` — NOT an inventory
+  // adjustment. `units` maps a unit term name to the farmOS quantity measure it
+  // implies; the dialog lets the user pick one.
+  weight: {
+    units: {
+      kg: 'weight',
+      g: 'weight',
+      hg: 'weight',
+    },
+  },
+
   // Feeding: feed given to animals decrements a shared `Foder` (feed) material
   // inventory. `materialName` is the material asset's name; `materialType` is the
   // `material_type` taxonomy term created (if missing) when first ensured.
@@ -131,6 +143,9 @@ export const config = {
       weatherHeading: 'Registrera en väderobservation',
       maintenanceHeading: 'Beskriv underhållet för {name}',
       milkHeading: 'Hur mycket mjölk mjölkade du från {name}?',
+      weightHeading: 'Hur mycket vägde {name}?',
+      weightUnit: 'Enhet',
+      weightQuantityRequired: 'Ange en vikt större än 0.',
       feedHeading: 'Hur mycket foder gav du {name}?',
       feedUnit: 'Enhet',
       feedQuantityRequired: 'Ange en fodermängd större än 0.',
@@ -188,6 +203,7 @@ export const config = {
       plantPlants: 'Plantera',
       recordMaintenance: 'Underhåll',
       recordMilking: 'Mjölka',
+      weigh: 'Väg',
       feed: 'Utfodra',
 
       // Reset-trap action options
@@ -239,6 +255,8 @@ export const config = {
       recordMaintenanceFor: 'Registrera underhåll för {name}',
       milkedFrom: 'Mjölkade {volume} L från {name}',
       recordMilkFor: 'Registrera mjölkning för {name}',
+      weighedAnimal: 'Vägde {name}',
+      recordWeightFor: 'Registrera vägning för {name}',
       fedTo: 'Utfodrade {name}',
       recordFeedFor: 'Registrera utfodring för {name}',
 
@@ -264,6 +282,9 @@ export const config = {
       weatherHeading: 'Record a weather observation',
       maintenanceHeading: 'Describe the maintenance for {name}',
       milkHeading: 'How much milk did you milk from {name}?',
+      weightHeading: 'How much did {name} weigh?',
+      weightUnit: 'Unit',
+      weightQuantityRequired: 'Enter a weight greater than 0.',
       feedHeading: 'How much feed did you give {name}?',
       feedUnit: 'Unit',
       feedQuantityRequired: 'Enter a feed quantity greater than 0.',
@@ -321,6 +342,7 @@ export const config = {
       plantPlants: 'Plant plants',
       recordMaintenance: 'Maintenance',
       recordMilking: 'Milk',
+      weigh: 'Weigh',
       feed: 'Feed',
 
       // Reset-trap action options
@@ -372,6 +394,8 @@ export const config = {
       recordMaintenanceFor: 'Record maintenance for {name}',
       milkedFrom: 'Milked {volume} L from {name}',
       recordMilkFor: 'Record milking for {name}',
+      weighedAnimal: 'Weighed {name}',
+      recordWeightFor: 'Record weighing for {name}',
       fedTo: 'Fed {name}',
       recordFeedFor: 'Record feeding for {name}',
 
