@@ -112,6 +112,7 @@ export const config = {
       harvestLogHeading: 'Hur mycket skördade du?',
       plantingHeading: 'Plantering',
       weatherHeading: 'Registrera en väderobservation',
+      maintenanceHeading: 'Beskriv underhållet för {name}',
       milkHeading: 'Hur mycket mjölk mjölkade du från {name}?',
 
       // Field / select labels
@@ -148,6 +149,7 @@ export const config = {
       transplantLocationRequired: 'Omplanteringsplats krävs',
       selectUnitBeforeHarvest: 'Välj en enhet innan du registrerar skörden.',
       harvestQtyGreaterThanZero: 'Ange en skördemängd större än 0.',
+      maintenanceDescriptionRequired: 'Ange en beskrivning av underhållet.',
       milkVolumeGreaterThanZero: 'Ange en mjölkmängd större än 0.',
       seedCountGreaterThanZero: 'Ange ett fröantal större än 0.',
       transplantDestRequired: 'Välj en destinationsplats innan du omplanterar.',
@@ -164,6 +166,7 @@ export const config = {
       harvest: 'Skörda',
       transplantPlant: 'Omplantera växt',
       plantPlants: 'Plantera',
+      recordMaintenance: 'Underhåll',
       recordMilking: 'Mjölka',
 
       // Reset-trap action options
@@ -211,6 +214,8 @@ export const config = {
       createTransplantingLogs: 'Skapa omplanteringsloggar',
       createHarvestLog: 'Skapa skördelogg',
       harvestName: 'Skörda {name}',
+      maintenanceName: 'Underhåll: {name}',
+      recordMaintenanceFor: 'Registrera underhåll för {name}',
       milkedFrom: 'Mjölkade {volume} L från {name}',
       recordMilkFor: 'Registrera mjölkning för {name}',
 
@@ -234,6 +239,7 @@ export const config = {
       harvestLogHeading: 'How much did you harvest?',
       plantingHeading: 'Planting',
       weatherHeading: 'Record a weather observation',
+      maintenanceHeading: 'Describe the maintenance for {name}',
       milkHeading: 'How much milk did you milk from {name}?',
 
       // Field / select labels
@@ -270,6 +276,7 @@ export const config = {
       transplantLocationRequired: 'Transplant location is required',
       selectUnitBeforeHarvest: 'Select a unit before recording the harvest.',
       harvestQtyGreaterThanZero: 'Enter a harvest quantity greater than 0.',
+      maintenanceDescriptionRequired: 'Enter a description of the maintenance.',
       milkVolumeGreaterThanZero: 'Enter a milk volume greater than 0.',
       seedCountGreaterThanZero: 'Enter a seed count greater than 0.',
       transplantDestRequired: 'Select a destination location before transplanting.',
@@ -286,6 +293,7 @@ export const config = {
       harvest: 'Harvest',
       transplantPlant: 'Transplant plant',
       plantPlants: 'Plant plants',
+      recordMaintenance: 'Maintenance',
       recordMilking: 'Milk',
 
       // Reset-trap action options
@@ -333,6 +341,8 @@ export const config = {
       createTransplantingLogs: 'Create transplanting logs',
       createHarvestLog: 'Create harvest log',
       harvestName: 'Harvest {name}',
+      maintenanceName: 'Maintenance: {name}',
+      recordMaintenanceFor: 'Record maintenance for {name}',
       milkedFrom: 'Milked {volume} L from {name}',
       recordMilkFor: 'Record milking for {name}',
 

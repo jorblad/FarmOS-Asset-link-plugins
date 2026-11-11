@@ -5,6 +5,8 @@ Nothing here is implemented yet — use this as a working list.
 
 ## New plugins (farmOS domain, fit the farm)
 
+- **Milking log** — **DONE** (PR #45): record milk volume → increment a `Mjölk`
+  (milk) product inventory. Near-duplicate of the egg/wool harvest flow.
 - **Milking log** — **DONE** (`Animals/MilkingLog.alink.vue`): records a milk
   volume (litres) and increments a shared `Mjölk` product inventory
   (`quantity--material`, measure `volume`, `inventory_adjustment: 'increment'`
@@ -20,9 +22,10 @@ Nothing here is implemented yet — use this as a working list.
   eggs/wool today).
 - **Birth / litter log** — like `PlantPlantsFromSeed` creates N plant assets,
   create a litter of new animal assets from a parent, with a birth log.
-- **Maintenance log on equipment** — farmOS already has a `maintenance` log
-  type; a quick action on equipment/structure assets (the trap already targets
-  `asset--equipment`) would be trivial and useful.
+- **Maintenance log on equipment** — **DONE** (PR #46): farmOS has a
+  `maintenance` log type; a quick action on `asset--equipment` /
+  `asset--structure` assets opens a dialog for a free-text description and
+  creates a `log--maintenance` referencing the asset.
 - **Manure / compost** — record manure production → material inventory for
   compost.
 - **Weight / measurement observation** — track animal or asset weight over time
