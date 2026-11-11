@@ -29,8 +29,14 @@ Nothing here is implemented yet — use this as a working list.
   `maintenance` log type; a quick action on `asset--equipment` /
   `asset--structure` assets opens a dialog for a free-text description and
   creates a `log--maintenance` referencing the asset.
-- **Manure / compost** — record manure production → material inventory for
-  compost.
+- **Manure / compost** — **DONE** (`Animals/RecordManure.alink.vue`): records
+  manure collected from an animal and increments a shared `Gödsel` (manure)
+  compost asset inventory. Requires the `farm_compost` module (enabled in
+  `setup-farmos.sh`). The amount is a `quantity--material` with
+  `inventory_adjustment: 'increment'` pointing at the `asset--compost` inventory,
+  referenced by an input log (`log--input`). Shown for all animals; the dialog lets
+  you pick the amount and the unit (each unit maps to a measure via
+  `config.compost.units`). Verified end-to-end with `e2e/manure-compost.spec.js`.
 - **Weight / measurement observation** — **DONE** (`Animals/WeighAnimal.alink.vue`):
   records an animal's weight as a `quantity--material` (measure `weight`)
   referenced by an observation log (`log--observation`). Shown for all animals;

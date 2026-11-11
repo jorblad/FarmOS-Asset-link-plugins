@@ -25,6 +25,9 @@
             "url": "Animals/FeedAnimals.alink.vue"
         },
         {
+            "url": "Animals/RecordManure.alink.vue"
+        },
+        {
             "url": "Weather/ObserveWeather.alink.vue"
         },
         {
