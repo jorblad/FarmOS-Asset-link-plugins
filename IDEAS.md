@@ -94,9 +94,12 @@ Nothing here is implemented yet — use this as a working list.
   — the start page is the route-based `tasks_page` (a built-in plugin) which
   already lists the farm's logs (upcoming / late / recent) and does not consume
   plugin page-slots, so a custom home logs page was redundant. The
-  `HomeAssetLogs` route + toolbar button was removed. The shared
-  `AssetLogsPanel` component is retained and still powers the per-asset
-  `DoneAssetLogs` / `PendingAssetLogs` panels on asset pages.
+  `HomeAssetLogs` route + toolbar button was removed. The per-asset
+  `DoneAssetLogs` / `PendingAssetLogs` panels (which also rendered
+  `AssetLogsPanel`) were later removed as well — the built-in Tasks page already
+  covers the same logs view. The `AssetLogsPanel` component itself is retained in
+  `SharedFarmOS.alink.js` and still has its own unit test
+  (`tests/AssetLogsPanel.test.js`), but is currently unused by any shipped plugin.
 - **Related-equipment panel** — **DONE**: new `Equipment/RelatedEquipment.alink.vue`
   renders a `page-slot` on any `asset--equipment` page listing the first ~10 other
   equipment assets (clickable to navigate). Registered in `repo.json`.

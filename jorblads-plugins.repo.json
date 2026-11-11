@@ -37,6 +37,9 @@
             "url": "Weather/ObserveWeather.alink.vue"
         },
         {
+            "url": "Weather/ObserveWeatherToolbar.alink.vue"
+        },
+        {
             "url": "Plants/PlantPlantsFromSeed.alink.vue"
         },
         {
