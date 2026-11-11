@@ -117,6 +117,15 @@ export const config = {
     },
   },
 
+  // Birth / litter: create N offspring animal assets from a parent, each linked
+  // to the parent via the `parent` relationship and sharing the chosen
+  // `animal_type` (defaulting to the parent's own type). A single `log--birth`
+  // references all the newborns. `defaultCount` pre-fills the dialog.
+  birth: {
+    logType: 'log--birth',
+    defaultCount: 1,
+  },
+
   // Inventory asset + product-type names created on first use (catch/mouse trap).
   inventoryAssets: {
     catch: 'Fångade möss',
@@ -191,6 +200,14 @@ export const config = {
       exitNotes: 'Anteckningar',
       exitAction: 'Avsluta / slakta / sälj',
       exitLogName: 'Avslut {name}',
+      birthHeading: 'Hur många ungar föddes av {name}?',
+      birthCount: 'Antal ungar',
+      birthAnimalType: 'Djurtyp för ungarna',
+      birthNotes: 'Anteckningar',
+      birthCountRequired: 'Ange ett antal större än 0.',
+      birthAction: 'Födsel / kull',
+      birthLogName: 'Födsel {name} ({count} ungar)',
+      offspringName: '{parent} avkomma {i}',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -344,6 +361,14 @@ export const config = {
       exitNotes: 'Notes',
       exitAction: 'Exit / butcher / sell',
       exitLogName: 'Exit {name}',
+      birthHeading: 'How many offspring were born to {name}?',
+      birthCount: 'Number of offspring',
+      birthAnimalType: 'Offspring animal type',
+      birthNotes: 'Notes',
+      birthCountRequired: 'Enter a count greater than 0.',
+      birthAction: 'Birth / litter',
+      birthLogName: 'Birth of {name} ({count} offspring)',
+      offspringName: '{parent} offspring {i}',
 
       // Field / select labels
       selectAction: 'Select Action',

@@ -31,6 +31,9 @@
             "url": "Animals/ExitAnimal.alink.vue"
         },
         {
+            "url": "Animals/BirthLitter.alink.vue"
+        },
+        {
             "url": "Weather/ObserveWeather.alink.vue"
         },
         {
