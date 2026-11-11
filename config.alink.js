@@ -86,6 +86,20 @@ export const config = {
     },
   },
 
+  // Manure / compost: manure collected from animals increments a shared `Gödsel`
+  // (manure) compost asset inventory. `materialName` is the compost asset's name;
+  // `asset--compost` needs no type term. `units` maps a unit term name to the
+  // farmOS quantity measure it implies. Requires the `farm_compost` module (in
+  // setup-farmos.sh's MODULES) so the compost asset type exists.
+  compost: {
+    materialName: 'Gödsel',
+    units: {
+      kg: 'weight',
+      g: 'weight',
+      hg: 'weight',
+    },
+  },
+
   // Inventory asset + product-type names created on first use (catch/mouse trap).
   inventoryAssets: {
     catch: 'Fångade möss',
@@ -149,6 +163,9 @@ export const config = {
       feedHeading: 'Hur mycket foder gav du {name}?',
       feedUnit: 'Enhet',
       feedQuantityRequired: 'Ange en fodermängd större än 0.',
+      compostHeading: 'Hur mycket gödsel samlade du från {name}?',
+      compostUnit: 'Enhet',
+      compostQuantityRequired: 'Ange en mängd gödsel större än 0.',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -205,6 +222,7 @@ export const config = {
       recordMilking: 'Mjölka',
       weigh: 'Väg',
       feed: 'Utfodra',
+      manure: 'Gödsel',
 
       // Reset-trap action options
       resetTrap: 'Återställ fälla',
@@ -259,6 +277,8 @@ export const config = {
       recordWeightFor: 'Registrera vägning för {name}',
       fedTo: 'Utfodrade {name}',
       recordFeedFor: 'Registrera utfodring för {name}',
+      recordedManure: 'Gödsel från {name}',
+      recordManureFor: 'Registrera gödsel för {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Frön: farm_ledger-modulen är inte aktiverad, så "{action}" är inaktiverad.',
@@ -288,6 +308,9 @@ export const config = {
       feedHeading: 'How much feed did you give {name}?',
       feedUnit: 'Unit',
       feedQuantityRequired: 'Enter a feed quantity greater than 0.',
+      compostHeading: 'How much manure did you collect from {name}?',
+      compostUnit: 'Unit',
+      compostQuantityRequired: 'Enter a manure amount greater than 0.',
 
       // Field / select labels
       selectAction: 'Select Action',
@@ -344,6 +367,7 @@ export const config = {
       recordMilking: 'Milk',
       weigh: 'Weigh',
       feed: 'Feed',
+      manure: 'Manure',
 
       // Reset-trap action options
       resetTrap: 'Reset trap',
@@ -398,6 +422,8 @@ export const config = {
       recordWeightFor: 'Record weighing for {name}',
       fedTo: 'Fed {name}',
       recordFeedFor: 'Record feeding for {name}',
+      recordedManure: 'Manure from {name}',
+      recordManureFor: 'Record manure for {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Seeds: the farm_ledger module is not enabled, so "{action}" is disabled.',

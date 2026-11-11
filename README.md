@@ -32,6 +32,17 @@ referenced by an observation log (`log--observation`). Shown for all animals; th
 dialog lets you pick the weight and the unit (each unit maps to a farmOS quantity
 measure via `config.weight.units`). Unlike milking/feeding this is a plain
 measurement — it does not adjust any inventory.
+
+### Manure / compost
+
+Records manure collected from an animal and increments a shared `Gödsel` (manure)
+compost asset inventory. Requires the `farm_compost` module (enabled in
+`setup-farmos.sh`). The amount is a `quantity--material` with
+`inventory_adjustment: 'increment'` pointing at the `asset--compost` inventory,
+referenced by an input log (`log--input`). Shown for all animals; the dialog lets
+you pick the amount and the unit (each unit maps to a measure via
+`config.compost.units`).
+
 ## Feeding log
 
 Records feed given to an animal and decrements a shared `Foder` (feed) material
