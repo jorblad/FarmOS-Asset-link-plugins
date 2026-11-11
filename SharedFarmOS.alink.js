@@ -70,6 +70,7 @@ const ASSET_TYPE_VOCAB = {
   'asset--seed': 'plant_type',
   'asset--land': 'land_type',
   'asset--equipment': 'equipment_type',
+  'asset--material': 'material_type',
 };
 
 // ---------------------------------------------------------------------------

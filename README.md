@@ -32,6 +32,15 @@ referenced by an observation log (`log--observation`). Shown for all animals; th
 dialog lets you pick the weight and the unit (each unit maps to a farmOS quantity
 measure via `config.weight.units`). Unlike milking/feeding this is a plain
 measurement — it does not adjust any inventory.
+## Feeding log
+
+Records feed given to an animal and decrements a shared `Foder` (feed) material
+inventory. The feed material and its `material_type` term are created on first use
+(configurable via `config.feed`). The amount is a `quantity--material` with
+`inventory_adjustment: 'decrement'` pointing at the `Foder` material, referenced
+by an input log (`log--input`). Shown for all animals; the dialog lets you pick
+the amount and the unit (each unit maps to a farmOS quantity measure via
+`config.feed.units`).
 
 ## Plants
 

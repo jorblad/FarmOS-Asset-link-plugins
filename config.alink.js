@@ -62,10 +62,20 @@ export const config = {
   // adjustment. `units` maps a unit term name to the farmOS quantity measure it
   // implies; the dialog lets the user pick one.
   weight: {
+  // Feeding: feed given to animals decrements a shared `Foder` (feed) material
+  // inventory. `materialName` is the material asset's name; `materialType` is the
+  // `material_type` taxonomy term created (if missing) when first ensured.
+  // `units` maps a unit term name to the farmOS quantity measure it implies; the
+  // dialog lets the user pick one.
+  feed: {
+    materialName: 'Foder',
+    materialType: 'Feed',
     units: {
       kg: 'weight',
       g: 'weight',
       hg: 'weight',
+      L: 'volume',
+      st: 'count',
     },
   },
 
@@ -124,10 +134,14 @@ export const config = {
       harvestLogHeading: 'Hur mycket skördade du?',
       plantingHeading: 'Plantering',
       weatherHeading: 'Registrera en väderobservation',
+      maintenanceHeading: 'Beskriv underhållet för {name}',
       milkHeading: 'Hur mycket mjölk mjölkade du från {name}?',
       weightHeading: 'Hur mycket vägde {name}?',
       weightUnit: 'Enhet',
       weightQuantityRequired: 'Ange en vikt större än 0.',
+      feedHeading: 'Hur mycket foder gav du {name}?',
+      feedUnit: 'Enhet',
+      feedQuantityRequired: 'Ange en fodermängd större än 0.',
 
       // Field / select labels
       selectAction: 'Välj åtgärd',
@@ -163,6 +177,7 @@ export const config = {
       transplantLocationRequired: 'Omplanteringsplats krävs',
       selectUnitBeforeHarvest: 'Välj en enhet innan du registrerar skörden.',
       harvestQtyGreaterThanZero: 'Ange en skördemängd större än 0.',
+      maintenanceDescriptionRequired: 'Ange en beskrivning av underhållet.',
       milkVolumeGreaterThanZero: 'Ange en mjölkmängd större än 0.',
       seedCountGreaterThanZero: 'Ange ett fröantal större än 0.',
       transplantDestRequired: 'Välj en destinationsplats innan du omplanterar.',
@@ -179,8 +194,10 @@ export const config = {
       harvest: 'Skörda',
       transplantPlant: 'Omplantera växt',
       plantPlants: 'Plantera',
+      recordMaintenance: 'Underhåll',
       recordMilking: 'Mjölka',
       weigh: 'Väg',
+      feed: 'Utfodra',
 
       // Reset-trap action options
       resetTrap: 'Återställ fälla',
@@ -227,10 +244,14 @@ export const config = {
       createTransplantingLogs: 'Skapa omplanteringsloggar',
       createHarvestLog: 'Skapa skördelogg',
       harvestName: 'Skörda {name}',
+      maintenanceName: 'Underhåll: {name}',
+      recordMaintenanceFor: 'Registrera underhåll för {name}',
       milkedFrom: 'Mjölkade {volume} L från {name}',
       recordMilkFor: 'Registrera mjölkning för {name}',
       weighedAnimal: 'Vägde {name}',
       recordWeightFor: 'Registrera vägning för {name}',
+      fedTo: 'Utfodrade {name}',
+      recordFeedFor: 'Registrera utfodring för {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Frön: farm_ledger-modulen är inte aktiverad, så "{action}" är inaktiverad.',
@@ -252,10 +273,14 @@ export const config = {
       harvestLogHeading: 'How much did you harvest?',
       plantingHeading: 'Planting',
       weatherHeading: 'Record a weather observation',
+      maintenanceHeading: 'Describe the maintenance for {name}',
       milkHeading: 'How much milk did you milk from {name}?',
       weightHeading: 'How much did {name} weigh?',
       weightUnit: 'Unit',
       weightQuantityRequired: 'Enter a weight greater than 0.',
+      feedHeading: 'How much feed did you give {name}?',
+      feedUnit: 'Unit',
+      feedQuantityRequired: 'Enter a feed quantity greater than 0.',
 
       // Field / select labels
       selectAction: 'Select Action',
@@ -291,6 +316,7 @@ export const config = {
       transplantLocationRequired: 'Transplant location is required',
       selectUnitBeforeHarvest: 'Select a unit before recording the harvest.',
       harvestQtyGreaterThanZero: 'Enter a harvest quantity greater than 0.',
+      maintenanceDescriptionRequired: 'Enter a description of the maintenance.',
       milkVolumeGreaterThanZero: 'Enter a milk volume greater than 0.',
       seedCountGreaterThanZero: 'Enter a seed count greater than 0.',
       transplantDestRequired: 'Select a destination location before transplanting.',
@@ -307,8 +333,10 @@ export const config = {
       harvest: 'Harvest',
       transplantPlant: 'Transplant plant',
       plantPlants: 'Plant plants',
+      recordMaintenance: 'Maintenance',
       recordMilking: 'Milk',
       weigh: 'Weigh',
+      feed: 'Feed',
 
       // Reset-trap action options
       resetTrap: 'Reset trap',
@@ -355,10 +383,14 @@ export const config = {
       createTransplantingLogs: 'Create transplanting logs',
       createHarvestLog: 'Create harvest log',
       harvestName: 'Harvest {name}',
+      maintenanceName: 'Maintenance: {name}',
+      recordMaintenanceFor: 'Record maintenance for {name}',
       milkedFrom: 'Milked {volume} L from {name}',
       recordMilkFor: 'Record milking for {name}',
       weighedAnimal: 'Weighed {name}',
       recordWeightFor: 'Record weighing for {name}',
+      fedTo: 'Fed {name}',
+      recordFeedFor: 'Record feeding for {name}',
 
       // Warnings (notify)
       seedsLedgerDisabled: 'Seeds: the farm_ledger module is not enabled, so "{action}" is disabled.',

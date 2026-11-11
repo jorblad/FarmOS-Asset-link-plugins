@@ -22,6 +22,9 @@
             "url": "Animals/WeighAnimal.alink.vue"
         },
         {
+            "url": "Animals/FeedAnimals.alink.vue"
+        },
+        {
             "url": "Weather/ObserveWeather.alink.vue"
         },
         {
@@ -41,6 +44,9 @@
         },
         {
             "url": "Equipment/RelatedEquipment.alink.vue"
+        },
+        {
+            "url": "Equipment/MaintenanceLog.alink.vue"
         },
         {
             "url": "Seeds/AddNewSeedsToInventory.alink.vue"
