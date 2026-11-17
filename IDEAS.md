@@ -97,9 +97,10 @@ Nothing here is implemented yet — use this as a working list.
   `HomeAssetLogs` route + toolbar button was removed. The per-asset
   `DoneAssetLogs` / `PendingAssetLogs` panels (which also rendered
   `AssetLogsPanel`) were later removed as well — the built-in Tasks page already
-  covers the same logs view. The `AssetLogsPanel` component itself is retained in
-  `SharedFarmOS.alink.js` and still has its own unit test
-  (`tests/AssetLogsPanel.test.js`), but is currently unused by any shipped plugin.
+  covers the same logs view. With no remaining consumers, the `AssetLogsPanel`
+  component itself was also removed from `SharedFarmOS.alink.js` along with its
+  unit test (`tests/AssetLogsPanel.test.js`) and the `tests/quasar-stub.js` helper
+  it alone used.
 - **Related-equipment panel** — **DONE**: new `Equipment/RelatedEquipment.alink.vue`
   renders a `page-slot` on any `asset--equipment` page listing the first ~10 other
   equipment assets (clickable to navigate). Registered in `repo.json`.
@@ -109,8 +110,8 @@ Nothing here is implemented yet — use this as a working list.
 
 ## Verification TODO (not yet confirmed at runtime)
 
-- Relative sibling imports (`../usePhotoCapture.js`, `../useFarmOS.js`,
-  `../AssetLogsPanel.js`) — confirmed to compile, but not yet verified to load
+- Relative sibling imports (`../usePhotoCapture.js`, `../useFarmOS.js`) —
+  confirmed to compile, but not yet verified to load
   in the running app. Load the photo-dialog plugins and the shared-helper
   plugins once to confirm.
 
