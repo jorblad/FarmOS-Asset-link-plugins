@@ -26,10 +26,6 @@ supplement that tells you what will silently bite you.
   `config.X` and render text via `t('key', vars)`. `config.locale` defaults to
   `sv` with `en` as fallback. (Quasar i18n / vue-i18n is NOT wired into Asset
   Link, so we use this tiny custom map instead.)
-- `SharedFarmOS.alink.js`'s `AssetLogsPanel` strings (`Klara loggar:` /
-  `Väntande loggar:` …) are the **one exception**: that file is imported
-  directly by the unit tests, which can't resolve `plugin-library:` imports, so
-  its four strings are hardcoded Swedish on purpose.
 - farmOS 4.x only has `quantity--material` (+ `quantity--price`). Assets
   **require a type term** (`product_type`, `plant_type`, …).
 - Orbit record types are **always** `taxonomy_term--<vocab>`, never the bare
