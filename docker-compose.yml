@@ -35,7 +35,7 @@ services:
       - db-data:/var/lib/mysql
 
   farmos:
-    image: jorblad/farmos-k8s:v4.0.12.1
+    image: jorblad/farmos-k8s:v4.0.13.1
     platform: linux/amd64
     depends_on:
       db:
